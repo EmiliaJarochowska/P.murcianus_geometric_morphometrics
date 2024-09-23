@@ -1,4 +1,4 @@
-### IN ANAYSE ARE INCORPORATE ELEMENT FROM SLOVENIA, SPAIN AND BOSNIA & HERZEGOVINA ###
+### IN ANAYSE ARE INCORPORATE ELEMENTS FROM SLOVENIA, SPAIN AND BOSNIA & HERZEGOVINA ###
 
 library(geomorph)
 tps_file <- "skupno.TPS"
@@ -187,7 +187,7 @@ cat("Max PC2: ", max(PCA$x[, 2]), " (ID: ", max_PC2_ID, ")\n\n")
 
 
 
-### IN ANAYSE ARE INCORPORATE ELEMENT FROM SLOVENIA AND SPAIN ###
+### IN ANAYSE ARE INCORPORATE ELEMENTS FROM SLOVENIA AND SPAIN ###
 
 ### Principal Component Analysis with confidence ellipse ####
 
@@ -330,6 +330,13 @@ cat("Max PC2: ", max(PCA$x[, 2]), " (ID: ", max_PC2_ID, ")\n\n")
 
 
 
+
+
+
+
+
+
+
 ### bigger the specimes bigger the dot ###
 
 
@@ -338,16 +345,26 @@ cat("Max PC2: ", max(PCA$x[, 2]), " (ID: ", max_PC2_ID, ")\n\n")
 
 
 
-
+### GROUPING DATA IN TO WESTERN (SPAIN) AND EASTERN TETHYS (SLOVENIA AND BOSNIA AND HERZEGOVINA) ###
   
 
 ### Length distribution ###
 
-### Weastern Tetys ###
+### Eastern Tetys ###
 
-library(geomorph)
+require(geomorph)
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("tidyverse")
 library(ggplot2)
-library(dplyr)
+library(geomorph)
+library(dplyr) # dplyr don't work now, and I don't know why
+
+
+tps_file <- "eastern.TPS"
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+sliders <- define.sliders(3:138)
+
 
 # Function to calculate Euclidean distance
 calculate_distance <- function(x1, y1, x2, y2) {
@@ -400,8 +417,8 @@ process_data <- function(file_path) {
   return(results)
 }
 
-# Load the TPS file
-tps_file <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/MORFOMETRIČNE ANALIZE/REGIONS/eastern.TPS"
+# Load the TPS file using geomorph's readland.tps function
+tps_file <- "eastern.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -416,9 +433,10 @@ scaled_distances_results <- tryCatch({
 if (!is.null(scaled_distances_results)) {
   
   # Convert scaled distances results into a data frame
-  distances_data <- do.call(rbind, lapply(scaled_distances_results, function(result) {
+  distances_data <- do.call(rbind, lapply(seq_along(scaled_distances_results), function(i) {
+    result <- scaled_distances_results[[i]]
     data.frame(
-      block_index = result$block_index,
+      block_index = i,
       scale = result$scale,
       distance = unlist(result$distances)
     )
@@ -442,9 +460,9 @@ if (!is.null(scaled_distances_results)) {
   
   samples$variable1 <- factor(samples$variable1)
   
-  # Add distances to samples data frame
-  samples_with_distances <- merge(samples, distances_data, by.x = "row.names", by.y = "block_index")
-  colnames(samples_with_distances)[1] <- "specimen_id"
+  # Merge using valid index, assuming 'block_index' corresponds to sample rows
+  samples_with_distances <- merge(samples, distances_data, by.x = "row.names", by.y = "block_index", all.x = TRUE)
+  colnames(samples_with_distances)[1] <- "specimen_id"  # Rename for clarity
   
   # Function to compute Shapiro-Wilk test results for combined data
   compute_shapiro_results <- function(data) {
@@ -461,16 +479,26 @@ if (!is.null(scaled_distances_results)) {
     geom_histogram(aes(y = ..density..), bins = 30, fill = "lightblue", color = "black") +
     stat_function(
       fun = dnorm, 
-      args = list(mean = mean(samples_with_distances$distance), sd = sd(samples_with_distances$distance)),
+      args = list(mean = mean(samples_with_distances$distance, na.rm = TRUE), 
+                  sd = sd(samples_with_distances$distance, na.rm = TRUE)),
       color = "red", 
       linewidth = 1
     ) +
     labs(
-      title = "Histogram of Length for Western Tethys with Gaussian Curve",
+      title = "Histogram of Length for Eastern Tethys with Gaussian Curve",
       x = "Length", 
       y = "Density"
     ) +
     theme_minimal() +
+    theme(
+      plot.title = element_text(size = 22, face = "bold"),   # Increase title size
+      axis.title.x = element_text(size = 18),                # Increase X-axis label size
+      axis.title.y = element_text(size = 18),                # Increase Y-axis label size
+      axis.text.x = element_text(size = 16),                 # Increase X-axis tick size
+      axis.text.y = element_text(size = 16),                 # Increase Y-axis tick size
+      legend.title = element_text(size = 16),                # Increase legend title size (if applicable)
+      legend.text = element_text(size = 14)                  # Increase legend text size (if applicable)
+    ) +
     annotate(
       "text", 
       x = Inf, 
@@ -478,63 +506,16 @@ if (!is.null(scaled_distances_results)) {
       label = shapiro_results,
       hjust = 1.1, 
       vjust = 1.5, 
-      size = 5, 
+      size = 6,       # Increase size of the Shapiro-Wilk annotation text
       color = "blue"
     )
   
-  # Print the combined plot
+  # Print the plot
   print(plot)
   
 } else {
   cat("No scaled distances were computed.\n")
 }
-
-
-
-# Compute Shapiro-Wilk results for the combined data
-shapiro_results <- compute_shapiro_results(samples_with_distances)
-
-# Create the combined histogram plot for Western Tethys with larger labels and text
-plot <- ggplot(samples_with_distances, aes(x = distance)) +
-  geom_histogram(aes(y = ..density..), bins = 30, fill = "lightblue", color = "black") +
-  stat_function(
-    fun = dnorm, 
-    args = list(mean = mean(samples_with_distances$distance), sd = sd(samples_with_distances$distance)),
-    color = "black", 
-    linewidth = 1
-  ) +
-  labs(
-    title = "North-Eastern part",
-    x = "Length", 
-    y = "Density"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 22, face = "bold"),   # Increase title size
-    axis.title.x = element_text(size = 18),                # Increase X-axis label size
-    axis.title.y = element_text(size = 18),                # Increase Y-axis label size
-    axis.text.x = element_text(size = 16),                 # Increase X-axis tick size
-    axis.text.y = element_text(size = 16),                 # Increase Y-axis tick size
-    legend.title = element_text(size = 16),                # Increase legend title size (if applicable)
-    legend.text = element_text(size = 14)                  # Increase legend text size (if applicable)
-  ) +
-  annotate(
-    "text", 
-    x = Inf, 
-    y = Inf, 
-    label = shapiro_results,
-    hjust = 1.1, 
-    vjust = 1.5, 
-    size = 6,       # Increase size of the Shapiro-Wilk annotation text
-    color = "blue"
-  )
-
-# Print the plot
-print(plot)
-
-
-
-
 
 
 
@@ -597,7 +578,7 @@ process_data <- function(file_path) {
 }
 
 # Load the TPS file
-tps_file <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/MORFOMETRIČNE ANALIZE/REGIONS/eastern.TPS"
+tps_file <- "eastern.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -764,13 +745,7 @@ for (p in plot_list) {
 }
 
 
-
-
-
-
-
-### Length by country ###
-
+### Length by sections (nonparametric test) ###
 # Install and load required packages
 if (!require("ca")) {
   install.packages("ca")
@@ -778,19 +753,21 @@ if (!require("ca")) {
 if (!require("ggplot2")) {
   install.packages("ggplot2")
 }
+if (!require("dplyr")) {
+  install.packages("dplyr")
+}
 library(ca)
 library(ggplot2)
+library(dplyr)
 
-tps_file <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/TPS files - prba/skupno - Copy.TPS"
+tps_file <- "skupno - Copy.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
 # Placeholder function to calculate length from landmarks
-# Replace this with your actual method to compute lengths
 calculate_length <- function(landmark_data) {
-  # Example: Calculate Euclidean distance between first and last landmark points
-  coords <- as.matrix(landmark_data)  # Convert landmark data to matrix
-  sqrt(sum((coords[1, ] - coords[nrow(coords), ])^2))  # Euclidean distance
+  coords <- as.matrix(landmark_data)
+  sqrt(sum((coords[1, ] - coords[nrow(coords), ])^2))
 }
 
 # Calculate length for each sample
@@ -806,23 +783,21 @@ samples <- data.frame(name = dimnames(landmarks)[[3]],
 # Add length variable to the samples data frame
 samples$length <- lengths
 
-# Fit a linear model using length as the response variable
-model <- lm(length ~ country * variable1, data = samples)
+# Perform the Kruskal-Wallis test
+kruskal_test <- kruskal.test(length ~ variable1, data = samples)
+print(kruskal_test)
 
-# Perform ANOVA
-anova_results <- anova(model)
-print(anova_results)
-
-# Visualize the results
-ggplot(samples, aes(x = country, y = length, color = variable1)) +
-  geom_point(position = position_jitter(width = 0.1, height = 0), alpha = 0.5) +
-  stat_summary(fun = mean, geom = "point", size = 3, position = position_dodge(0.8)) +
-  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.2, position = position_dodge(0.8)) +
-  labs(title = "Length by Country",
-       x = "Country",
+# Visualize the results with boxplots
+ggplot(samples, aes(x = variable1, y = length, fill = variable1)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.7) +
+  geom_jitter(position = position_jitter(width = 0.2), alpha = 0.5) +
+  labs(title = "Length Distribution by Section",
+       x = "Section",
        y = "Length") +
-  theme_minimal()
-
+  scale_fill_manual(values = c("Pr" = "red", "Li" = "blue", "Bu" = "green", "He" = "orange"),
+                    labels = section_names) +
+  theme_minimal() +
+  theme(legend.position = "none")  # Remove legend if desired
 
 
 ### Length by regions ###
@@ -838,7 +813,7 @@ library(ca)
 library(ggplot2)
 
 # Reading landmarks data from TPS file
-tps_file <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/TPS files - prba/skupno - Copy.TPS"
+tps_file <- "skupno - Copy.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -894,10 +869,11 @@ ggplot(samples, aes(x = tethys_group, y = length, fill = tethys_group)) +
 ### PC1 scores ###
 
 ### Weastern Tetys (when analysing the Eastern Tethys just change the file to eastern) ###
+
 # Load necessary libraries
 library(geomorph)
 library(ggplot2)
-library(dplyr)
+library(dplyr) ##same proble it doesn't work
 
 # Load the TPS file for Eastern Tethys
 tps_file <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/MORFOMETRIČNE ANALIZE/REGIONS/Western T.TPS"
@@ -1176,7 +1152,7 @@ for (p in plot_list) {
 ### PC1 by coutry ###
 
 ### ANOVA and Tukey's analyse for coutry ###
-tps_file <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/TPS files - prba/skupno - Copy.TPS"
+tps_file <- "skupno - Copy.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138) 
 
@@ -1233,7 +1209,7 @@ library(ggplot2)
 library(geomorph)
 
 # Load the TPS file
-tps_file <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/TPS files - prba/skupno - Copy.TPS"
+tps_file <- "skupno - Copy.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
