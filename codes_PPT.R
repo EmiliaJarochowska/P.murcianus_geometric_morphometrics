@@ -1,9 +1,12 @@
+### IN ANAYSE ARE INCORPORATE ELEMENT FROM SLOVENIA, SPAIN AND BOSNIA & HERZEGOVINA ###
+
 library(geomorph)
-tps_file <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/TPS files - prba/skupno - Copy.TPS"
+tps_file <- "skupno.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138) 
 
 ### Mean shape, PC1 min and max, PC2 min and max ###
+
 #procrusteranalyse
 landmarks.gpa<-gpagen(landmarks, curves = sliders)
 plot(landmarks.gpa)
@@ -24,14 +27,14 @@ plotRefToTarget(PCA$shapes$shapes.comp2$max, msho,
 require(geomorph)
 
 
-### Principal Component Analysis with confidence ellipse ####
+### Principal Component Analysis ####
 
 # Install and load necessary packages
 install.packages("ggplot2")
 library(ggplot2)
 library(geomorph)
 
-tps_file <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/TPS files - prba/skupno - Copy.TPS"
+tps_file <- "skupno.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138) 
 
@@ -76,101 +79,8 @@ dunn_test <- dunn.test(pca_data$PC1, pca_data$Country, method = "bonferroni")
 print(dunn_test)
 
 
-import pandas as pd
 
-# Data to export
-data = {
-  "Comparison": ["SL - SP"],
-  "Z-score": [-11.60547],
-  "P-value (unadjusted)": [1.932844e-31],
-  "P-value (adjusted)": [1.932844e-31],
-  "Reject H0": ["Yes"]
-}
-
-# Create DataFrame
-result_df = pd.DataFrame(data)
-
-# Exporting to a CSV file
-output_path = "/mnt/data/Kruskal_Wallis_Dunn_Test_Results.csv"
-result_df.to_csv(output_path, index=False)
-
-output_path
-
-
-
-# Calculate the percentage of variance for each PC
-variance_explained <- PCA$sdev^2 / sum(PCA$sdev^2) * 100
-pc1_var <- round(variance_explained[1], 2)
-pc2_var <- round(variance_explained[2], 2)
-
-# Generate a distinct color and symbol for each country
-unique_countries <- levels(samples$country)
-num_countries <- length(unique_countries)
-colors <- rainbow(num_countries)
-symbols <- 15 + 0:(num_countries - 1)
-
-# Map colors and symbols to the data
-pca_data$Color <- colors[as.numeric(pca_data$Country)]
-pca_data$Symbol <- symbols[as.numeric(pca_data$Country)]
-
-# Define country full names
-country_full_names <- c(
-  "SL" = "Slovenia",
-  "SP" = "Spain"
-)
-# Plot with ggplot2
-ggplot(pca_data, aes(x = PC1, y = PC2, color = Country, shape = Country)) +
-  geom_point(size = 2) +
-  scale_shape_manual(values = symbols) +
-  scale_color_manual(values = c(
-    "SL" = "grey",                        # Black
-    "SP" = "#0033A0"                            # Blue
-  )) +
-  stat_ellipse(type = "t", level = 0.95, segments = 51, na.rm = FALSE) +
-  labs(title = "Morphospace of the aboral side of P. murcianus",
-       x = paste0("PC 1 (", pc1_var, "% variance)"),
-       y = paste0("PC 2 (", pc2_var, "% variance)")) +
-  theme_minimal() +
-  theme(legend.position = c(0.1, 0.1))
-
-
-
-# Define country full names
-country_full_names <- c(
-  "SL" = "Slovenia",
-  "SP" = "Spain"
-)
-
-# Plot with ggplot2
-ggplot(pca_data, aes(x = PC1, y = PC2, color = Country, shape = Country)) +
-  geom_point(size = 2) +
-  scale_shape_manual(values = symbols, labels = country_full_names) +  # Update with full names
-  scale_color_manual(values = c(
-    "SL" = "grey",  # Black
-    "SP" = "#0033A0" # Blue
-  ), labels = country_full_names) +  # Update with full names
-  stat_ellipse(type = "t", level = 0.95, segments = 51, na.rm = FALSE) +
-  labs(title = "Morphospace of the aboral side of P. murcianus",
-       x = paste0("PC 1 (", pc1_var, "% variance)"),
-       y = paste0("PC 2 (", pc2_var, "% variance)")) +
-  theme_minimal() +
-  theme(
-    legend.position = "bottom",  # Place legend at the bottom
-    legend.box = "horizontal",   # Arrange legend horizontally
-    plot.title = element_text(size = 20, face = "bold"),  # Bigger plot title
-    axis.title = element_text(size = 16),  # Bigger axis titles
-    axis.text = element_text(size = 14),   # Bigger axis text
-    legend.text = element_text(size = 14), # Bigger legend text
-    legend.title = element_text(size = 16) # Bigger legend title
-  )
-
-
-
-
-
-
-# Load necessary libraries
-library(ggplot2)
+### Print % of explained PC scores ###
 
 # Assuming PCA and samples are already defined and PCA$x contains the PCA scores
 
@@ -191,52 +101,14 @@ for (i in 1:length(variance_explained_percent)) {
   cat(sprintf("PC%d: %.2f%%\n", i, variance_explained_percent[i]))
 }
 
-# Define country full names
-country_full_names <- c(
-  "BAH" = "Bosnia and Herzegovina",
-  "SL" = "Slovenia",
-  "SP" = "Spain"
-)
 
-# Convert country codes in samples$country to full names
-samples$country <- country_full_names[samples$country]
-
-
-
-### bigger the specimes bigger the dot ###
-
-
-
-
-
-
-
-# Load necessary libraries
-library(ggplot2)
-
-# Assuming PCA and samples are already defined and PCA$x contains the PCA scores
-
-# Create a data frame for PCA scores
-pca_scores_df <- data.frame(
-  PC1 = PCA$x[, 1],
-  PC2 = PCA$x[, 2],
-  country = samples$country  # Assuming you have the samples dataframe ready
-)
-
-# Extract variance explained
-variance_explained <- PCA$sdev^2 / sum(PCA$sdev^2)  # Eigenvalues / Total eigenvalues
-variance_explained_percent <- variance_explained * 100
-
-# Print the percentage of variance explained
-cat("Percentage variance explained by each principal component:\n")
-for (i in 1:length(variance_explained_percent)) {
-  cat(sprintf("PC%d: %.2f%%\n", i, variance_explained_percent[i]))
-}
+### Principal Component Analysis with confidence ellipse ####
 
 # Define country full names
 country_full_names <- c(
   "SL" = "Slovenia",
-  "SP" = "Spain"
+  "SP" = "Spain",
+  "BAH" = "Bosnia and Herzegovina"
 )
 
 # Convert country codes in samples$country to full names
@@ -267,63 +139,8 @@ ggplot(pca_scores_df, aes(x = PC1, y = PC2, color = country, shape = country)) +
 
 
 
-# Create the plot
-ggplot(pca_scores_df, aes(x = PC1, y = PC2, color = country, shape = country)) +
-  geom_point(size = 2) +  # Increase point size
-  stat_ellipse(level = 0.95) +  # 95% confidence ellipse
-  labs(x = "PC 1", y = "PC 2", title = "Morphospace of the aboral side of P. murcianus") +
-  scale_color_manual(values = c(
-    "Bosnia and Herzegovina" = "#D81B60",  # Dark pink
-    "Slovenia" = "grey",                        # Grey
-    "Spain" = "#0033A0"                         # Blue
-  )) +
-  scale_shape_manual(values = 15 + 0:(length(country_full_names) - 1)) +
-  theme_minimal() +
-  scale_size_continuous(name = "PC1", range = c(1, 5)) +  # Adjust the size range as needed
-  theme(legend.position = "bottom",  # Place legend at the bottom
-        legend.box = "horizontal",  # Arrange legend horizontally
-        legend.background = element_rect(fill = "transparent"),
-        text = element_text(size = 16),  # Increase size of axis labels and titles
-        legend.text = element_text(size = 14),  # Increase size of legend text
-        legend.title = element_text(size = 16)) +  # Increase size of legend title
-  annotate("text", x = Inf, y = -Inf, label = sprintf("PC1: %.2f%%", variance_explained_percent[1]), 
-           hjust = 1.1, vjust = -0.5, size = 8, fontface = "italic") +  # Increase size of PC1 label
-  annotate("text", x = -Inf, y = Inf, label = sprintf("PC2: %.2f%%", variance_explained_percent[2]), 
-           hjust = -0.1, vjust = 1.5, size = 8, fontface = "italic")  # Increase size of PC2 label
 
-
-
-
-
-# Create the plot
-ggplot(pca_scores_df, aes(x = PC1, y = PC2, color = country, shape = country, size = PC1)) +
-  geom_point() +  # Size mapped to PC1
-  stat_ellipse(level = 0.95) +  # 95% confidence ellipse
-  labs(x = "PC 1", y = "PC 2", title = "Morphospace of the aboral side of P. murcianus") +
-  scale_color_manual(values = c(
-    "Slovenia" = "grey",                   # Grey
-    "Spain" = "#0033A0"                    # Blue
-  )) +
-  scale_shape_manual(values = 15 + 0:(length(country_full_names) - 1)) +
-  scale_size_continuous(name = "PC1", range = c(1, 5), guide = "none") +  # Size scaled to PC1, adjust range as needed
-  theme_minimal() +
-  theme(legend.position = "bottom",  # Place legend at the bottom
-        legend.box = "horizontal",   # Arrange legend horizontally
-        legend.background = element_rect(fill = "transparent"),
-        text = element_text(size = 18),  # Increase size of axis labels and titles
-        legend.text = element_text(size = 14),  # Increase size of legend text
-        legend.title = element_text(size = 14)) +  # Increase size of legend title
-  annotate("text", x = Inf, y = -Inf, label = sprintf("PC1: %.2f%%", variance_explained_percent[1]), 
-           hjust = 1.1, vjust = -0.5, size = 7, fontface = "italic") +  # PC1 variance explained
-  annotate("text", x = -Inf, y = Inf, label = sprintf("PC2: %.2f%%", variance_explained_percent[2]), 
-           hjust = -0.1, vjust = 1.5, size = 7, fontface = "italic")  # PC2 variance explained
-
-
-
-
-
-
-### Principal Component Analysis with confidence ellipse ####
+### Print the ID od specific specimens who are closer to the PC1 and PC2 min and max ####
 
 # Create a sample data frame assuming you have 'ID' or 'IMAGE' in your dataset
 samples <- data.frame(
@@ -368,11 +185,165 @@ cat("Min PC2: ", min(PCA$x[, 2]), " (ID: ", min_PC2_ID, ")\n")
 cat("Max PC2: ", max(PCA$x[, 2]), " (ID: ", max_PC2_ID, ")\n\n")
 
 
+
+
+### IN ANAYSE ARE INCORPORATE ELEMENT FROM SLOVENIA AND SPAIN ###
+
+### Principal Component Analysis with confidence ellipse ####
+
+# Install and load necessary packages
+install.packages("ggplot2")
+library(ggplot2)
+library(geomorph)
+
+tps_file <- "skupno - Copy.TPS"
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+sliders <- define.sliders(3:138) 
+
+# Assuming `landmarks` is already defined and loaded
+samples <- data.frame(name = rep(NA, dim(landmarks)[3]),
+                      country = rep(NA, dim(landmarks)[3]),
+                      variable1 = rep(NA, dim(landmarks)[3]),
+                      variable2 = rep(NA, dim(landmarks)[3]),
+                      variable3 = rep(NA, dim(landmarks)[3]))
+
+for (i in 1:dim(landmarks)[3]) {
+  samples$name[i] <- dimnames(landmarks)[[3]][i]
+  samples$country[i] <- unlist(strsplit(samples$name[i], "_"))[1]
+  samples$variable1[i] <- unlist(strsplit(samples$name[i], "_"))[2]
+  samples$variable2[i] <- unlist(strsplit(samples$name[i], "_"))[3]
+  samples$variable3[i] <- unlist(strsplit(samples$name[i], "_"))[4]
+}
+
+samples$country <- as.factor(samples$country)
+samples$variable1 <- as.factor(samples$variable1)
+
+# Perform Procrustes analysis
+sliders <- define.sliders(3:138)
+landmarks.gpa <- gpagen(landmarks, curves = sliders)
+plot(landmarks.gpa)
+plotAllSpecimens(A = landmarks.gpa$coords, mean = TRUE, label = FALSE)
+
+# Perform PCA
+PCA <- gm.prcomp(landmarks.gpa$coords)
+
+# Calculate the percentage of variance for each PC
+variance_explained <- PCA$sdev^2 / sum(PCA$sdev^2) * 100
+pc1_var <- round(variance_explained[1], 2)
+pc2_var <- round(variance_explained[2], 2)
+
+# Generate a distinct color and symbol for each country
+unique_countries <- levels(samples$country)
+num_countries <- length(unique_countries)
+colors <- rainbow(num_countries)
+symbols <- 15 + 0:(num_countries - 1)
+
+# Map colors and symbols to the data
+pca_data$Color <- colors[as.numeric(pca_data$Country)]
+pca_data$Symbol <- symbols[as.numeric(pca_data$Country)]
+
+# Create PCA data for plotting
+pca_data <- data.frame(
+  PC1 = PCA$x[, 1],
+  PC2 = PCA$x[, 2],
+  Country = samples$country
+)
+
+# Map colors and symbols based on the country
+pca_data$Color <- colors[as.numeric(pca_data$Country)]
+pca_data$Symbol <- symbols[as.numeric(pca_data$Country)]
+
+# Define country full names
+country_full_names <- c(
+  "SL" = "Slovenia",
+  "SP" = "Spain"
+)
+
+# Plot with ggplot2
+ggplot(pca_data, aes(x = PC1, y = PC2, color = Country, shape = Country)) +
+  geom_point(size = 2) +
+  scale_shape_manual(values = symbols, labels = country_full_names) +  # Update with full names
+  scale_color_manual(values = c(
+    "SL" = "grey",  # Grey for Slovenia
+    "SP" = "#0033A0" # Blue for Spain
+  ), labels = country_full_names) +  # Update with full names
+  stat_ellipse(type = "t", level = 0.95, segments = 51, na.rm = FALSE) +
+  labs(title = "Morphospace of the aboral side of P. murcianus",
+       x = paste0("PC 1 (", pc1_var, "% variance)"),
+       y = paste0("PC 2 (", pc2_var, "% variance)")) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",  # Place legend at the bottom
+    legend.box = "horizontal",   # Arrange legend horizontally
+    plot.title = element_text(size = 20, face = "bold"),  # Bigger plot title
+    axis.title = element_text(size = 16),  # Bigger axis titles
+    axis.text = element_text(size = 14),   # Bigger axis text
+    legend.text = element_text(size = 14), # Bigger legend text
+    legend.title = element_text(size = 16) # Bigger legend title
+  )
+
+
+### Print the ID od specific specimens who are closer to the PC1 and PC2 min and max ####
+
+# Create a sample data frame assuming you have 'ID' or 'IMAGE' in your dataset
+samples <- data.frame(
+  ID = dimnames(landmarks)[[3]],  # Replace this with appropriate identifier if different
+  PC1 = PCA$x[, 1],
+  PC2 = PCA$x[, 2]
+)
+
+# Print PCA results
+print(PCA)
+# Find the IDs with minimum and maximum values for PC1
+min_PC1_idx <- which.min(PCA$x[, 1])
+max_PC1_idx <- which.max(PCA$x[, 1])
+
+# Find the IDs with minimum and maximum values for PC2
+min_PC2_idx <- which.min(PCA$x[, 2])
+max_PC2_idx <- which.max(PCA$x[, 2])
+
+# Get corresponding IDs
+min_PC1_ID <- samples$ID[min_PC1_idx]
+max_PC1_ID <- samples$ID[max_PC1_idx]
+
+min_PC2_ID <- samples$ID[min_PC2_idx]
+max_PC2_ID <- samples$ID[max_PC2_idx]
+
+# Calculate the mean of PC1 scores
+mean_PC1 <- mean(PCA$x[, 1])
+
+# Find the ID closest to the mean PC1 score
+mean_PC1_idx <- which.min(abs(PCA$x[, 1] - mean_PC1))
+mean_PC1_ID <- samples$ID[mean_PC1_idx]
+
+# Print the min, max, and mean values and corresponding IDs for PC1
+cat("PC1 Minimum, Maximum, and Mean values:\n")
+cat("Min PC1: ", min(PCA$x[, 1]), " (ID: ", min_PC1_ID, ")\n")
+cat("Max PC1: ", max(PCA$x[, 1]), " (ID: ", max_PC1_ID, ")\n")
+cat("Mean PC1: ", mean_PC1, " (ID: ", mean_PC1_ID, ")\n\n")
+
+# Print the min and max values and corresponding IDs for PC2
+cat("PC2 Minimum and Maximum values:\n")
+cat("Min PC2: ", min(PCA$x[, 2]), " (ID: ", min_PC2_ID, ")\n")
+cat("Max PC2: ", max(PCA$x[, 2]), " (ID: ", max_PC2_ID, ")\n\n")
+
+
+
+
+### bigger the specimes bigger the dot ###
+
+
+
+
+
+
+
+
   
 
 ### Length distribution ###
 
-### Weastern Tetys (when analysing the Eastern Tethys just change the file to eastern) ###
+### Weastern Tetys ###
 
 library(geomorph)
 library(ggplot2)
