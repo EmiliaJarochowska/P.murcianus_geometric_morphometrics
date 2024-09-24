@@ -518,6 +518,168 @@ if (!is.null(scaled_distances_results)) {
 }
 
 
+### western part ###
+
+
+tps_file <- "eastern.TPS"
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+sliders <- define.sliders(3:138)
+
+
+# Function to calculate Euclidean distance
+calculate_distance <- function(x1, y1, x2, y2) {
+  return(sqrt((x2 - x1)^2 + (y2 - y1)^2))
+}
+
+# Function to process the data and calculate scaled distance
+process_data <- function(file_path) {
+  lines <- readLines(file_path)
+  lm_indices <- which(grepl("LM=", lines))
+  scale_indices <- which(grepl("SCALE=", lines))
+  
+  if(length(lm_indices) == 0 || length(scale_indices) == 0) {
+    stop("LM= or SCALE= not found in the data file.")
+  }
+  
+  results <- list()
+  
+  for (i in seq_along(lm_indices)) {
+    num_landmarks <- as.numeric(gsub("LM=", "", lines[lm_indices[i]]))
+    scale <- as.numeric(gsub("SCALE=", "", lines[scale_indices[i]]))
+    
+    landmark_lines <- lines[(lm_indices[i] + 1):(lm_indices[i] + num_landmarks)]
+    landmarks <- do.call(rbind, strsplit(landmark_lines, "\\s+"))
+    landmarks <- as.data.frame(landmarks, stringsAsFactors = FALSE)
+    landmarks <- mutate_all(landmarks, as.numeric)
+    
+    if(nrow(landmarks) < 2) {
+      next 
+    }
+    
+    # Calculate distances between all pairs of landmarks
+    num_landmarks <- nrow(landmarks)
+    distances <- numeric()
+    for (j in 1:(num_landmarks - 1)) {
+      for (k in (j + 1):num_landmarks) {
+        dist <- calculate_distance(landmarks[j, 1], landmarks[j, 2], landmarks[k, 1], landmarks[k, 2])
+        scaled_distance <- dist * scale
+        distances <- c(distances, scaled_distance)
+      }
+    }
+    
+    results[[length(results) + 1]] <- list(
+      block_index = i,
+      scale = scale,
+      distances = distances
+    )
+  }
+  
+  return(results)
+}
+
+# Load the TPS file using geomorph's readland.tps function
+tps_file <- "eastern.TPS"
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+sliders <- define.sliders(3:138)
+
+# Process the TPS file to get scaled distances
+scaled_distances_results <- tryCatch({
+  process_data(tps_file)
+}, error = function(e) {
+  cat("Error:", e$message, "\n")
+  return(NULL)
+})
+
+if (!is.null(scaled_distances_results)) {
+  
+  # Convert scaled distances results into a data frame
+  distances_data <- do.call(rbind, lapply(seq_along(scaled_distances_results), function(i) {
+    result <- scaled_distances_results[[i]]
+    data.frame(
+      block_index = i,
+      scale = result$scale,
+      distance = unlist(result$distances)
+    )
+  }))
+  
+  # Add the data to the samples data frame
+  samples <- data.frame(
+    name = dimnames(landmarks)[[3]],
+    region = "Eastern Tethys",  # All samples are from Eastern Tethys
+    variable1 = NA,
+    variable2 = NA,
+    variable3 = NA
+  )
+  
+  for (i in 1:nrow(samples)) {
+    split_name <- unlist(strsplit(samples$name[i], "_"))
+    samples$variable1[i] <- split_name[2]
+    samples$variable2[i] <- split_name[3]
+    samples$variable3[i] <- split_name[4]
+  }
+  
+  samples$variable1 <- factor(samples$variable1)
+  
+  # Merge using valid index, assuming 'block_index' corresponds to sample rows
+  samples_with_distances <- merge(samples, distances_data, by.x = "row.names", by.y = "block_index", all.x = TRUE)
+  colnames(samples_with_distances)[1] <- "specimen_id"  # Rename for clarity
+  
+  # Function to compute Shapiro-Wilk test results for combined data
+  compute_shapiro_results <- function(data) {
+    shapiro_test <- shapiro.test(data$distance)
+    return(paste0("W = ", round(shapiro_test$statistic, 5), 
+                  "\nP-value = ", format(shapiro_test$p.value, digits = 3, scientific = TRUE)))
+  }
+  
+  # Compute Shapiro-Wilk results for the combined data
+  shapiro_results <- compute_shapiro_results(samples_with_distances)
+  
+  # Create the combined histogram plot for Eastern Tethys
+  plot <- ggplot(samples_with_distances, aes(x = distance)) +
+    geom_histogram(aes(y = ..density..), bins = 30, fill = "lightblue", color = "black") +
+    stat_function(
+      fun = dnorm, 
+      args = list(mean = mean(samples_with_distances$distance, na.rm = TRUE), 
+                  sd = sd(samples_with_distances$distance, na.rm = TRUE)),
+      color = "red", 
+      linewidth = 1
+    ) +
+    labs(
+      title = "Histogram of Length for Eastern Tethys with Gaussian Curve",
+      x = "Length", 
+      y = "Density"
+    ) +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 22, face = "bold"),   # Increase title size
+      axis.title.x = element_text(size = 18),                # Increase X-axis label size
+      axis.title.y = element_text(size = 18),                # Increase Y-axis label size
+      axis.text.x = element_text(size = 16),                 # Increase X-axis tick size
+      axis.text.y = element_text(size = 16),                 # Increase Y-axis tick size
+      legend.title = element_text(size = 16),                # Increase legend title size (if applicable)
+      legend.text = element_text(size = 14)                  # Increase legend text size (if applicable)
+    ) +
+    annotate(
+      "text", 
+      x = Inf, 
+      y = Inf, 
+      label = shapiro_results,
+      hjust = 1.1, 
+      vjust = 1.5, 
+      size = 6,       # Increase size of the Shapiro-Wilk annotation text
+      color = "blue"
+    )
+  
+  # Print the plot
+  print(plot)
+  
+} else {
+  cat("No scaled distances were computed.\n")
+}
+
+
+
+
 
 
 ### by sections ###
@@ -746,58 +908,12 @@ for (p in plot_list) {
 
 
 ### Length by sections (nonparametric test) ###
-# Install and load required packages
-if (!require("ca")) {
-  install.packages("ca")
-}
-if (!require("ggplot2")) {
-  install.packages("ggplot2")
-}
-if (!require("dplyr")) {
-  install.packages("dplyr")
-}
-library(ca)
-library(ggplot2)
-library(dplyr)
-
-tps_file <- "skupno - Copy.TPS"
-landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
-sliders <- define.sliders(3:138)
-
-# Placeholder function to calculate length from landmarks
-calculate_length <- function(landmark_data) {
-  coords <- as.matrix(landmark_data)
-  sqrt(sum((coords[1, ] - coords[nrow(coords), ])^2))
-}
-
-# Calculate length for each sample
-lengths <- sapply(1:dim(landmarks)[3], function(i) calculate_length(landmarks[,,i]))
-
-# Generate a sample properties data frame
-samples <- data.frame(name = dimnames(landmarks)[[3]],
-                      country = as.factor(sapply(dimnames(landmarks)[[3]], function(x) unlist(strsplit(x, "_"))[1])),
-                      variable1 = as.factor(sapply(dimnames(landmarks)[[3]], function(x) unlist(strsplit(x, "_"))[2])),
-                      variable2 = as.factor(sapply(dimnames(landmarks)[[3]], function(x) unlist(strsplit(x, "_"))[3])),
-                      variable3 = as.factor(sapply(dimnames(landmarks)[[3]], function(x) unlist(strsplit(x, "_"))[4])))
-
-# Add length variable to the samples data frame
-samples$length <- lengths
-
 # Perform the Kruskal-Wallis test
 kruskal_test <- kruskal.test(length ~ variable1, data = samples)
 print(kruskal_test)
 
-# Visualize the results with boxplots
-ggplot(samples, aes(x = variable1, y = length, fill = variable1)) +
-  geom_boxplot(outlier.shape = NA, alpha = 0.7) +
-  geom_jitter(position = position_jitter(width = 0.2), alpha = 0.5) +
-  labs(title = "Length Distribution by Section",
-       x = "Section",
-       y = "Length") +
-  scale_fill_manual(values = c("Pr" = "red", "Li" = "blue", "Bu" = "green", "He" = "orange"),
-                    labels = section_names) +
-  theme_minimal() +
-  theme(legend.position = "none")  # Remove legend if desired
+
+
 
 
 ### Length by regions ###
@@ -868,7 +984,7 @@ ggplot(samples, aes(x = tethys_group, y = length, fill = tethys_group)) +
 
 ### PC1 scores ###
 
-### Weastern Tetys (when analysing the Eastern Tethys just change the file to eastern) ###
+### Weastern Tetys ###
 
 # Load necessary libraries
 library(geomorph)
@@ -876,7 +992,7 @@ library(ggplot2)
 library(dplyr) ##same proble it doesn't work
 
 # Load the TPS file for Eastern Tethys
-tps_file <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/MORFOMETRIČNE ANALIZE/REGIONS/Western T.TPS"
+tps_file <- "Western T.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -1001,6 +1117,133 @@ print(combined_plot)
 
 
 
+
+
+# Load necessary libraries
+library(geomorph)
+library(ggplot2)
+library(dplyr) ##same proble it doesn't work
+
+# Load the TPS file for Eastern Tethys
+tps_file <- "eastern.TPS"
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+sliders <- define.sliders(3:138)
+
+# Check if 'landmarks' is a 3D array and if it has dimnames
+if (is.array(landmarks) && !is.null(dimnames(landmarks)[[3]])) {
+  
+  # Initialize the data frame with the correct number of rows
+  samples <- data.frame(
+    name = rep(NA, dim(landmarks)[3]),
+    country = rep(NA, dim(landmarks)[3]),
+    variable1 = rep(NA, dim(landmarks)[3]),
+    variable2 = rep(NA, dim(landmarks)[3]),
+    variable3 = rep(NA, dim(landmarks)[3])
+  )
+  
+  # Populate the samples data frame
+  for (i in 1:dim(landmarks)[3]) {
+    samples$name[i] <- dimnames(landmarks)[[3]][i]
+    
+    # Split the name based on underscores
+    split_name <- unlist(strsplit(samples$name[i], "_"))
+    
+    # Assign values based on the split
+    samples$country[i] <- split_name[1]
+    samples$variable1[i] <- split_name[2]
+    samples$variable2[i] <- split_name[3]
+    samples$variable3[i] <- split_name[4]
+  }
+  
+  # Convert to factors
+  samples$country <- as.factor(samples$country)
+  samples$variable1 <- factor(samples$variable1)
+  
+  # Perform Generalized Procrustes Analysis (GPA) to align shapes
+  gpa_result <- gpagen(landmarks, curves = sliders, PrinAxes = TRUE)
+  
+  # Perform PCA on the aligned shape data
+  pca_result <- gm.prcomp(gpa_result$coords)
+  
+  # Extract PC1 scores
+  samples$PC1 <- pca_result$x[,1]
+  
+  # Compute Shapiro-Wilk test for the overall PC1 distribution
+  shapiro_test <- shapiro.test(samples$PC1)
+  shapiro_results <- paste0("W = ", round(shapiro_test$statistic, 5), 
+                            "\nP-value = ", format(shapiro_test$p.value, digits = 3, scientific = TRUE))
+  
+  # Create a combined histogram plot for Eastern Tethys with Gaussian curve
+  combined_plot <- ggplot(samples, aes(x = PC1)) +
+    geom_histogram(aes(y = ..density..), bins = 30, fill = "lightblue", color = "black") +
+    stat_function(
+      fun = dnorm, 
+      args = list(mean = mean(samples$PC1), sd = sd(samples$PC1)),
+      color = "black", 
+      linewidth = 1
+    ) +
+    labs(
+      title = "Western part",
+      x = "PC1 Scores", 
+      y = "Density"
+    ) +
+    theme_minimal() +
+    annotate(
+      "text", 
+      x = Inf, 
+      y = Inf, 
+      label = shapiro_results,
+      hjust = 1.1, 
+      vjust = 1.5, 
+      size = 3, 
+      color = "blue",
+      fontface = "italic"
+    )
+  
+  # Print the combined plot
+  print(combined_plot)
+  
+} else {
+  stop("The 'landmarks' object is either not a 3D array or does not have dimnames.")
+}
+
+# Create a combined histogram plot for Eastern Tethys with Gaussian curve
+combined_plot <- ggplot(samples, aes(x = PC1)) +
+  geom_histogram(aes(y = ..density..), bins = 30, fill = "lightblue", color = "black") +
+  stat_function(
+    fun = dnorm, 
+    args = list(mean = mean(samples$PC1), sd = sd(samples$PC1)),
+    color = "black", 
+    linewidth = 1
+  ) +
+  labs(
+    title = "North-Eastern part",
+    x = "PC1 Scores", 
+    y = "Density"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),
+    axis.title.x = element_text(size = 14),
+    axis.title.y = element_text(size = 14),
+    axis.text = element_text(size = 12),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 14)
+  ) +
+  annotate(
+    "text", 
+    x = Inf, 
+    y = Inf, 
+    label = shapiro_results,
+    hjust = 1.1, 
+    vjust = 1.5, 
+    size = 3, 
+    color = "blue",
+    fontface = "italic"
+  )
+
+# Print the combined plot
+print(combined_plot)
 
 
 
@@ -1149,291 +1392,102 @@ for (p in plot_list) {
 
 
 
-### PC1 by coutry ###
+### nonparametric test for section ###
 
-### ANOVA and Tukey's analyse for coutry ###
+### PC sections ###
+# Load necessary libraries
+library(geomorph)  # For GPA, PCA, and shape analysis
+library(ggplot2)   # For plotting
+library(MASS)      # For Kernel Density Estimation
+library(viridis)   # For colorblind-friendly palettes
+library(dplyr)     # For data manipulation
+
+# 1. Read the TPS file and define the sliders
 tps_file <- "skupno - Copy.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138) 
 
+# 2. Create the samples data frame
+samples <- data.frame(name = rep(NA, dim(landmarks)[3]),
+                      country = rep(NA, dim(landmarks)[3]),
+                      variable1 = rep(NA, dim(landmarks)[3]),
+                      variable2 = rep(NA, dim(landmarks)[3]),
+                      variable3 = rep(NA, dim(landmarks)[3]))
 
-# Check if 'pca_samples' contains 'country' and 'PC1' columns
-if ("country" %in% colnames(pca_samples) && "PC1" %in% colnames(pca_samples)) {
-  
-  # Perform ANOVA for PC1 by country
-  anova_results <- aov(PC1 ~ country, data = pca_samples)
-  
-  # Extract summary of ANOVA
-  anova_summary <- summary(anova_results)
-  
-  # Extract p-value from the ANOVA summary
-  p_value <- anova_summary[[1]]$`Pr(>F)`[1]
-  
-  # Print p-value
-  cat("ANOVA p-value for PC1 across countries:", p_value, "\n")
-  
-} else {
-  stop("Error: `pca_samples` should contain both `country` and `PC1` columns.")
+for (i in 1:dim(landmarks)[3]) {
+  samples$name[i] <- dimnames(landmarks)[[3]][i]
+  samples$country[i] <- unlist(strsplit(samples$name[i], "_"))[1]
+  samples$variable1[i] <- unlist(strsplit(samples$name[i], "_"))[2]
+  samples$variable2[i] <- unlist(strsplit(samples$name[i], "_"))[3]
+  samples$variable3[i] <- unlist(strsplit(samples$name[i], "_"))[4]
 }
 
-# Perform Tukey's HSD post-hoc test
-tukey_results <- TukeyHSD(anova_results)
+samples$country <- as.factor(samples$country)
+samples$variable1 <- as.factor(samples$variable1)
 
-# Print the Tukey's HSD results
-print(tukey_results)
+# 3. Perform GPA (Generalized Procrustes Analysis) to align the shape data
+gpa <- gpagen(landmarks, curves = sliders, print.progress = FALSE) # GPA alignment
 
+# 4. Perform Principal Component Analysis (PCA)
+pca_result <- gm.prcomp(gpa$coords) # PCA on GPA aligned data
 
-# Load ggplot2 for plotting
-library(ggplot2)
+# 5. Extract the first Principal Component (PC1) and add it to the samples data frame
+samples$PC1 <- pca_result$x[, 1] # First Principal Component
 
-# Create a boxplot of PC1 by country
-ggplot(pca_samples, aes(x = country, y = PC1, fill = country)) +
-  geom_boxplot() +
-  labs(x = "Country", y = "PC1", title = "Distribution of PC1 by Country") +
-  scale_color_manual(values = c(
-    "Bosnia and Herzegovina" = "#D81B60",  # Dark pink
-    "Slovenia" = "grey",                        # Grey
-    "Spain" = "#0033A0"                         # Blue
-  )) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for readability
+# 6. Reorder the levels of variable1 to ensure the desired order in the boxplot with full names
+samples$variable1 <- factor(samples$variable1, 
+                            levels = c("Clp", "He", "Li", "Bu", "Dr", "Pr"),
+                            labels = c("Calasparra", "Henarejos", "Libros", "Bugarra", "Drežnica", "Prikrnica"))
 
-
-
-
-
-
-### ANOVA and Tukey's analyse for section ###
-# Load necessary libraries
-library(ggplot2)
-library(geomorph)
-
-# Load the TPS file
-tps_file <- "skupno - Copy.TPS"
-landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
-sliders <- define.sliders(3:138)
-
-# Check if 'landmarks' is a 3D array and if it has dimnames
-if (is.array(landmarks) && !is.null(dimnames(landmarks)[[3]])) {
-  
-  # Initialize the data frame with the correct number of rows
-  samples <- data.frame(
-    name = rep(NA, dim(landmarks)[3]),
-    country = rep(NA, dim(landmarks)[3]),
-    variable1 = rep(NA, dim(landmarks)[3]),
-    variable2 = rep(NA, dim(landmarks)[3]),
-    variable3 = rep(NA, dim(landmarks)[3])
-  )
-  
-  # Populate the samples data frame
-  for (i in 1:dim(landmarks)[3]) {
-    samples$name[i] <- dimnames(landmarks)[[3]][i]
-    
-    # Split the name based on underscores
-    split_name <- unlist(strsplit(samples$name[i], "_"))
-    
-    # Assign values based on the split
-    samples$country[i] <- split_name[1]
-    samples$variable1[i] <- split_name[2]
-    samples$variable2[i] <- split_name[3]
-    samples$variable3[i] <- split_name[4]
-  }
-  
-  # Convert to factors
-  samples$country <- as.factor(samples$country)
-  
-  # Manually set the levels for variable1 to match the desired section order
-  samples$variable1 <- factor(samples$variable1, levels = c("Clp", "He", "Li", "Bu", "Dr", "Pr"))
-  
-  # Perform Generalized Procrustes Analysis (GPA) to align shapes
-  gpa_result <- gpagen(landmarks, curves = sliders, PrinAxes = TRUE)
-  
-  # Perform PCA on the aligned shape data
-  pca_result <- gm.prcomp(gpa_result$coords)
-  
-  # Extract PC1 scores
-  samples$PC1 <- pca_result$x[,1]
-  
-  # Plot PC1 scores by variable1 (sections) in the specified order
-  ggplot(samples, aes(x = variable1, y = PC1, fill = variable1)) +
-    geom_boxplot() +
-    labs(x = "Section (Variable1)", y = "PC1 Scores", title = "PC1 Scores by Section (Ordered)") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for readability
-  
-  # Fit an ANOVA model using PC1 as the dependent variable
-  anova_model <- aov(PC1 ~ variable1, data = samples)
-  
-  # Check the ANOVA summary
-  summary(anova_model)
-  
-  # Perform Tukey's HSD test
-  tukey_results <- TukeyHSD(anova_model)
-  
-  # View Tukey's HSD results
-  print(tukey_results)
-  
-  # Plot the Tukey's HSD results
-  plot(tukey_results)
-  
-} else {
-  stop("The 'landmarks' object is either not a 3D array or does not have dimnames.")
-}
-
-
-  
-  
-  # Load necessary libraries
-  library(ggplot2)
-
-# Verify and align PCA results and country labels
-# Assuming PCA and samples are already defined
-
-# Check dimensions
-cat("Dimensions of PCA$x:", dim(PCA$x), "\n")
-cat("Length of samples$country:", length(samples$country), "\n")
-
-# Ensure samples$country matches the number of rows in PCA$x
-if (nrow(PCA$x) != length(samples$country)) {
-  stop("Error: Number of rows in PCA$x does not match length of samples$country")
-}
-
-# Create a data frame for PCA scores and country information
-pca_scores_df <- data.frame(
-  PC1 = PCA$x[, 1],  # Ensure PCA$x has the correct dimensions
-  country = samples$country  # Ensure samples$country is aligned
-)
-
-# Define country full names
-country_full_names <- c(
-  "BAH" = "Bosnia and Herzegovina",
-  "SL" = "Slovenia",
-  "SP" = "Spain"
-)
-
-# Convert country codes in pca_scores_df$country to full names
-pca_scores_df$country <- country_full_names[pca_scores_df$country]
-# Reorder countries with Spain on the left
-pca_scores_df$country <- factor(pca_scores_df$country, levels = c("Spain", "Bosnia and Herzegovina", "Slovenia"))
-# Create the plot
-ggplot(pca_scores_df, aes(x = country, y = PC1, fill = country)) +
-  geom_boxplot() +
-  labs(x = "Country", y = "PC1", title = "Distribution of PC1 by Country") +
-  scale_fill_manual(values = c(
-    "Bosnia and Herzegovina" = "lightgreen",  # Dark pink
-    "Slovenia" = "lightblue",                 # Grey
-    "Spain" = "grey"                  # Blue
-  )) +
+# 7. Create a boxplot for PC1 by sections (variable1) with ordered levels
+ggplot(samples, aes(x = variable1, y = PC1, fill = variable1)) +
+  geom_boxplot(alpha = 0.6) +         # Plot the boxplot with some transparency
+  labs(title = "Boxplot of PC1 by Sections", 
+       x = "Section", 
+       y = "PC1") +
   theme_minimal() +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 14),  # Increase size of x-axis labels
-    axis.text.y = element_text(size = 14),  # Increase size of y-axis labels
-    axis.title.x = element_text(size = 16),  # Increase size of x-axis title
-    axis.title.y = element_text(size = 16),  # Increase size of y-axis title
-    plot.title = element_text(size = 18, face = "bold"),  # Increase size of plot title
     legend.title = element_blank(),  # Remove legend title
-    legend.text = element_text(size = 14)  # Increase size of legend text
-  )
-  
+    axis.text.x = element_text(size = 12, angle = 45, hjust = 1),  # Rotate x-axis labels for better readability
+    axis.text.y = element_text(size = 12),  # Increase y-axis text size
+    axis.title.x = element_text(size = 14),  # Increase x-axis title size
+    axis.title.y = element_text(size = 14),  # Increase y-axis title size
+    plot.title = element_text(size = 16, face = "bold")  # Increase plot title size and make it bold
+  ) +
+  scale_fill_viridis_d(option = "D")       # Use the 'viridis' palette for colorblind-friendly colors
+
+
+
+# Load the FSA package for Dunn test
+install.packages("FSA")
+library(FSA)
+
+# Perform Kruskal-Wallis test to compare PC1 values between sections (variable1)
+kruskal_test <- kruskal.test(PC1 ~ variable1, data = samples)
+print(kruskal_test)
+
+# If Kruskal-Wallis is significant, perform pairwise comparisons using Dunn test
+if (kruskal_test$p.value < 0.05) {
+  dunn_test <- dunnTest(PC1 ~ variable1, data = samples, method = "bonferroni")
+  print(dunn_test)
+}
+
+
+
 
 
 
 ### N-E and W part ###
 
 
-# Load necessary libraries
-library(ggplot2)
-library(geomorph)
 
+
+
+
+
+### plots for mean shape for western and eastern part ###
 # Load the TPS file
-tps_file <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/TPS files - prba/skupno - Copy.TPS"
-landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
-sliders <- define.sliders(3:138)
-
-# Check if 'landmarks' is a 3D array and if it has dimnames
-if (is.array(landmarks) && !is.null(dimnames(landmarks)[[3]])) {
-  
-  # Initialize the data frame with the correct number of rows
-  samples <- data.frame(
-    name = rep(NA, dim(landmarks)[3]),
-    country = rep(NA, dim(landmarks)[3]),
-    variable1 = rep(NA, dim(landmarks)[3]),
-    variable2 = rep(NA, dim(landmarks)[3]),
-    variable3 = rep(NA, dim(landmarks)[3])
-  )
-  
-  # Populate the samples data frame
-  for (i in 1:dim(landmarks)[3]) {
-    samples$name[i] <- dimnames(landmarks)[[3]][i]
-    
-    # Split the name based on underscores
-    split_name <- unlist(strsplit(samples$name[i], "_"))
-    
-    # Assign values based on the split
-    samples$country[i] <- split_name[1]
-    samples$variable1[i] <- split_name[2]
-    samples$variable2[i] <- split_name[3]
-    samples$variable3[i] <- split_name[4]
-  }
-  
-  # Convert to factors
-  samples$country <- as.factor(samples$country)
-  
-  # Define Western and North-Eastern sections
-  samples$section <- ifelse(samples$variable1 %in% c("DR", "Pr"), "North-Eastern", "Western")
-  
-  # Convert 'section' to a factor with Western on the left and North-Eastern on the right
-  samples$section <- factor(samples$section, levels = c("Western", "North-Eastern"))
-  
-  # Perform Generalized Procrustes Analysis (GPA) to align shapes
-  gpa_result <- gpagen(landmarks, curves = sliders, PrinAxes = TRUE)
-  
-  # Perform PCA on the aligned shape data
-  pca_result <- gm.prcomp(gpa_result$coords)
-  
-  # Extract PC1 scores
-  samples$PC1 <- pca_result$x[,1]
-  
-  # Plot PC1 scores by section
-  ggplot(samples, aes(x = section, y = PC1, fill = section)) +
-    geom_boxplot() +
-    labs(x = "Section", y = "PC1 Scores", title = "PC1 Scores by Section (Western vs. North-Eastern)") +
-    scale_fill_manual(values = c("North-Eastern part" = "lightblue", "Western part" = "gray")) +
-    theme_minimal() +
-    theme(
-      axis.text.x = element_text(angle = 45, hjust = 1, size = 14),  # Increase size of x-axis labels
-      axis.text.y = element_text(size = 14),  # Increase size of y-axis labels
-      axis.title.x = element_text(size = 16),  # Increase size of x-axis title
-      axis.title.y = element_text(size = 16),  # Increase size of y-axis title
-      plot.title = element_text(size = 18, face = "bold"),  # Increase size of plot title
-      legend.title = element_blank(),  # Remove legend title
-      legend.text = element_text(size = 14)  # Increase size of legend text
-    )
-  
-  # Fit an ANOVA model using PC1 as the dependent variable
-  anova_model <- aov(PC1 ~ section, data = samples)
-  
-  # Check the ANOVA summary
-  summary(anova_model)
-  
-  # Perform Tukey's HSD test
-  tukey_results <- TukeyHSD(anova_model)
-  
-  # View Tukey's HSD results
-  print(tukey_results)
-  
-  # Plot the Tukey's HSD results
-  plot(tukey_results)
-  
-} else {
-  stop("The 'landmarks' object is either not a 3D array or does not have dimnames.")
-}
-
-# Load necessary libraries
-library(geomorph)
-
-# Load the TPS file
-tps_file <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/MORFOMETRIČNE ANALIZE/REGIONS/Western T.TPS"
+tps_file <- "Western T.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 
 # Perform Procrustes alignment (this step is often required before calculating the mean shape)
@@ -1446,6 +1500,19 @@ msho <- mshape(gpa$coords)
 plot(msho, main = "Mean Shape")
 
 
+
+# Load the TPS file
+tps_file <- "eastern.TPS"
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+
+# Perform Procrustes alignment (this step is often required before calculating the mean shape)
+gpa <- gpagen(landmarks)
+
+# Calculate the mean shape
+msho <- mshape(gpa$coords)
+
+# Plot the mean shape
+plot(msho, main = "Mean Shape")
 
 
 
