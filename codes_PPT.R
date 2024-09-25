@@ -2274,7 +2274,7 @@ ggplot(samples, aes(x = PC1, y = Length, color = variable1)) +
        x = "PC1 Score",
        y = "Length (µm)") +
   scale_color_discrete(name = "Section",
-                       labels = c("He" = "Henarejos", "Li" = "Libros", "Bu" = "Bugarra", "Dr" = "Drežnica", "Pr" = "Prikrnica")) +
+                       labels = c("He" = "Henarejos", "Li" = "Libros", "Clp" = "Calasparra", "Bu" = "Bugarra", "Dr" = "Drežnica", "Pr" = "Prikrnica")) +
   theme(
     plot.title = element_text(size = 16, face = "bold"),
     axis.title.x = element_text(size = 14),
