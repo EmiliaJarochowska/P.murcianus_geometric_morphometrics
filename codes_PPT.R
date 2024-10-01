@@ -176,8 +176,6 @@ ggplot(pca_data, aes(x = PC1, y = PC2, color = Country, shape = Country)) +
   theme_minimal() +
   theme(legend.position = c(0.1, 0.1))
 
-
-
 ### Print the ID od specific specimens who are closer to the PC1 and PC2 min and max ####
 
 # Create a sample data frame assuming you have 'ID' or 'IMAGE' in your dataset
@@ -282,9 +280,10 @@ pca_data <- data.frame(PC1 = PCA$x[, 1], PC2 = PCA$x[, 2],
 # Define colors for each region
 region_colors <- c("North-Eastern" = "grey", "Western" = "#0033A0")
 
-# Plot with ggplot2 using region as color and modifying the legend
+
+# Plot with ggplot2 using region as color and removing country from the legend
 ggplot(pca_data, aes(x = PC1, y = PC2, color = Region)) +
-  geom_point(aes(shape = Country), size = 2) +  # Shapes based on Country
+  geom_point(aes(shape = Country), size = 2, show.legend = FALSE) +  # Hide Country from legend
   scale_shape_manual(values = symbols) +
   scale_color_manual(values = region_colors) +
   # Create a single ellipse for the North-Eastern part
@@ -299,8 +298,155 @@ ggplot(pca_data, aes(x = PC1, y = PC2, color = Region)) +
        x = x_label,
        y = y_label) +
   theme_minimal() +
-  theme(legend.position = c(0.1, 0.1)) +
+  theme(
+    legend.position = "right",         # Move legend to the right
+    legend.margin = margin(0, 20, 0, 0)  # Add space between the plot and the legend
+  ) +
   guides(shape = guide_legend(override.aes = list(size = 4)))  # Adjust shape legend
+
+
+
+
+### longer the specimen bigger the symbol ###
+# Install required packages if they are not installed
+if (!require("geomorph")) install.packages("geomorph", dependencies = TRUE)
+if (!require("ggplot2")) install.packages("ggplot2", dependencies = TRUE)
+
+# Load necessary libraries
+library(geomorph)
+library(ggplot2)
+
+# Function to calculate Euclidean distance
+calculate_distance <- function(x1, y1, x2, y2) {
+  return(sqrt((x2 - x1)^2 + (y2 - y1)^2))
+}
+
+# Function to process the data and calculate scaled distance (using base R)
+process_data <- function(file_path) {
+  lines <- readLines(file_path)
+  lm_indices <- which(grepl("LM=", lines))
+  scale_indices <- which(grepl("SCALE=", lines))
+  
+  if(length(lm_indices) == 0 || length(scale_indices) == 0) {
+    stop("LM= or SCALE= not found in the data file.")
+  }
+  
+  results <- list()
+  
+  for (i in seq_along(lm_indices)) {
+    num_landmarks <- as.numeric(gsub("LM=", "", lines[lm_indices[i]]))
+    scale <- as.numeric(gsub("SCALE=", "", lines[scale_indices[i]]))
+    
+    landmark_lines <- lines[(lm_indices[i] + 1):(lm_indices[i] + num_landmarks)]
+    landmarks <- do.call(rbind, strsplit(landmark_lines, "\\s+"))
+    landmarks <- as.data.frame(landmarks, stringsAsFactors = FALSE)
+    
+    # Use apply to convert all columns to numeric
+    landmarks <- as.data.frame(apply(landmarks, 2, as.numeric))
+    
+    if(nrow(landmarks) < 2) {
+      next 
+    }
+    
+    # Calculate distances between all pairs of landmarks
+    num_landmarks <- nrow(landmarks)
+    distances <- numeric()
+    for (j in 1:(num_landmarks - 1)) {
+      for (k in (j + 1):num_landmarks) {
+        dist <- calculate_distance(landmarks[j, 1], landmarks[j, 2], landmarks[k, 1], landmarks[k, 2])
+        scaled_distance <- dist * scale
+        distances <- c(distances, scaled_distance)
+      }
+    }
+    
+    results[[length(results) + 1]] <- list(
+      block_index = i,
+      scale = scale,
+      distances = distances
+    )
+  }
+  
+  return(results)
+}
+
+# Process the data and calculate scaled distances
+tps_file <- "skupno.TPS"  # Replace with the actual file path of your TPS file
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+sliders <- define.sliders(3:138) 
+
+# Assuming the process_data function calculates scaled distances for each specimen
+scaled_distances <- process_data(tps_file)
+
+# Extract the mean scaled distance for each specimen and add to the samples data frame
+samples <- data.frame(name = rep(NA, dim(landmarks)[3]),
+                      country = rep(NA, dim(landmarks)[3]),
+                      variable1 = rep(NA, dim(landmarks)[3]),
+                      variable2 = rep(NA, dim(landmarks)[3]),
+                      variable3 = rep(NA, dim(landmarks)[3]))
+
+for (i in 1:dim(landmarks)[3]) {
+  samples$name[i] <- dimnames(landmarks)[[3]][i]
+  samples$country[i] <- unlist(strsplit(samples$name[i], "_"))[1]
+  samples$variable1[i] <- unlist(strsplit(samples$name[i], "_"))[2]
+  samples$variable2[i] <- unlist(strsplit(samples$name[i], "_"))[3]
+  samples$variable3[i] <- unlist(strsplit(samples$name[i], "_"))[4]
+}
+
+samples$country <- as.factor(samples$country)
+samples$variable1 <- as.factor(samples$variable1)
+
+# Map abbreviations to full country names
+samples$country <- factor(samples$country,
+                          levels = c("SL", "SP", "BAH"),
+                          labels = c("Slovenia", "Spain", "Bosnia and Herzegovina"))
+
+# Add scaled distance to the samples data frame
+samples$scaled_distance <- sapply(scaled_distances, function(x) mean(x$distances))
+
+# Add region data
+samples$region <- ifelse(samples$country %in% c("Slovenia", "Bosnia and Herzegovina"), 
+                         "North-Eastern", "Western")
+samples$region <- as.factor(samples$region)
+
+# Perform Procrustes analysis (as already defined)
+landmarks.gpa <- gpagen(landmarks, curves = sliders)
+
+# Perform PCA
+PCA <- gm.prcomp(landmarks.gpa$coords)
+
+# Extract PCA scores and create a data frame
+pca_data <- data.frame(PC1 = PCA$x[, 1], PC2 = PCA$x[, 2], 
+                       Country = samples$country, Region = samples$region,
+                       Scaled_Distance = samples$scaled_distance)  # Add scaled distance
+
+# Define colors for each region
+region_colors <- c("North-Eastern" = "grey", "Western" = "#0033A0") 
+
+# Plot with ggplot2 using region as color and removing country from the legend
+ggplot(pca_data, aes(x = PC1, y = PC2, color = Region, size = Scaled_Distance)) +  # Size by scaled distance
+  geom_point(aes(shape = Country), show.legend = FALSE) +  # Hide Country from legend
+  scale_shape_manual(values = c(16, 17, 18)) +  # Replace with actual symbols if needed
+  scale_color_manual(values = region_colors) +
+  # Create a single ellipse for the North-Eastern part
+  stat_ellipse(data = pca_data[pca_data$Region == "North-Eastern", ], 
+               aes(color = Region), 
+               type = "t", level = 0.95, segments = 51, na.rm = FALSE) +
+  # Create individual ellipses for the Western region
+  stat_ellipse(data = pca_data[pca_data$Region == "Western", ], 
+               aes(color = Region), 
+               type = "t", level = 0.95, segments = 51, na.rm = FALSE) +
+  labs(title = "Morphospace of the aboral side of P. murcianus",
+       x = "PC1", y = "PC2") +
+  theme_minimal() +
+  theme(
+    legend.position = "right",         # Move legend to the right
+    legend.margin = margin(0, 20, 0, 0)  # Add space between the plot and the legend
+  ) +
+  guides(shape = guide_legend(override.aes = list(size = 4)), 
+         size = guide_legend(title = "Length (µm)"))  # Change size legend title to Length
+
+
+
 
 
 
