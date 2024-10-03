@@ -2052,7 +2052,7 @@ library(ggpubr)
 # Process the data and calculate scaled distances
 tps_file <- "skupno.TPS"  # Replace with the actual file path of your TPS file
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
-sliders <- define.sliders(3:138) 
+sliders <- define.sliders(3:138)
 # Placeholder function to calculate length from landmarks
 calculate_length <- function(landmark_data) {
   coords <- as.matrix(landmark_data)
@@ -2110,72 +2110,27 @@ calculate_distance <- function(x1, y1, x2, y2) {
   return(sqrt((x2 - x1)^2 + (y2 - y1)^2))
 }
 
-# Function to process the data and calculate scaled distance
-process_data <- function(file_path) {
-  # Read the data file
-  lines <- readLines(file_path)
-  
-  # Extract landmark and scale information
-  lm_indices <- which(grepl("LM=", lines))
-  scale_indices <- which(grepl("SCALE=", lines))
-  
-  if(length(lm_indices) == 0 || length(scale_indices) == 0) {
-    stop("LM= or SCALE= not found in the data file.")
-  }
-  
-  # Initialize result list
-  results <- list()
-  
-  # Process each set of landmarks and scales
-  for (i in seq_along(lm_indices)) {
-    # Get number of landmarks and scale value for this block
-    num_landmarks <- as.numeric(gsub("LM=", "", lines[lm_indices[i]]))
-    scale <- as.numeric(gsub("SCALE=", "", lines[scale_indices[i]]))
-    
-    # Extract landmarks coordinates
-    landmark_lines <- lines[(lm_indices[i] + 1):(lm_indices[i] + num_landmarks)]
-    landmarks <- do.call(rbind, strsplit(landmark_lines, "\\s+"))
-    landmarks <- as.data.frame(landmarks, stringsAsFactors = FALSE)
-    landmarks <- mutate_all(landmarks, as.numeric)
-    
-    # Ensure there are at least two landmarks
-    if(nrow(landmarks) < 2) {
-      next # Skip this block if not enough landmarks
-    }
-    
-    # Calculate distance between the first two landmarks
-    distance <- calculate_distance(landmarks[1, 1], landmarks[1, 2], landmarks[2, 1], landmarks[2, 2])
-    
-    # Adjust distance for scale
-    scaled_distance <- distance * scale
-    
-    # Store the result
-    results[[length(results) + 1]] <- list(
-      block_index = i,
-      scale = scale,
-      scaled_distance = scaled_distance
-    )
-  }
-  
-  # Convert results to a data frame for plotting
-  results_df <- do.call(rbind, lapply(results, as.data.frame))
-  
-  return(results_df)
-}
-
 # Function to calculate lengths from landmarks
 calculate_length <- function(landmark_data) {
   coords <- as.matrix(landmark_data)
-  sqrt(sum((coords[1, ] - coords[nrow(coords), ])^2))
+  return(sqrt(sum((coords[1, ] - coords[nrow(coords), ])^2)))
 }
 
 # Read TPS file for landmarks
-tps_file <- "skupno - Copy.TPS"
+tps_file <- "skupno.TPS"  # Replace with your actual file path
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
+# Print the dimensions of the landmarks to check the number of samples
+cat("Dimensions of landmarks array:\n")
+print(dim(landmarks))
+
 # Calculate length for each sample
 lengths <- sapply(1:dim(landmarks)[3], function(i) calculate_length(landmarks[,,i]))
+
+# Print the length of the `lengths` vector
+cat("Number of calculated lengths: ", length(lengths), "\n")
+
 # Create samples data frame
 samples <- data.frame(name = dimnames(landmarks)[[3]],
                       country = sapply(dimnames(landmarks)[[3]], function(x) unlist(strsplit(x, "_"))[1]),
@@ -2183,6 +2138,9 @@ samples <- data.frame(name = dimnames(landmarks)[[3]],
                       variable2 = sapply(dimnames(landmarks)[[3]], function(x) unlist(strsplit(x, "_"))[3]),
                       variable3 = sapply(dimnames(landmarks)[[3]], function(x) unlist(strsplit(x, "_"))[4]),
                       stringsAsFactors = FALSE)
+
+# Print the number of rows in the samples data frame
+cat("Number of rows in samples: ", nrow(samples), "\n")
 
 # Convert relevant columns to factors
 samples$country <- as.factor(samples$country)
@@ -2197,12 +2155,30 @@ samples <- samples %>%
                             "Pr" = "Prikrnica")) %>%
   filter(variable1 %in% c("Henarejos", "Libros", "Bugarra", "Prikrnica"))
 
-# Add length variable to the samples data frame
-samples$length <- lengths
+# Ensure lengths match the samples, and filter accordingly
+if (length(lengths) == nrow(samples)) {
+  samples$length <- lengths
+} else {
+  warning("Mismatch between number of lengths and samples. Attempting to filter.")
+  
+  # Assuming dimnames(landmarks)[[3]] correspond to sample names
+  valid_samples <- dimnames(landmarks)[[3]][1:length(lengths)]
+  
+  # Filter samples that have corresponding valid landmarks
+  samples <- samples[samples$name %in% valid_samples, ]
+  
+  # Check if they still mismatch
+  cat("Filtered number of rows in samples: ", nrow(samples), "\n")
+  cat("Filtered number of lengths: ", length(lengths), "\n")
+  
+  # Only use the number of lengths that matches the filtered samples
+  samples$length <- lengths[1:nrow(samples)]
+}
 
 # Set the order of levels for variable1
 samples$variable1 <- factor(samples$variable1, 
                             levels = c("Henarejos", "Libros", "Bugarra", "Prikrnica"))
+
 # Define custom colors for sections
 section_colors <- c(
   "Henarejos" = "#D4A017",   # Yellow for Henarejos
@@ -2226,8 +2202,8 @@ ggplot(samples, aes(x = variable1, y = length, fill = variable1)) +
     axis.title.y = element_text(size = 16),                # Y-axis label size
     axis.text.x = element_text(size = 14),                 # X-axis tick label size
     axis.text.y = element_text(size = 14),                 # Y-axis tick label size
-    legend.title = element_text(size = 16),                 # Legend title size
-    legend.text = element_text(size = 14)                   # Legend text size
+    legend.title = element_text(size = 16),                # Legend title size
+    legend.text = element_text(size = 14)                  # Legend text size
   )
 
 
@@ -2250,8 +2226,6 @@ if (kruskal_test$p.value < 0.05) {
 } else {
   print("No significant differences found in the Kruskal-Wallis test.")
 }
-
-
 
 
 
@@ -2387,59 +2361,6 @@ p_value <- correlation_test$p.value
 
 library(ggplot2)
 
-ggplot(samples, aes(x = PC1, y = Length)) +
-  geom_point(aes(color = variable1, size = Length)) +  # Points colored by variable1 and sized by Length
-  geom_smooth(method = "lm", se = FALSE, color = "black") +  # Add linear regression line
-  theme_minimal() +
-  labs(title = "PC1 vs Length",
-       x = "PC1 Score",
-       y = "Length (µm)") +
-  scale_color_discrete(name = "Section",
-                       labels = c("He" = "Henarejos", "Li" = "Libros", "Bu" = "Bugarra", "Dr" = "Drežnica", "Pr" = "Prikrnica")) +
-  theme(
-    plot.title = element_text(size = 16, face = "bold"),
-    axis.title.x = element_text(size = 14),
-    axis.title.y = element_text(size = 14),
-    axis.text.x = element_text(size = 12),
-    axis.text.y = element_text(size = 12),
-    legend.title = element_text(size = 14),
-    legend.text = element_text(size = 12)
-  ) +
-  scale_size_continuous(range = c(1, 5))  # Adjust the range of point sizes as needed
-
-# Perform linear regression
-lm_model <- lm(Length ~ PC1, data = samples)
-
-# Print the summary of the regression model
-summary(lm_model)
-
-# Extract and print the slope (inclination) of the regression line
-slope <- coef(lm_model)[2]
-cat("Inclination (Slope) of the regression line:", slope, "\n")
-
-
-
-
-ggplot(samples, aes(x = PC1, y = Length, color = variable1)) +
-  geom_point(aes(size = Length)) +  # Points sized by Length
-  geom_smooth(method = "lm", se = FALSE) +  # Add linear regression lines for each section
-  theme_minimal() +
-  labs(title = "PC1 vs Length with Regression Lines per Section",
-       x = "PC1 Score",
-       y = "Length (µm)") +
-  scale_color_discrete(name = "Section",
-                       labels = c("He" = "Henarejos", "Li" = "Libros", "Clp" = "Calasparra", "Bu" = "Bugarra", "Dr" = "Drežnica", "Pr" = "Prikrnica")) +
-  theme(
-    plot.title = element_text(size = 16, face = "bold"),
-    axis.title.x = element_text(size = 14),
-    axis.title.y = element_text(size = 14),
-    axis.text.x = element_text(size = 12),
-    axis.text.y = element_text(size = 12),
-    legend.title = element_text(size = 14),
-    legend.text = element_text(size = 12)
-  ) +
-  scale_size_continuous(range = c(1, 5))  # Adjust the range of point sizes as needed
-
 
 # Create the grouping variable with updated names
 samples$group <- ifelse(samples$variable1 %in% c("Pr", "Dr"), "North-Eastern part", "Western part")
@@ -2449,16 +2370,17 @@ ggplot(samples, aes(x = PC1, y = Length, color = group, shape = variable1)) +  #
   geom_point(aes(size = Length)) +  # Points sized by Length
   geom_smooth(aes(group = group), method = "lm", se = FALSE) +  # Regression lines grouped by the new 'group' column
   theme_minimal() +
-  labs(title = "PC1 vs Length with Regression Lines per Group",
+  labs(title = "Relationship between size and shape",
        x = "PC1 Score",
        y = "Length (µm)") +
   scale_color_manual(name = "Sephardic province",  # Legend title updated to 'Sephardic province'
-                     values = c("North-Eastern part" = "gray", "Western part" = "lightblue"),  # Assigning specific colors
+                     values = c("North-Eastern part" = "black", "Western part" = "lightblue"),  # Assigning specific colors
                      labels = c("North-Eastern part", "Western part")) +  # Updated group labels
-  scale_shape_manual(values = c(16, 17, 18, 19, 15, 13),  # Assign different shapes to each section
+  scale_shape_manual(name = "Section",
+                     values = c(16, 17, 18, 19, 15, 13),  # Assign different shapes to each section
                      labels = c("Pr" = "Prikrnica", "Dr" = "Drežnica", 
                                 "Li" = "Libros", "Bu" = "Bugarra", 
-                                "He" = "Henarejos", "Ca" = "Calasparra")) +  # Shape labels for sections
+                                "He" = "Henarejos", "Clp" = "Calasparra")) +  # Shape labels for sections
   theme(
     plot.title = element_text(size = 16, face = "bold"),
     axis.title.x = element_text(size = 14),
@@ -2485,7 +2407,5 @@ slope_western <- coef(lm_western)["PC1"]
 # Print the slopes
 print(paste("Slope for North-Eastern part:", slope_north_eastern))
 print(paste("Slope for Western part:", slope_western))
-
-
 
 
