@@ -846,6 +846,7 @@ combined_plot <- ggplot(samples, aes(x = PC1)) +
 print(combined_plot)
 
 
+
 ### Sections in North-Eastern part ###
   
   # Function to compute Shapiro-Wilk test results for each level of variable1
@@ -1594,7 +1595,10 @@ if (!is.null(scaled_distances_results)) {
 library(geomorph)
 library(ggplot2)
 library(dplyr)
-
+# Process the data and calculate scaled distances
+tps_file <- "skupno.TPS"  # Replace with the actual file path of your TPS file
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+sliders <- define.sliders(3:138) 
 # Function to calculate Euclidean distance
 calculate_distance <- function(x1, y1, x2, y2) {
   return(sqrt((x2 - x1)^2 + (y2 - y1)^2))
@@ -1723,7 +1727,7 @@ if (!is.null(scaled_distances_results)) {
       ) +
       labs(
         title = paste("Histogram of Length for", level, "with Gaussian Curve"),
-        x = "Length", 
+        x = "Length (µm)", 
         y = "Density"
       ) +
       theme_minimal() +
@@ -1754,7 +1758,7 @@ if (!is.null(scaled_distances_results)) {
 
 # Recode 'variable1' to replace abbreviations with full names
 samples_with_distances$variable1 <- recode(samples_with_distances$variable1,
-                                           "Pr" = "Prikrnica")
+                                           "Pr" = "Prikrnica", "Dr" = "Drežnica")
 
 # Loop through each level of variable1 and create a plot with larger labels and text
 for (level in levels(samples_with_distances$variable1)) {
@@ -1775,7 +1779,7 @@ for (level in levels(samples_with_distances$variable1)) {
     ) +
     labs(
       title = paste(level),
-      x = "Length", 
+      x = "Length (µm)", 
       y = "Density"
     ) +
     theme_minimal() +
@@ -1946,7 +1950,7 @@ if (!is.null(scaled_distances_results)) {
       ) +
       labs(
         title = paste("Histogram of Length for", level, "with Gaussian Curve"),
-        x = "Length", 
+        x = "Length (µm)", 
         y = "Density"
       ) +
       theme_minimal() +
@@ -1980,6 +1984,7 @@ if (!is.null(scaled_distances_results)) {
 samples_with_distances$variable1 <- recode(samples_with_distances$variable1,
                                            "Bu" = "Bugarra",
                                            "Li" = "Libros",
+                                           "Clp" = "Calasparra",
                                            "He" = "Henarejos")
 
 # Loop through each level of variable1 and create a plot with larger labels and text
@@ -2001,7 +2006,7 @@ for (level in levels(samples_with_distances$variable1)) {
     ) +
     labs(
       title = paste(level),
-      x = "Length", 
+      x = "Length (µm)", 
       y = "Density"
     ) +
     theme_minimal() +
@@ -2044,7 +2049,10 @@ library(dplyr)
 library(FSA)
 library(ggplot2)
 library(ggpubr)
-
+# Process the data and calculate scaled distances
+tps_file <- "skupno.TPS"  # Replace with the actual file path of your TPS file
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+sliders <- define.sliders(3:138) 
 # Placeholder function to calculate length from landmarks
 calculate_length <- function(landmark_data) {
   coords <- as.matrix(landmark_data)
@@ -2064,27 +2072,27 @@ samples <- data.frame(name = dimnames(landmarks)[[3]],
 # Add length variable to the samples data frame
 samples$length <- lengths
 
-# Group variable1 into Western and Eastern Tethys
-samples$tethys_group <- ifelse(samples$variable1 %in% c("Bu", "Li", "He", "Clp"), "Western Tethys", "Eastern Tethys")
+# Group variable1 into Western and Eastern part
+samples$Sephardic_group <- ifelse(samples$variable1 %in% c("Bu", "Li", "He", "Clp"), "Western part", "North-Eastern part")
 
 # Reorder levels of tethys_group
-samples$tethys_group <- factor(samples$tethys_group, levels = c("Western Tethys", "Eastern Tethys"))
+samples$Sephardic_group <- factor(samples$Sephardic_group, levels = c("Western part", "North-Eastern part"))
 
 # Perform Kruskal-Wallis test
-kruskal_test <- kruskal.test(length ~ tethys_group, data = samples)
+kruskal_test <- kruskal.test(length ~ Sephardic_group, data = samples)
 print(kruskal_test)
 
 # Perform Dunn's test
-dunn_results <- dunnTest(length ~ tethys_group, data = samples, method = "bonferroni")
+dunn_results <- dunnTest(length ~ Sephardic_group, data = samples, method = "bonferroni")
 print(dunn_results)
 
 # Visualize the results with a box-and-whiskers plot
-ggplot(samples, aes(x = tethys_group, y = length, fill = tethys_group)) +
+ggplot(samples, aes(x = Sephardic_group, y = length, fill = Sephardic_group)) +
   geom_boxplot() +
-  labs(title = "Length by Tethys Group",
-       x = "Tethys Group",
-       y = "Length") +
-  scale_fill_manual(values = c("Western Tethys" = "lightblue", "Eastern Tethys" = "gray")) + 
+  labs(title = "Length by part of Sephardic province",
+       x = "Part of Sephardic province",
+       y = "Length (µm)") +
+  scale_fill_manual(values = c("Western part" = "lightblue", "North-Eastern part" = "gray")) + 
   theme_minimal() +
   theme(legend.position = "none")
 
