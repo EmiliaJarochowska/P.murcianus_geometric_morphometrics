@@ -1034,12 +1034,21 @@ samples$variable1 <- factor(samples$variable1,
 filtered_samples <- samples %>% 
   filter(variable1 %in% c("Henarejos", "Libros", "Bugarra", "Prikrnica"))
 
+# Define custom colors for sections
+section_colors <- c(
+  "Henarejos" = "#D4A017",   # Yellow for Henarejos
+  "Libros" = "#17A909",      # Green for Libros
+  "Bugarra" = "#17BCC4",     # Cyan/Teal for Bugarra
+  "Prikrnica" = "#D91C93"    # Pink for Prikrnica
+)
+
 # 8. Create a boxplot for PC1 by sections (variable1) with ordered levels
 ggplot(filtered_samples, aes(x = variable1, y = PC1, fill = variable1)) +
   geom_boxplot(alpha = 0.6) +         # Plot the boxplot with some transparency
+  scale_fill_manual(values = section_colors, drop = FALSE) +  # Use drop = FALSE to keep unused factor levels
   labs(title = "Boxplot of PC1 by Sections", 
        x = "Section", 
-       y = "PC1") +
+       y = "PC1 scores") +
   theme_minimal() +
   theme(
     legend.title = element_blank(),  # Remove legend title
@@ -1048,8 +1057,7 @@ ggplot(filtered_samples, aes(x = variable1, y = PC1, fill = variable1)) +
     axis.title.x = element_text(size = 14),  # Increase x-axis title size
     axis.title.y = element_text(size = 14),  # Increase y-axis title size
     plot.title = element_text(size = 16, face = "bold")  # Increase plot title size and make it bold
-  ) +
-  scale_fill_viridis_d(option = "D")       # Use the 'viridis' palette for colorblind-friendly colors
+  ) 
 
 
 # Load the FSA package for Dunn test
@@ -1397,7 +1405,7 @@ if (!is.null(scaled_distances_results)) {
     ) +
     theme_minimal() +
     theme(
-      plot.title = element_text(size = 22, face = "bold"),   # Increase title size
+      plot.title = element_text(size = 18, face = "bold"),   # Increase title size
       axis.title.x = element_text(size = 18),                # Increase X-axis label size
       axis.title.y = element_text(size = 18),                # Increase Y-axis label size
       axis.text.x = element_text(size = 16),                 # Increase X-axis tick size
@@ -1561,7 +1569,7 @@ if (!is.null(scaled_distances_results)) {
     ) +
     theme_minimal() +
     theme(
-      plot.title = element_text(size = 22, face = "bold"),   # Increase title size
+      plot.title = element_text(size = 18, face = "bold"),   # Increase title size
       axis.title.x = element_text(size = 18),                # Increase X-axis label size
       axis.title.y = element_text(size = 18),                # Increase Y-axis label size
       axis.text.x = element_text(size = 16),                 # Increase X-axis tick size
@@ -2049,6 +2057,7 @@ library(dplyr)
 library(FSA)
 library(ggplot2)
 library(ggpubr)
+library(geomorph)
 # Process the data and calculate scaled distances
 tps_file <- "skupno.TPS"  # Replace with the actual file path of your TPS file
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
@@ -2094,7 +2103,16 @@ ggplot(samples, aes(x = Sephardic_group, y = length, fill = Sephardic_group)) +
        y = "Length (µm)") +
   scale_fill_manual(values = c("Western part" = "lightblue", "North-Eastern part" = "gray")) + 
   theme_minimal() +
-  theme(legend.position = "none")
+  theme(
+    legend.title = element_blank(),  # Remove legend title
+    axis.text.x = element_text(size = 12),  # Increase x-axis text size
+    axis.text.y = element_text(size = 12),  # Increase y-axis text size
+    axis.title.x = element_text(size = 14),  # Increase x-axis title size
+    axis.title.y = element_text(size = 14),  # Increase y-axis title size
+    plot.title = element_text(size = 16, face = "bold")  # Increase plot title size and make it bold
+  ) 
+
+
 
 
 
