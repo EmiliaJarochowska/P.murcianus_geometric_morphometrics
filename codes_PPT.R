@@ -1,7 +1,7 @@
 ### IN ANAYSE ARE INCORPORATE ELEMENTS FROM SLOVENIA, SPAIN AND BOSNIA & HERZEGOVINA ###
 
 library(geomorph)
-tps_file <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/skupno.TPS"
+tps_file <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/All_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138) 
 
@@ -34,7 +34,7 @@ install.packages("ggplot2")
 library(ggplot2)
 library(geomorph)
 
-tps_file <- "skupno.TPS"
+tps_file <- "All_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138) 
 
@@ -109,7 +109,7 @@ install.packages("ggplot2")
 library(ggplot2)
 library(geomorph)
 
-tps_file <- "skupno.TPS"
+tps_file <- "All_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138) 
 # Assuming `landmarks` is already defined and loaded
@@ -227,13 +227,13 @@ cat("Max PC2: ", max(PCA$x[, 2]), " (ID: ", max_PC2_ID, ")\n\n")
 
 
 
-### PCA: GROUPING DATA IN TO WESTERN (SPAIN) AND EASTERN TETHYS (SLOVENIA AND BOSNIA AND HERZEGOVINA) ###
+### PCA: GROUPING DATA IN TO WESTERN (SPAIN) AND Norteastern_sections TETHYS (SLOVENIA AND BOSNIA AND HERZEGOVINA) ###
   
 
 library(ggplot2)
 library(geomorph)
 
-tps_file <- "skupno.TPS"
+tps_file <- "All_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138) 
 # Assuming `landmarks` is already defined and loaded
@@ -270,7 +270,7 @@ PCA <- gm.prcomp(landmarks.gpa$coords)
 pca_data <- data.frame(PC1 = PCA$x[, 1], PC2 = PCA$x[, 2], Country = samples$country)
 # Modify the samples data frame to include region
 samples$region <- ifelse(samples$country %in% c("Slovenia", "Bosnia and Herzegovina"), 
-                         "North-Eastern", "Western")
+                         "North-Norteastern_sections", "Western")
 samples$region <- as.factor(samples$region)
 
 # Create PCA data frame including the region
@@ -278,7 +278,7 @@ pca_data <- data.frame(PC1 = PCA$x[, 1], PC2 = PCA$x[, 2],
                        Country = samples$country, Region = samples$region)
 
 # Define colors for each region
-region_colors <- c("North-Eastern" = "grey", "Western" = "#0033A0")
+region_colors <- c("North-Norteastern_sections" = "grey", "Western" = "#0033A0")
 
 
 # Plot with ggplot2 using region as color and removing country from the legend
@@ -286,8 +286,8 @@ ggplot(pca_data, aes(x = PC1, y = PC2, color = Region)) +
   geom_point(aes(shape = Country), size = 2, show.legend = FALSE) +  # Hide Country from legend
   scale_shape_manual(values = symbols) +
   scale_color_manual(values = region_colors) +
-  # Create a single ellipse for the North-Eastern part
-  stat_ellipse(data = pca_data[pca_data$Region == "North-Eastern", ], 
+  # Create a single ellipse for the North-Norteastern_sections part
+  stat_ellipse(data = pca_data[pca_data$Region == "North-Norteastern_sections", ], 
                aes(color = Region), 
                type = "t", level = 0.95, segments = 51, na.rm = FALSE) +
   # Create individual ellipses for the Western region
@@ -370,7 +370,7 @@ process_data <- function(file_path) {
 }
 
 # Process the data and calculate scaled distances
-tps_file <- "skupno.TPS"  # Replace with the actual file path of your TPS file
+tps_file <- "All_sections.TPS"  # Replace with the actual file path of your TPS file
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138) 
 
@@ -405,7 +405,7 @@ samples$scaled_distance <- sapply(scaled_distances, function(x) mean(x$distances
 
 # Add region data
 samples$region <- ifelse(samples$country %in% c("Slovenia", "Bosnia and Herzegovina"), 
-                         "North-Eastern", "Western")
+                         "North-Norteastern_sections", "Western")
 samples$region <- as.factor(samples$region)
 
 # Perform Procrustes analysis (as already defined)
@@ -420,15 +420,15 @@ pca_data <- data.frame(PC1 = PCA$x[, 1], PC2 = PCA$x[, 2],
                        Scaled_Distance = samples$scaled_distance)  # Add scaled distance
 
 # Define colors for each region
-region_colors <- c("North-Eastern" = "grey", "Western" = "#0033A0") 
+region_colors <- c("North-Norteastern_sections" = "grey", "Western" = "#0033A0") 
 
 # Plot with ggplot2 using region as color and removing country from the legend
 ggplot(pca_data, aes(x = PC1, y = PC2, color = Region, size = Scaled_Distance)) +  # Size by scaled distance
   geom_point(aes(shape = Country), show.legend = FALSE) +  # Hide Country from legend
   scale_shape_manual(values = c(16, 17, 18)) +  # Replace with actual symbols if needed
   scale_color_manual(values = region_colors) +
-  # Create a single ellipse for the North-Eastern part
-  stat_ellipse(data = pca_data[pca_data$Region == "North-Eastern", ], 
+  # Create a single ellipse for the North-Norteastern_sections part
+  stat_ellipse(data = pca_data[pca_data$Region == "North-Norteastern_sections", ], 
                aes(color = Region), 
                type = "t", level = 0.95, segments = 51, na.rm = FALSE) +
   # Create individual ellipses for the Western region
@@ -452,15 +452,15 @@ ggplot(pca_data, aes(x = PC1, y = PC2, color = Region, size = Scaled_Distance)) 
 
 ### normal distribution of PC1 scores ###
 
-### Weastern part ###
+### WNorteastern_sections part ###
 
 # Load necessary libraries
 library(geomorph)
 library(ggplot2)
 library(dplyr) ##same proble it doesn't work
 
-# Load the TPS file for Eastern Tethys
-tps_file <- "Western T.TPS"
+# Load the TPS file for Norteastern_sections Tethys
+tps_file <- "Western_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -508,7 +508,7 @@ if (is.array(landmarks) && !is.null(dimnames(landmarks)[[3]])) {
   shapiro_results <- paste0("W = ", round(shapiro_test$statistic, 5), 
                             "\nP-value = ", format(shapiro_test$p.value, digits = 3, scientific = TRUE))
   
-  # Create a combined histogram plot for Eastern Tethys with Gaussian curve
+  # Create a combined histogram plot for Norteastern_sections Tethys with Gaussian curve
   combined_plot <- ggplot(samples, aes(x = PC1)) +
     geom_histogram(aes(y = ..density..), bins = 30, fill = "lightblue", color = "black") +
     stat_function(
@@ -543,7 +543,7 @@ if (is.array(landmarks) && !is.null(dimnames(landmarks)[[3]])) {
 }
 
 
-# Create a combined histogram plot for Eastern Tethys with Gaussian curve
+# Create a combined histogram plot for Norteastern_sections Tethys with Gaussian curve
 combined_plot <- ggplot(samples, aes(x = PC1)) +
   geom_histogram(aes(y = ..density..), bins = 30, fill = "lightblue", color = "black") +
   stat_function(
@@ -717,15 +717,15 @@ for (p in plot_list) {
 
 
 
-### North-Eastern part ###
+### North-Norteastern_sections part ###
 
 # Load necessary libraries
 library(geomorph)
 library(ggplot2)
 library(dplyr) ##same proble it doesn't work
 
-# Load the TPS file for Eastern Tethys
-tps_file <- "eastern.TPS"
+# Load the TPS file for Norteastern_sections Tethys
+tps_file <- "Norteastern_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -773,7 +773,7 @@ if (is.array(landmarks) && !is.null(dimnames(landmarks)[[3]])) {
   shapiro_results <- paste0("W = ", round(shapiro_test$statistic, 5), 
                             "\nP-value = ", format(shapiro_test$p.value, digits = 3, scientific = TRUE))
   
-  # Create a combined histogram plot for Eastern Tethys with Gaussian curve
+  # Create a combined histogram plot for Norteastern_sections Tethys with Gaussian curve
   combined_plot <- ggplot(samples, aes(x = PC1)) +
     geom_histogram(aes(y = ..density..), bins = 30, fill = "lightblue", color = "black") +
     stat_function(
@@ -783,7 +783,7 @@ if (is.array(landmarks) && !is.null(dimnames(landmarks)[[3]])) {
       linewidth = 1
     ) +
     labs(
-      title = "North-Eastern part of Sephardic province",
+      title = "North-Norteastern_sections part of Sephardic province",
       x = "PC1 Scores", 
       y = "Density"
     ) +
@@ -807,7 +807,7 @@ if (is.array(landmarks) && !is.null(dimnames(landmarks)[[3]])) {
   stop("The 'landmarks' object is either not a 3D array or does not have dimnames.")
 }
 
-# Create a combined histogram plot for Eastern Tethys with Gaussian curve
+# Create a combined histogram plot for Norteastern_sections Tethys with Gaussian curve
 combined_plot <- ggplot(samples, aes(x = PC1)) +
   geom_histogram(aes(y = ..density..), bins = 30, fill = "lightblue", color = "black") +
   stat_function(
@@ -817,7 +817,7 @@ combined_plot <- ggplot(samples, aes(x = PC1)) +
     linewidth = 1
   ) +
   labs(
-    title = "North-Eastern part of Sephardic province",
+    title = "North-Norteastern_sections part of Sephardic province",
     x = "PC1 Scores", 
     y = "Density"
   ) +
@@ -847,7 +847,7 @@ print(combined_plot)
 
 
 
-### Sections in North-Eastern part ###
+### Sections in North-Norteastern_sections part ###
   
   # Function to compute Shapiro-Wilk test results for each level of variable1
   compute_shapiro_results <- function(data) {
@@ -992,7 +992,7 @@ library(viridis)   # For colorblind-friendly palettes
 library(dplyr)     # For data manipulation
 
 # 1. Read the TPS file and define the sliders
-tps_file <- "skupno.TPS"
+tps_file <- "All_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138) 
 
@@ -1085,7 +1085,7 @@ library(dplyr)
 library(FSA)  # For Dunn's test
 
 # Read landmarks from TPS file
-tps_file <- "skupno.TPS"
+tps_file <- "All_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -1122,7 +1122,7 @@ PCA <- gm.prcomp(landmarks.gpa$coords)
 
 # Modify the samples data frame to include region
 samples$region <- ifelse(samples$country %in% c("Slovenia", "Bosnia and Herzegovina"), 
-                         "North-Eastern", "Western")
+                         "North-Norteastern_sections", "Western")
 samples$region <- as.factor(samples$region)
 
 # Create PCA data frame including the region
@@ -1149,7 +1149,7 @@ library(dplyr)
 library(FSA)  # For Dunn's test
 
 # Read landmarks from TPS file
-tps_file <- "skupno.TPS"
+tps_file <- "All_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -1186,11 +1186,11 @@ PCA <- gm.prcomp(landmarks.gpa$coords)
 
 # Modify the samples data frame to include region
 samples$region <- ifelse(samples$country %in% c("Slovenia", "Bosnia and Herzegovina"), 
-                         "North-Eastern", "Western")
+                         "North-Norteastern_sections", "Western")
 samples$region <- as.factor(samples$region)
 
-# Set the order of regions: Western on the left, North-Eastern on the right
-samples$region <- factor(samples$region, levels = c("Western", "North-Eastern"))
+# Set the order of regions: Western on the left, North-Norteastern_sections on the right
+samples$region <- factor(samples$region, levels = c("Western", "North-Norteastern_sections"))
 # Create PCA data frame including the region
 pca_data <- data.frame(PC1 = PCA$x[, 1], PC2 = PCA$x[, 2], 
                        Country = samples$country, Region = samples$region)
@@ -1210,7 +1210,7 @@ if (kruskal_test$p.value < 0.05) {
 # 3. Create a boxplot for PC1 by region
 ggplot(pca_data, aes(x = Region, y = PC1, fill = Region)) +
   geom_boxplot(alpha = 0.6) +  # Add boxplot with some transparency
-  scale_fill_manual(values = c("Western" = "lightblue", "North-Eastern" = "gray")) + 
+  scale_fill_manual(values = c("Western" = "lightblue", "North-Norteastern_sections" = "gray")) + 
   labs(title = "Boxplot of PC1 by part of Sephardic province", 
        x = "Part of Sephardic province", 
        y = "PC1") +
@@ -1229,9 +1229,9 @@ ggplot(pca_data, aes(x = Region, y = PC1, fill = Region)) +
 
 
 
-### plots for mean shape for western and eastern part ###
+### plots for mean shape for western and Norteastern_sections part ###
 # Load the TPS file
-tps_file <- "Western T.TPS"
+tps_file <- "Western_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 
 # Perform Procrustes alignment (this step is often required before calculating the mean shape)
@@ -1246,7 +1246,7 @@ plot(msho, main = "Mean Shape")
 
 
 # Load the TPS file
-tps_file <- "eastern.TPS"
+tps_file <- "Norteastern_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 
 # Perform Procrustes alignment (this step is often required before calculating the mean shape)
@@ -1264,7 +1264,7 @@ plot(msho, main = "Mean Shape")
 
 ### Length distribution ###
 
-### Eastern Tetys ###
+### Norteastern_sections Tetys ###
 
 require(geomorph)
 install.packages("ggplot2")
@@ -1275,7 +1275,7 @@ library(geomorph)
 library(dplyr) # dplyr don't work now, and I don't know why
 
 
-tps_file <- "eastern.TPS"
+tps_file <- "Norteastern_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -1332,7 +1332,7 @@ process_data <- function(file_path) {
 }
 
 # Load the TPS file using geomorph's readland.tps function
-tps_file <- "eastern.TPS"
+tps_file <- "Norteastern_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -1359,7 +1359,7 @@ if (!is.null(scaled_distances_results)) {
   # Add the data to the samples data frame
   samples <- data.frame(
     name = dimnames(landmarks)[[3]],
-    region = "North-Eastern part of Sephardic province",  # All samples are from Eastern Tethys
+    region = "North-Norteastern_sections part of Sephardic province",  # All samples are from Norteastern_sections Tethys
     variable1 = NA,
     variable2 = NA,
     variable3 = NA
@@ -1388,7 +1388,7 @@ if (!is.null(scaled_distances_results)) {
   # Compute Shapiro-Wilk results for the combined data
   shapiro_results <- compute_shapiro_results(samples_with_distances)
   
-  # Create the combined histogram plot for Eastern Tethys
+  # Create the combined histogram plot for Norteastern_sections Tethys
   plot <- ggplot(samples_with_distances, aes(x = distance)) +
     geom_histogram(aes(y = ..density..), bins = 30, fill = "lightblue", color = "black") +
     stat_function(
@@ -1399,7 +1399,7 @@ if (!is.null(scaled_distances_results)) {
       linewidth = 1
     ) +
     labs(
-      title = "North-Eastern part of Sephardic province",
+      title = "North-Norteastern_sections part of Sephardic province",
       x = "Length (µm)", 
       y = "Density"
     ) +
@@ -1439,7 +1439,7 @@ if (!is.null(scaled_distances_results)) {
 ### western part ###
 
 
-tps_file <- "Western T.TPS"
+tps_file <- "Western_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -1496,7 +1496,7 @@ process_data <- function(file_path) {
 }
 
 # Load the TPS file using geomorph's readland.tps function
-tps_file <- "Western T.TPS"
+tps_file <- "Western_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -1523,7 +1523,7 @@ if (!is.null(scaled_distances_results)) {
   # Add the data to the samples data frame
   samples <- data.frame(
     name = dimnames(landmarks)[[3]],
-    region = "Western part of Sephardic Province",  # All samples are from Eastern Tethys
+    region = "Western part of Sephardic Province",  # All samples are from Norteastern_sections Tethys
     variable1 = NA,
     variable2 = NA,
     variable3 = NA
@@ -1552,7 +1552,7 @@ if (!is.null(scaled_distances_results)) {
   # Compute Shapiro-Wilk results for the combined data
   shapiro_results <- compute_shapiro_results(samples_with_distances)
   
-  # Create the combined histogram plot for Eastern Tethys
+  # Create the combined histogram plot for Norteastern_sections Tethys
   plot <- ggplot(samples_with_distances, aes(x = distance)) +
     geom_histogram(aes(y = ..density..), bins = 30, fill = "lightblue", color = "black") +
     stat_function(
@@ -1604,7 +1604,7 @@ library(geomorph)
 library(ggplot2)
 library(dplyr)
 # Process the data and calculate scaled distances
-tps_file <- "skupno.TPS"  # Replace with the actual file path of your TPS file
+tps_file <- "All_sections.TPS"  # Replace with the actual file path of your TPS file
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138) 
 # Function to calculate Euclidean distance
@@ -1659,7 +1659,7 @@ process_data <- function(file_path) {
 }
 
 # Load the TPS file
-tps_file <- "eastern.TPS"
+tps_file <- "Norteastern_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -1882,7 +1882,7 @@ process_data <- function(file_path) {
 }
 
 # Load the TPS file
-tps_file <- "Western T.TPS"
+tps_file <- "Western_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -2059,7 +2059,7 @@ library(ggplot2)
 library(ggpubr)
 library(geomorph)
 # Process the data and calculate scaled distances
-tps_file <- "skupno.TPS"  # Replace with the actual file path of your TPS file
+tps_file <- "All_sections.TPS"  # Replace with the actual file path of your TPS file
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 # Placeholder function to calculate length from landmarks
@@ -2081,11 +2081,11 @@ samples <- data.frame(name = dimnames(landmarks)[[3]],
 # Add length variable to the samples data frame
 samples$length <- lengths
 
-# Group variable1 into Western and Eastern part
-samples$Sephardic_group <- ifelse(samples$variable1 %in% c("Bu", "Li", "He", "Clp"), "Western part", "North-Eastern part")
+# Group variable1 into Western and Norteastern_sections part
+samples$Sephardic_group <- ifelse(samples$variable1 %in% c("Bu", "Li", "He", "Clp"), "Western part", "North-Norteastern_sections part")
 
 # Reorder levels of tethys_group
-samples$Sephardic_group <- factor(samples$Sephardic_group, levels = c("Western part", "North-Eastern part"))
+samples$Sephardic_group <- factor(samples$Sephardic_group, levels = c("Western part", "North-Norteastern_sections part"))
 
 # Perform Kruskal-Wallis test
 kruskal_test <- kruskal.test(length ~ Sephardic_group, data = samples)
@@ -2101,7 +2101,7 @@ ggplot(samples, aes(x = Sephardic_group, y = length, fill = Sephardic_group)) +
   labs(title = "Length by part of Sephardic province",
        x = "Part of Sephardic province",
        y = "Length (µm)") +
-  scale_fill_manual(values = c("Western part" = "lightblue", "North-Eastern part" = "gray")) + 
+  scale_fill_manual(values = c("Western part" = "lightblue", "North-Norteastern_sections part" = "gray")) + 
   theme_minimal() +
   theme(
     legend.title = element_blank(),  # Remove legend title
@@ -2258,7 +2258,7 @@ library(dplyr)
 library(ggplot2)
 
 # Path to your data file
-file_path <- "skupno - Copy.TPS"
+file_path <- "All_sections - Copy.TPS"
 tps_file <- file_path
 
 # Load landmarks and define sliders
@@ -2381,7 +2381,7 @@ library(ggplot2)
 
 
 # Create the grouping variable with updated names
-samples$group <- ifelse(samples$variable1 %in% c("Pr", "Dr"), "North-Eastern part", "Western part")
+samples$group <- ifelse(samples$variable1 %in% c("Pr", "Dr"), "North-Norteastern_sections part", "Western part")
 
 # Update the plot with specific colors for each group
 ggplot(samples, aes(x = PC1, y = Length, color = group, shape = variable1)) +  # Color by group and shape by section
@@ -2392,8 +2392,8 @@ ggplot(samples, aes(x = PC1, y = Length, color = group, shape = variable1)) +  #
        x = "PC1 Score",
        y = "Length (µm)") +
   scale_color_manual(name = "Sephardic province",  # Legend title updated to 'Sephardic province'
-                     values = c("North-Eastern part" = "black", "Western part" = "lightblue"),  # Assigning specific colors
-                     labels = c("North-Eastern part", "Western part")) +  # Updated group labels
+                     values = c("North-Norteastern_sections part" = "black", "Western part" = "lightblue"),  # Assigning specific colors
+                     labels = c("North-Norteastern_sections part", "Western part")) +  # Updated group labels
   scale_shape_manual(name = "Section",
                      values = c(16, 17, 18, 19, 15, 13),  # Assign different shapes to each section
                      labels = c("Pr" = "Prikrnica", "Dr" = "Drežnica", 
@@ -2411,19 +2411,19 @@ ggplot(samples, aes(x = PC1, y = Length, color = group, shape = variable1)) +  #
   scale_size_continuous(range = c(1, 5))  # Adjust the range of point sizes as needed
 
 # Subset the data for each group
-north_eastern <- subset(samples, group == "North-Eastern part")
+north_Norteastern_sections <- subset(samples, group == "North-Norteastern_sections part")
 western <- subset(samples, group == "Western part")
 
 # Fit linear models for each group
-lm_north_eastern <- lm(Length ~ PC1, data = north_eastern)
+lm_north_Norteastern_sections <- lm(Length ~ PC1, data = north_Norteastern_sections)
 lm_western <- lm(Length ~ PC1, data = western)
 
 # Extract slopes (coefficients for PC1)
-slope_north_eastern <- coef(lm_north_eastern)["PC1"]
+slope_north_Norteastern_sections <- coef(lm_north_Norteastern_sections)["PC1"]
 slope_western <- coef(lm_western)["PC1"]
 
 # Print the slopes
-print(paste("Slope for North-Eastern part:", slope_north_eastern))
+print(paste("Slope for North-Norteastern_sections part:", slope_north_Norteastern_sections))
 print(paste("Slope for Western part:", slope_western))
 
 
