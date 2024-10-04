@@ -2135,7 +2135,7 @@ calculate_length <- function(landmark_data) {
 }
 
 # Read TPS file for landmarks
-tps_file <- "skupno.TPS"  # Replace with your actual file path
+tps_file <- "Selected_secti.TPS"  # Replace with your actual file path
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
