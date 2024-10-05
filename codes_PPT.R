@@ -286,7 +286,7 @@ ggplot(pca_data, aes(x = PC1, y = PC2, color = Region)) +
   geom_point(aes(shape = Country), size = 2, show.legend = FALSE) +  # Hide Country from legend
   scale_shape_manual(values = symbols) +
   scale_color_manual(values = region_colors) +
-  # Create a single ellipse for the North-Norteastern_sections part
+  # Create a single ellipse for the North-Eastern part
   stat_ellipse(data = pca_data[pca_data$Region == "North-Norteastern_sections", ], 
                aes(color = Region), 
                type = "t", level = 0.95, segments = 51, na.rm = FALSE) +
@@ -427,7 +427,7 @@ ggplot(pca_data, aes(x = PC1, y = PC2, color = Region, size = Scaled_Distance)) 
   geom_point(aes(shape = Country), show.legend = FALSE) +  # Hide Country from legend
   scale_shape_manual(values = c(16, 17, 18)) +  # Replace with actual symbols if needed
   scale_color_manual(values = region_colors) +
-  # Create a single ellipse for the North-Norteastern_sections part
+  # Create a single ellipse for the North-Eastern part
   stat_ellipse(data = pca_data[pca_data$Region == "North-Norteastern_sections", ], 
                aes(color = Region), 
                type = "t", level = 0.95, segments = 51, na.rm = FALSE) +
@@ -717,7 +717,7 @@ for (p in plot_list) {
 
 
 
-### North-Norteastern_sections part ###
+### North-Eastern part ###
 
 # Load necessary libraries
 library(geomorph)
@@ -783,7 +783,7 @@ if (is.array(landmarks) && !is.null(dimnames(landmarks)[[3]])) {
       linewidth = 1
     ) +
     labs(
-      title = "North-Norteastern_sections part of Sephardic province",
+      title = "North-Eastern part of Sephardic province",
       x = "PC1 Scores", 
       y = "Density"
     ) +
@@ -817,7 +817,7 @@ combined_plot <- ggplot(samples, aes(x = PC1)) +
     linewidth = 1
   ) +
   labs(
-    title = "North-Norteastern_sections part of Sephardic province",
+    title = "North-Eastern part of Sephardic province",
     x = "PC1 Scores", 
     y = "Density"
   ) +
@@ -847,7 +847,7 @@ print(combined_plot)
 
 
 
-### Sections in North-Norteastern_sections part ###
+### Sections in North-Eastern part ###
   
   # Function to compute Shapiro-Wilk test results for each level of variable1
   compute_shapiro_results <- function(data) {
@@ -1359,7 +1359,7 @@ if (!is.null(scaled_distances_results)) {
   # Add the data to the samples data frame
   samples <- data.frame(
     name = dimnames(landmarks)[[3]],
-    region = "North-Norteastern_sections part of Sephardic province",  # All samples are from Norteastern_sections Tethys
+    region = "North-Eastern part of Sephardic province",  # All samples are from Norteastern_sections Tethys
     variable1 = NA,
     variable2 = NA,
     variable3 = NA
@@ -1399,7 +1399,7 @@ if (!is.null(scaled_distances_results)) {
       linewidth = 1
     ) +
     labs(
-      title = "North-Norteastern_sections part of Sephardic province",
+      title = "North-Eastern part of Sephardic province",
       x = "Length (µm)", 
       y = "Density"
     ) +
@@ -2082,10 +2082,10 @@ samples <- data.frame(name = dimnames(landmarks)[[3]],
 samples$length <- lengths
 
 # Group variable1 into Western and Norteastern_sections part
-samples$Sephardic_group <- ifelse(samples$variable1 %in% c("Bu", "Li", "He", "Clp"), "Western part", "North-Norteastern_sections part")
+samples$Sephardic_group <- ifelse(samples$variable1 %in% c("Bu", "Li", "He", "Clp"), "Western part", "North-Eastern part")
 
 # Reorder levels of tethys_group
-samples$Sephardic_group <- factor(samples$Sephardic_group, levels = c("Western part", "North-Norteastern_sections part"))
+samples$Sephardic_group <- factor(samples$Sephardic_group, levels = c("Western part", "North-Eastern part"))
 
 # Perform Kruskal-Wallis test
 kruskal_test <- kruskal.test(length ~ Sephardic_group, data = samples)
@@ -2101,7 +2101,7 @@ ggplot(samples, aes(x = Sephardic_group, y = length, fill = Sephardic_group)) +
   labs(title = "Length by part of Sephardic province",
        x = "Part of Sephardic province",
        y = "Length (µm)") +
-  scale_fill_manual(values = c("Western part" = "lightblue", "North-Norteastern_sections part" = "gray")) + 
+  scale_fill_manual(values = c("Western part" = "lightblue", "North-Eastern part" = "gray")) + 
   theme_minimal() +
   theme(
     legend.title = element_blank(),  # Remove legend title
@@ -2135,7 +2135,7 @@ calculate_length <- function(landmark_data) {
 }
 
 # Read TPS file for landmarks
-tps_file <- "Selected_secti.TPS"  # Replace with your actual file path
+tps_file <- "Selected_sections.TPS"  # Replace with your actual file path
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138)
 
@@ -2381,7 +2381,7 @@ library(ggplot2)
 
 
 # Create the grouping variable with updated names
-samples$group <- ifelse(samples$variable1 %in% c("Pr", "Dr"), "North-Norteastern_sections part", "Western part")
+samples$group <- ifelse(samples$variable1 %in% c("Pr", "Dr"), "North-Eastern part", "Western part")
 
 # Update the plot with specific colors for each group
 ggplot(samples, aes(x = PC1, y = Length, color = group, shape = variable1)) +  # Color by group and shape by section
@@ -2392,8 +2392,8 @@ ggplot(samples, aes(x = PC1, y = Length, color = group, shape = variable1)) +  #
        x = "PC1 Score",
        y = "Length (µm)") +
   scale_color_manual(name = "Sephardic province",  # Legend title updated to 'Sephardic province'
-                     values = c("North-Norteastern_sections part" = "black", "Western part" = "lightblue"),  # Assigning specific colors
-                     labels = c("North-Norteastern_sections part", "Western part")) +  # Updated group labels
+                     values = c("North-Eastern part" = "black", "Western part" = "lightblue"),  # Assigning specific colors
+                     labels = c("North-Eastern part", "Western part")) +  # Updated group labels
   scale_shape_manual(name = "Section",
                      values = c(16, 17, 18, 19, 15, 13),  # Assign different shapes to each section
                      labels = c("Pr" = "Prikrnica", "Dr" = "Drežnica", 
@@ -2411,7 +2411,7 @@ ggplot(samples, aes(x = PC1, y = Length, color = group, shape = variable1)) +  #
   scale_size_continuous(range = c(1, 5))  # Adjust the range of point sizes as needed
 
 # Subset the data for each group
-north_Norteastern_sections <- subset(samples, group == "North-Norteastern_sections part")
+north_Norteastern_sections <- subset(samples, group == "North-Eastern part")
 western <- subset(samples, group == "Western part")
 
 # Fit linear models for each group
@@ -2423,7 +2423,7 @@ slope_north_Norteastern_sections <- coef(lm_north_Norteastern_sections)["PC1"]
 slope_western <- coef(lm_western)["PC1"]
 
 # Print the slopes
-print(paste("Slope for North-Norteastern_sections part:", slope_north_Norteastern_sections))
+print(paste("Slope for North-Eastern part:", slope_north_Norteastern_sections))
 print(paste("Slope for Western part:", slope_western))
 
 
