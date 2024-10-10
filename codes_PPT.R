@@ -270,7 +270,7 @@ PCA <- gm.prcomp(landmarks.gpa$coords)
 pca_data <- data.frame(PC1 = PCA$x[, 1], PC2 = PCA$x[, 2], Country = samples$country)
 # Modify the samples data frame to include region
 samples$region <- ifelse(samples$country %in% c("Slovenia", "Bosnia and Herzegovina"), 
-                         "North-Eastern", "Western")
+                         "North-Norteastern_sections", "Western")
 samples$region <- as.factor(samples$region)
 
 # Create PCA data frame including the region
@@ -287,7 +287,7 @@ ggplot(pca_data, aes(x = PC1, y = PC2, color = Region)) +
   scale_shape_manual(values = symbols) +
   scale_color_manual(values = region_colors) +
   # Create a single ellipse for the North-Eastern part
-  stat_ellipse(data = pca_data[pca_data$Region == "North-Eastern", ], 
+  stat_ellipse(data = pca_data[pca_data$Region == "North-Norteastern_sections", ], 
                aes(color = Region), 
                type = "t", level = 0.95, segments = 51, na.rm = FALSE) +
   # Create individual ellipses for the Western region
@@ -432,7 +432,7 @@ ggplot(pca_data, aes(x = PC1, y = PC2, color = Region, size = Scaled_Distance)) 
                aes(color = Region), 
                type = "t", level = 0.95, segments = 51, na.rm = FALSE) +
   # Create individual ellipses for the Western region
-  stat_ellipse(data = pca_data[pca_data$Region == "Western", ], 
+  stat_ellipse(data = pca_data[pca_data$Region == "Western", "North-Eastern"], 
                aes(color = Region), 
                type = "t", level = 0.95, segments = 51, na.rm = FALSE) +
   labs(title = "Morphospace of the aboral side of P. murcianus",
