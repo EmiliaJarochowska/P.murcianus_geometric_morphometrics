@@ -270,7 +270,7 @@ PCA <- gm.prcomp(landmarks.gpa$coords)
 pca_data <- data.frame(PC1 = PCA$x[, 1], PC2 = PCA$x[, 2], Country = samples$country)
 # Modify the samples data frame to include region
 samples$region <- ifelse(samples$country %in% c("Slovenia", "Bosnia and Herzegovina"), 
-                         "North-Norteastern_sections", "Western")
+                         "North-Eastern", "Western")
 samples$region <- as.factor(samples$region)
 
 # Create PCA data frame including the region
@@ -287,7 +287,7 @@ ggplot(pca_data, aes(x = PC1, y = PC2, color = Region)) +
   scale_shape_manual(values = symbols) +
   scale_color_manual(values = region_colors) +
   # Create a single ellipse for the North-Eastern part
-  stat_ellipse(data = pca_data[pca_data$Region == "North-Norteastern_sections", ], 
+  stat_ellipse(data = pca_data[pca_data$Region == "North-Eastern", ], 
                aes(color = Region), 
                type = "t", level = 0.95, segments = 51, na.rm = FALSE) +
   # Create individual ellipses for the Western region
@@ -405,7 +405,7 @@ samples$scaled_distance <- sapply(scaled_distances, function(x) mean(x$distances
 
 # Add region data
 samples$region <- ifelse(samples$country %in% c("Slovenia", "Bosnia and Herzegovina"), 
-                         "North-Norteastern_sections", "Western")
+                         "North-Eastern", "Western")
 samples$region <- as.factor(samples$region)
 
 # Perform Procrustes analysis (as already defined)
@@ -420,7 +420,7 @@ pca_data <- data.frame(PC1 = PCA$x[, 1], PC2 = PCA$x[, 2],
                        Scaled_Distance = samples$scaled_distance)  # Add scaled distance
 
 # Define colors for each region
-region_colors <- c("North-Norteastern_sections" = "grey", "Western" = "#0033A0") 
+region_colors <- c("North-Eastern" = "grey", "Western" = "#0033A0") 
 
 # Plot with ggplot2 using region as color and removing country from the legend
 ggplot(pca_data, aes(x = PC1, y = PC2, color = Region, size = Scaled_Distance)) +  # Size by scaled distance
@@ -428,7 +428,7 @@ ggplot(pca_data, aes(x = PC1, y = PC2, color = Region, size = Scaled_Distance)) 
   scale_shape_manual(values = c(16, 17, 18)) +  # Replace with actual symbols if needed
   scale_color_manual(values = region_colors) +
   # Create a single ellipse for the North-Eastern part
-  stat_ellipse(data = pca_data[pca_data$Region == "North-Norteastern_sections", ], 
+  stat_ellipse(data = pca_data[pca_data$Region == "North-Eastern", ], 
                aes(color = Region), 
                type = "t", level = 0.95, segments = 51, na.rm = FALSE) +
   # Create individual ellipses for the Western region
@@ -452,7 +452,7 @@ ggplot(pca_data, aes(x = PC1, y = PC2, color = Region, size = Scaled_Distance)) 
 
 ### normal distribution of PC1 scores ###
 
-### WNorteastern_sections part ###
+### Weastern_sections part ###
 
 # Load necessary libraries
 library(geomorph)
@@ -1122,7 +1122,7 @@ PCA <- gm.prcomp(landmarks.gpa$coords)
 
 # Modify the samples data frame to include region
 samples$region <- ifelse(samples$country %in% c("Slovenia", "Bosnia and Herzegovina"), 
-                         "North-Norteastern_sections", "Western")
+                         "North-Eastern", "Western")
 samples$region <- as.factor(samples$region)
 
 # Create PCA data frame including the region
@@ -1186,11 +1186,11 @@ PCA <- gm.prcomp(landmarks.gpa$coords)
 
 # Modify the samples data frame to include region
 samples$region <- ifelse(samples$country %in% c("Slovenia", "Bosnia and Herzegovina"), 
-                         "North-Norteastern_sections", "Western")
+                         "North-Eastern", "Western")
 samples$region <- as.factor(samples$region)
 
-# Set the order of regions: Western on the left, North-Norteastern_sections on the right
-samples$region <- factor(samples$region, levels = c("Western", "North-Norteastern_sections"))
+# Set the order of regions: Western on the left, North-Eastern on the right
+samples$region <- factor(samples$region, levels = c("Western", "North-Eastern"))
 # Create PCA data frame including the region
 pca_data <- data.frame(PC1 = PCA$x[, 1], PC2 = PCA$x[, 2], 
                        Country = samples$country, Region = samples$region)
@@ -1210,7 +1210,7 @@ if (kruskal_test$p.value < 0.05) {
 # 3. Create a boxplot for PC1 by region
 ggplot(pca_data, aes(x = Region, y = PC1, fill = Region)) +
   geom_boxplot(alpha = 0.6) +  # Add boxplot with some transparency
-  scale_fill_manual(values = c("Western" = "lightblue", "North-Norteastern_sections" = "gray")) + 
+  scale_fill_manual(values = c("Western" = "lightblue", "North-Eastern" = "gray")) + 
   labs(title = "Boxplot of PC1 by part of Sephardic province", 
        x = "Part of Sephardic province", 
        y = "PC1") +
