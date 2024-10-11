@@ -1,7 +1,7 @@
 ### IN ANAYSE ARE INCORPORATE ELEMENTS FROM SLOVENIA, SPAIN AND BOSNIA & HERZEGOVINA ###
 
 library(geomorph)
-tps_file <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/All_sections.TPS"
+tps_file <- "All_sections.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138) 
 
@@ -370,7 +370,7 @@ process_data <- function(file_path) {
 }
 
 # Process the data and calculate scaled distances
-tps_file <- "All_sections.TPS"  # Replace with the actual file path of your TPS file
+tps_file <- "All_sections.TPS"  
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 sliders <- define.sliders(3:138) 
 
@@ -2425,5 +2425,597 @@ slope_western <- coef(lm_western)["PC1"]
 # Print the slopes
 print(paste("Slope for North-Eastern part:", slope_north_Norteastern_sections))
 print(paste("Slope for Western part:", slope_western))
+
+
+
+
+
+### working on residuals ###
+
+
+#### PC1 and PC2 resid. plot ###
+# Load necessary libraries
+if (!require("geomorph")) install.packages("geomorph", dependencies = TRUE)
+if (!require("ggplot2")) install.packages("ggplot2", dependencies = TRUE)
+
+library(geomorph)
+library(ggplot2)
+
+# Function to calculate Euclidean distance
+calculate_distance <- function(x1, y1, x2, y2) {
+  return(sqrt((x2 - x1)^2 + (y1 - y2)^2))
+}
+
+# Function to process the data and calculate scaled distance (using base R)
+process_data <- function(file_path) {
+  lines <- readLines(file_path)
+  lm_indices <- which(grepl("LM=", lines))
+  scale_indices <- which(grepl("SCALE=", lines))
+  
+  if(length(lm_indices) == 0 || length(scale_indices) == 0) {
+    stop("LM= or SCALE= not found in the data file.")
+  }
+  
+  results <- list()
+  
+  for (i in seq_along(lm_indices)) {
+    num_landmarks <- as.numeric(gsub("LM=", "", lines[lm_indices[i]]))
+    scale <- as.numeric(gsub("SCALE=", "", lines[scale_indices[i]]))
+    
+    landmark_lines <- lines[(lm_indices[i] + 1):(lm_indices[i] + num_landmarks)]
+    landmarks <- do.call(rbind, strsplit(landmark_lines, "\\s+"))
+    landmarks <- as.data.frame(landmarks, stringsAsFactors = FALSE)
+    
+    # Use apply to convert all columns to numeric
+    landmarks <- as.data.frame(apply(landmarks, 2, as.numeric))
+    
+    if(nrow(landmarks) < 2) {
+      next 
+    }
+    
+    # Calculate distances between all pairs of landmarks
+    num_landmarks <- nrow(landmarks)
+    distances <- numeric()
+    for (j in 1:(num_landmarks - 1)) {
+      for (k in (j + 1):num_landmarks) {
+        dist <- calculate_distance(landmarks[j, 1], landmarks[j, 2], landmarks[k, 1], landmarks[k, 2])
+        scaled_distance <- dist * scale
+        distances <- c(distances, scaled_distance)
+      }
+    }
+    
+    results[[length(results) + 1]] <- list(
+      block_index = i,
+      scale = scale,
+      distances = distances
+    )
+  }
+  
+  return(results)
+}
+
+# Path to your data file
+tps_file <- "All_sections.TPS"
+
+# Process the data to calculate distances
+scaled_distances_results <- process_data(tps_file)
+
+# Conduct Generalized Procrustes Analysis (GPA)
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+gpa <- gpagen(landmarks)
+
+# Perform Principal Component Analysis (PCA) on Procrustes-aligned data
+pca_results <- gm.prcomp(gpa$coords)
+
+# Extract PC scores (PC1 and PC2)
+pc_scores <- pca_results$x[, 1:2]  # Getting PC1 and PC2
+
+# Calculate the residuals
+residuals <- array(0, dim = dim(gpa$coords))  # Initialize residual array
+
+for (i in 1:dim(gpa$coords)[3]) {
+  residuals[,,i] <- gpa$coords[,,i] - gpa$consensus  # Subtract consensus from each specimen
+}
+
+# Sum the squared residuals across landmarks and dimensions (for each specimen)
+pc1_residuals <- apply(residuals, 3, function(x) sum(x[,1]^2))  # PC1 residuals
+pc2_residuals <- apply(residuals, 3, function(x) sum(x[,2]^2))  # PC2 residuals
+
+# Combine results in a data frame with the specimen names
+residuals_data <- data.frame(
+  Specimen = dimnames(landmarks)[[3]],
+  PC1_Residuals = pc1_residuals,
+  PC2_Residuals = pc2_residuals
+)
+
+# Create a sample properties data frame
+samples <- data.frame(
+  Specimen = dimnames(landmarks)[[3]],
+  Country = sapply(dimnames(landmarks)[[3]], function(x) strsplit(x, "_")[[1]][1])  # Extract country from specimen name
+)
+
+# Map abbreviations to full country names
+country_full_names <- c("BAH" = "Bosnia and Herzegovina", 
+                        "SP" = "Spain", 
+                        "SL" = "Slovenia")
+
+# Create a new column with full country names
+samples$FullCountry <- country_full_names[samples$Country]
+
+# Assign groups
+samples$Group <- ifelse(samples$Country %in% c("SL", "BAH"), "North-Eastern part", "Western part")
+
+# Merge residuals data with samples data (to include country information)
+merged_data <- merge(residuals_data, samples, by = "Specimen")
+
+# Extract the scaled distances from the processed data
+scaled_distances <- unlist(lapply(scaled_distances_results, function(x) x$distances))
+
+# Add scaled distances to the merged data frame
+merged_data$Scaled_Distance <- scaled_distances[1:nrow(merged_data)]  # Ensure sizes match
+
+# Calculate the variance explained by PC1 and PC2
+eigenvalues <- pca_results$sdev^2  # Eigenvalues are the squared singular values
+total_variance <- sum(eigenvalues)  # Total variance
+
+# Calculate the proportion of variance explained by PC1 and PC2
+variance_explained <- eigenvalues / total_variance
+pc1_variance <- variance_explained[1] * 100  # Percentage of variance for PC1
+pc2_variance <- variance_explained[2] * 100  # Percentage of variance for PC2
+
+# Calculate explained variance for residuals in PC1 and PC2
+residuals_pc1_variance <- var(merged_data$PC1_Residuals)  # Variance of PC1 residuals
+residuals_pc2_variance <- var(merged_data$PC2_Residuals)  # Variance of PC2 residuals
+
+# Calculate explained variance percentages for residuals
+explained_variance_pc1 <- (residuals_pc1_variance / total_variance) * 100  # Explained variance percentage for PC1
+explained_variance_pc2 <- (residuals_pc2_variance / total_variance) * 100  # Explained variance percentage for PC2
+
+# Print variance explained
+cat("Variance explained by PC1: ", round(pc1_variance, 2), "%\n")
+cat("Variance explained by PC2: ", round(pc2_variance, 2), "%\n")
+cat("Explained variance by residuals for PC1: ", round(explained_variance_pc1, 2), "%\n")
+cat("Explained variance by residuals for PC2: ", round(explained_variance_pc2, 2), "%\n")
+
+# Plot the residuals for PC1 and PC2, coloring by group and adding confidence ellipses
+ggplot(merged_data, aes(x = PC1_Residuals, y = PC2_Residuals, color = Group)) +
+  geom_point(aes(size = Scaled_Distance), alpha = 0.7) +  # Use scaled distance to size points
+  stat_ellipse(level = 0.95) +  # Add 95% confidence ellipses
+  labs(title = "PC1 vs PC2 Residuals with Confidence Ellipses", 
+       x = "PC1 Residuals",  # Label for x-axis
+       y = "PC2 Residuals") +  # Label for y-axis
+  theme_minimal() +  # Use a clean theme
+  theme(legend.title = element_text(size = 10), 
+        legend.text = element_text(size = 8)) +
+  scale_color_manual(name = "Country Group", 
+                     values = c("North-Eastern part" = "grey", "Western part" = "#0033A0")) +  # Define colors for groups
+  scale_size_continuous(name = "Scaled Distance", range = c(1, 4)) +  # Adjust size range for visibility
+  annotate("text", x = max(merged_data$PC1_Residuals) * 0.95, 
+           y = max(merged_data$PC2_Residuals) * 0.5, 
+           label = paste("Variance explained by PC1:", round(pc1_variance, 2), "%"), 
+           size = 4, color = "black", hjust = 0) +  # Annotation for PC1 variance
+  annotate("text", x = max(merged_data$PC1_Residuals) * 0.05, 
+           y = max(merged_data$PC2_Residuals) * 0.95, 
+           label = paste("Variance explained by PC2:", round(pc2_variance, 2), "%"), 
+           size = 4, color = "black", vjust = 0) +  # Annotation for PC
+  
+  print(
+    ggplot(merged_data, aes(x = PC1_Residuals, y = PC2_Residuals, color = Group, shape = Group)) +  # Map shape to Group
+      geom_point(aes(size = Scaled_Distance)) +  # Fully opaque points
+      stat_ellipse(level = 0.95) +
+      labs(title = "PC1 vs PC2 Residuals with Confidence Ellipses", 
+           x = "PC1 Residuals", 
+           y = "PC2 Residuals") +
+      theme_minimal() +
+      theme(legend.title = element_text(size = 10), 
+            legend.text = element_text(size = 8)) +
+      scale_color_manual(name = "Country Group", 
+                         values = c("North-Eastern part" = "grey", "Western part" = "#0033A0")) +
+      scale_shape_manual(name = "Country Group", 
+                         values = c("North-Eastern part" = 16, "Western part" = 17)) +  # Circles for North-Eastern, Triangles for Western
+      scale_size_continuous(name = "Scaled Distance", range = c(1, 4)) +
+      
+      # PC1 annotation moved next to the x-axis label
+      annotate("text", x = max(merged_data$PC1_Residuals) * 0.95, 
+               y = max(merged_data$PC2_Residuals) * -0.03, 
+               label = paste0(round(pc1_variance, 0), "%"),  
+               size = 4, color = "black", hjust = 0) +
+      
+      # PC2 annotation moved next to the y-axis label
+      annotate("text", x = max(merged_data$PC1_Residuals) * -0.03, 
+               y = max(merged_data$PC2_Residuals) * 0.95, 
+               label = paste0(round(pc2_variance, 0), "%"),  
+               size = 4, color = "black", vjust = 0)
+  )
+
+
+
+### PC1 resids. by section###
+### PC sections ###
+# Load necessary libraries
+library(geomorph)  # For GPA, PCA, and shape analysis
+library(ggplot2)   # For plotting
+library(MASS)      # For Kernel Density Estimation
+library(viridis)   # For colorblind-friendly palettes
+library(dplyr)     # For data manipulation
+library(FSA)       # For Dunn test
+
+# 1. Read the TPS file and define the sliders
+tps_file <- "All_sections.TPS"
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+sliders <- define.sliders(3:138) 
+
+# 2. Create the samples data frame
+samples <- data.frame(name = rep(NA, dim(landmarks)[3]),
+                      country = rep(NA, dim(landmarks)[3]),
+                      variable1 = rep(NA, dim(landmarks)[3]),
+                      variable2 = rep(NA, dim(landmarks)[3]),
+                      variable3 = rep(NA, dim(landmarks)[3]))
+
+for (i in 1:dim(landmarks)[3]) {
+  samples$name[i] <- dimnames(landmarks)[[3]][i]
+  samples$country[i] <- unlist(strsplit(samples$name[i], "_"))[1]
+  samples$variable1[i] <- unlist(strsplit(samples$name[i], "_"))[2]
+  samples$variable2[i] <- unlist(strsplit(samples$name[i], "_"))[3]
+  samples$variable3[i] <- unlist(strsplit(samples$name[i], "_"))[4]
+}
+
+samples$country <- as.factor(samples$country)
+samples$variable1 <- as.factor(samples$variable1)
+
+# 3. Perform GPA (Generalized Procrustes Analysis) to align the shape data
+gpa <- gpagen(landmarks, curves = sliders, print.progress = FALSE) # GPA alignment
+
+# 4. Perform Principal Component Analysis (PCA)
+pca_result <- gm.prcomp(gpa$coords) # PCA on GPA aligned data
+
+# 5. Calculate residuals for PC1
+# Assume you have a linear model for PC1, e.g., PC1 ~ variable1
+lm_model <- lm(pca_result$x[, 1] ~ samples$variable1) # Linear model for PC1
+samples$PC1_residuals <- residuals(lm_model)  # Calculate residuals for PC1
+
+# 6. Reorder the levels of variable1 to ensure the desired order in the boxplot with full names
+samples$variable1 <- factor(samples$variable1, 
+                            levels = c("Clp", "He", "Li", "Bu", "Dr", "Pr"),
+                            labels = c("Calasparra", "Henarejos", "Libros", "Bugarra", "Drežnica", "Prikrnica"))
+
+# 7. Filter the samples data frame to include only the desired sections
+filtered_samples <- samples %>% 
+  filter(variable1 %in% c("Henarejos", "Libros", "Bugarra", "Prikrnica"))
+
+# Define custom colors for sections
+section_colors <- c(
+  "Henarejos" = "#D4A017",   # Yellow for Henarejos
+  "Libros" = "#17A909",      # Green for Libros
+  "Bugarra" = "#17BCC4",     # Cyan/Teal for Bugarra
+  "Prikrnica" = "#D91C93"    # Pink for Prikrnica
+)
+
+# 8. Create a boxplot for PC1 residuals by sections (variable1) with ordered levels
+ggplot(filtered_samples, aes(x = variable1, y = PC1_residuals, fill = variable1)) +
+  geom_boxplot(alpha = 0.6) +         # Plot the boxplot with some transparency
+  scale_fill_manual(values = section_colors, drop = FALSE) +  # Use drop = FALSE to keep unused factor levels
+  labs(title = "Boxplot of PC1 Residuals by Sections", 
+       x = "Section", 
+       y = "PC1 Residuals") +  # Updated label for y-axis
+  theme_minimal() +
+  theme(
+    legend.title = element_blank(),  # Remove legend title
+    axis.text.x = element_text(size = 12, angle = 45, hjust = 1),  # Rotate x-axis labels for better readability
+    axis.text.y = element_text(size = 12),  # Increase y-axis text size
+    axis.title.x = element_text(size = 14),  # Increase x-axis title size
+    axis.title.y = element_text(size = 14),  # Increase y-axis title size
+    plot.title = element_text(size = 16, face = "bold")  # Increase plot title size and make it bold
+  ) 
+
+
+
+### PC1 resids. statist. signi. by sections ###
+# Load necessary libraries
+library(geomorph)  # For GPA, PCA, and shape analysis
+library(ggplot2)   # For plotting
+library(MASS)      # For Kernel Density Estimation
+library(viridis)   # For colorblind-friendly palettes
+library(dplyr)     # For data manipulation
+library(FSA)       # For Dunn test
+
+# 1. Read the TPS file and define the sliders
+tps_file <- "All_sections.TPS"
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+sliders <- define.sliders(3:138) 
+
+# 2. Create the samples data frame
+samples <- data.frame(name = rep(NA, dim(landmarks)[3]),
+                      country = rep(NA, dim(landmarks)[3]),
+                      variable1 = rep(NA, dim(landmarks)[3]),
+                      variable2 = rep(NA, dim(landmarks)[3]),
+                      variable3 = rep(NA, dim(landmarks)[3]))
+
+for (i in 1:dim(landmarks)[3]) {
+  samples$name[i] <- dimnames(landmarks)[[3]][i]
+  samples$country[i] <- unlist(strsplit(samples$name[i], "_"))[1]
+  samples$variable1[i] <- unlist(strsplit(samples$name[i], "_"))[2]
+  samples$variable2[i] <- unlist(strsplit(samples$name[i], "_"))[3]
+  samples$variable3[i] <- unlist(strsplit(samples$name[i], "_"))[4]
+}
+
+samples$country <- as.factor(samples$country)
+samples$variable1 <- as.factor(samples$variable1)
+
+# 3. Perform GPA (Generalized Procrustes Analysis) to align the shape data
+gpa <- gpagen(landmarks, curves = sliders, print.progress = FALSE) # GPA alignment
+
+# 4. Perform Principal Component Analysis (PCA)
+pca_result <- gm.prcomp(gpa$coords) # PCA on GPA aligned data
+
+# 5. Calculate residuals for PC1
+# Assume you have a linear model for PC1, e.g., PC1 ~ variable1
+lm_model <- lm(pca_result$x[, 1] ~ samples$variable1) # Linear model for PC1
+samples$PC1_residuals <- residuals(lm_model)  # Calculate residuals for PC1
+
+# 6. Reorder the levels of variable1 to ensure the desired order in the boxplot with full names
+samples$variable1 <- factor(samples$variable1, 
+                            levels = c("Clp", "He", "Li", "Bu", "Dr", "Pr"),
+                            labels = c("Calasparra", "Henarejos", "Libros", "Bugarra", "Drežnica", "Prikrnica"))
+
+
+# 8. Perform Kruskal-Wallis test to compare PC1 residuals between all sections (variable1)
+kruskal_test <- kruskal.test(PC1_residuals ~ variable1, data = samples)
+print(kruskal_test)
+
+# If Kruskal-Wallis is significant, perform pairwise comparisons using Dunn test
+if (kruskal_test$p.value < 0.05) {
+  dunn_test <- dunnTest(PC1_residuals ~ variable1, data = samples, method = "bonferroni")
+  print(dunn_test)
+}
+
+
+
+### PC1 resids by part of sephard, province ###
+
+# Load necessary libraries
+library(geomorph)  # For GPA, PCA, and shape analysis
+library(ggplot2)   # For plotting
+library(MASS)      # For Kernel Density Estimation
+library(viridis)   # For colorblind-friendly palettes
+library(dplyr)     # For data manipulation
+library(FSA)       # For Dunn test
+
+# 1. Read the TPS file and define the sliders
+tps_file <- "All_sections.TPS"
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+sliders <- define.sliders(3:138) 
+
+# 2. Create the samples data frame
+samples <- data.frame(name = rep(NA, dim(landmarks)[3]),
+                      country = rep(NA, dim(landmarks)[3]),
+                      variable1 = rep(NA, dim(landmarks)[3]),
+                      variable2 = rep(NA, dim(landmarks)[3]),
+                      variable3 = rep(NA, dim(landmarks)[3]))
+
+for (i in 1:dim(landmarks)[3]) {
+  samples$name[i] <- dimnames(landmarks)[[3]][i]
+  samples$country[i] <- unlist(strsplit(samples$name[i], "_"))[1]
+  samples$variable1[i] <- unlist(strsplit(samples$name[i], "_"))[2]
+  samples$variable2[i] <- unlist(strsplit(samples$name[i], "_"))[3]
+  samples$variable3[i] <- unlist(strsplit(samples$name[i], "_"))[4]
+}
+
+samples$country <- as.factor(samples$country)
+samples$variable1 <- as.factor(samples$variable1)
+
+# 3. Perform GPA (Generalized Procrustes Analysis) to align the shape data
+gpa <- gpagen(landmarks, curves = sliders, print.progress = FALSE) # GPA alignment
+
+# 4. Perform Principal Component Analysis (PCA)
+pca_result <- gm.prcomp(gpa$coords) # PCA on GPA aligned data
+
+# 5. Calculate residuals for PC1
+lm_model <- lm(pca_result$x[, 1] ~ samples$variable1) # Linear model for PC1
+samples$PC1_residuals <- residuals(lm_model)  # Calculate residuals for PC1
+
+# 6. Reorder the levels of variable1 to ensure the desired order in the boxplot with full names
+samples$variable1 <- factor(samples$variable1, 
+                            levels = c("Clp", "He", "Li", "Bu", "Dr", "Pr"),
+                            labels = c("Calasparra", "Henarejos", "Libros", "Bugarra", "Drežnica", "Prikrnica"))
+
+# 7. Group sections into North-Eastern and Western parts
+samples$Group <- ifelse(samples$variable1 %in% c("Prikrnica", "Drežnica"), 
+                        "North-Eastern part", 
+                        "Western part")
+
+
+# 8. Create a boxplot for PC1 residuals by groups with reordered levels
+samples$Group <- factor(samples$Group, levels = c("Western part", "North-Eastern part"))  # Reorder levels
+
+ggplot(samples, aes(x = Group, y = PC1_residuals, fill = Group)) +
+  geom_boxplot(alpha = 0.6) +         # Plot the boxplot with some transparency
+  scale_fill_manual(values = c("Western part" = "lightblue", "North-Eastern part" = "grey")) +  # Define custom colors for groups
+  labs(title = "Boxplot of PC1 Residuals by Sephardic part", 
+       x = "Sephardic part", 
+       y = "PC1 Residuals") +  # Updated label for y-axis
+  theme_minimal() +
+  theme(
+    legend.title = element_blank(),  # Remove legend title
+    axis.text.x = element_text(size = 12),  # Increase x-axis text size
+    axis.text.y = element_text(size = 12),  # Increase y-axis text size
+    axis.title.x = element_text(size = 14),  # Increase x-axis title size
+    axis.title.y = element_text(size = 14),  # Increase y-axis title size
+    plot.title = element_text(size = 16, face = "bold")  # Increase plot title size and make it bold
+  ) 
+
+
+# 9. Perform Kruskal-Wallis test to compare PC1 residuals between groups
+kruskal_test <- kruskal.test(PC1_residuals ~ Group, data = samples)
+print(kruskal_test)
+
+# If Kruskal-Wallis is significant, perform pairwise comparisons using Dunn test
+if (kruskal_test$p.value < 0.05) {
+  dunn_test <- dunnTest(PC1_residuals ~ Group, data = samples, method = "bonferroni")
+  print(dunn_test)
+}
+
+
+
+
+### relationship length and PC1 resid. ###  
+### Load necessary libraries
+if (!require("geomorph")) install.packages("geomorph", dependencies = TRUE)
+if (!require("ggplot2")) install.packages("ggplot2", dependencies = TRUE)
+if (!require("dplyr")) install.packages("dplyr", dependencies = TRUE)
+
+library(geomorph)
+library(ggplot2)
+library(dplyr)
+
+# Function to calculate Euclidean distance
+calculate_distance <- function(x1, y1, x2, y2) {
+  return(sqrt((x2 - x1)^2 + (y1 - y2)^2))
+}
+
+# Function to process the data and calculate scaled distance (using base R)
+process_data <- function(file_path) {
+  lines <- readLines(file_path)
+  lm_indices <- which(grepl("LM=", lines))
+  scale_indices <- which(grepl("SCALE=", lines))
+  
+  if(length(lm_indices) == 0 || length(scale_indices) == 0) {
+    stop("LM= or SCALE= not found in the data file.")
+  }
+  
+  results <- list()
+  
+  for (i in seq_along(lm_indices)) {
+    num_landmarks <- as.numeric(gsub("LM=", "", lines[lm_indices[i]]))
+    scale <- as.numeric(gsub("SCALE=", "", lines[scale_indices[i]]))
+    
+    landmark_lines <- lines[(lm_indices[i] + 1):(lm_indices[i] + num_landmarks)]
+    landmarks <- do.call(rbind, strsplit(landmark_lines, "\\s+"))
+    landmarks <- as.data.frame(landmarks, stringsAsFactors = FALSE)
+    
+    # Use apply to convert all columns to numeric
+    landmarks <- as.data.frame(apply(landmarks, 2, as.numeric))
+    
+    if(nrow(landmarks) < 2) {
+      next 
+    }
+    
+    # Calculate distances between all pairs of landmarks
+    num_landmarks <- nrow(landmarks)
+    distances <- numeric()
+    for (j in 1:(num_landmarks - 1)) {
+      for (k in (j + 1):num_landmarks) {
+        dist <- calculate_distance(landmarks[j, 1], landmarks[j, 2], landmarks[k, 1], landmarks[k, 2])
+        scaled_distance <- dist * scale
+        distances <- c(distances, scaled_distance)
+      }
+    }
+    
+    results[[length(results) + 1]] <- list(
+      block_index = i,
+      scale = scale,
+      distances = distances
+    )
+  }
+  
+  return(results)
+}
+
+# Path to your data file
+tps_file <- "All_sections.TPS"
+
+# Process the data to calculate distances
+scaled_distances_results <- process_data(tps_file)
+
+# Conduct Generalized Procrustes Analysis (GPA)
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+gpa <- gpagen(landmarks)
+
+# Perform Principal Component Analysis (PCA) on Procrustes-aligned data
+pca_results <- gm.prcomp(gpa$coords)
+
+# Extract PC scores (PC1 and PC2)
+pc_scores <- pca_results$x[, 1:2]  # Getting PC1 and PC2
+
+# Calculate the residuals
+residuals <- array(0, dim = dim(gpa$coords))  # Initialize residual array
+
+for (i in 1:dim(gpa$coords)[3]) {
+  residuals[,,i] <- gpa$coords[,,i] - gpa$consensus  # Subtract consensus from each specimen
+}
+
+# Sum the squared residuals across landmarks and dimensions (for each specimen)
+pc1_residuals <- apply(residuals, 3, function(x) sum(x[,1]^2))  # PC1 residuals
+pc2_residuals <- apply(residuals, 3, function(x) sum(x[,2]^2))  # PC2 residuals
+
+# Combine results in a data frame with the specimen names
+residuals_data <- data.frame(
+  Specimen = dimnames(landmarks)[[3]],
+  PC1_Residuals = pc1_residuals,
+  PC2_Residuals = pc2_residuals
+)
+
+# Create a sample properties data frame
+samples <- data.frame(
+  Specimen = dimnames(landmarks)[[3]],
+  Country = sapply(dimnames(landmarks)[[3]], function(x) strsplit(x, "_")[[1]][1])  # Extract country from specimen name
+)
+
+# Map abbreviations to full country names
+country_full_names <- c("BAH" = "Bosnia and Herzegovina", 
+                        "SP" = "Spain", 
+                        "SL" = "Slovenia")
+
+# Create a new column with full country names
+samples$FullCountry <- country_full_names[samples$Country]
+
+# Assign groups
+samples$Group <- ifelse(samples$Country %in% c("SL", "BAH"), "North-Eastern part", "Western part")
+
+# Merge residuals data with samples data (to include country information)
+merged_data <- merge(residuals_data, samples, by = "Specimen")
+
+# Extract the scaled distances from the processed data
+scaled_distances <- unlist(lapply(scaled_distances_results, function(x) x$distances))
+
+# Add scaled distances to the merged data frame
+merged_data$Scaled_Distance <- scaled_distances[1:nrow(merged_data)]  # Ensure sizes match
+
+# Calculate regression slopes for each group
+slopes <- merged_data %>%
+  group_by(Group) %>%
+  summarize(slope = coef(lm(Scaled_Distance ~ PC1_Residuals))[2])  # Get slope (coefficient of PC1)
+
+# Print slopes
+print(slopes)
+
+# Plot the residuals for PC1 against scaled distances, coloring by group and adding regression lines
+ggplot(merged_data, aes(x = PC1_Residuals, y = Scaled_Distance, color = Group, shape = Group)) +
+  geom_point(aes(size = Scaled_Distance)) +  # Fully opaque points
+  geom_smooth(method = "lm", aes(group = Group), se = FALSE) +  # Add regression line for each group
+  scale_color_manual(name = "Country Group", 
+                     values = c("North-Eastern part" = "lightblue", "Western part" = "gray")) +  # Define colors for groups
+  scale_shape_manual(name = "Country Group", 
+                     values = c("North-Eastern part" = 16, "Western part" = 17)) +  # Circle for NE, triangle for Western
+  labs(title = "PC1 Residuals vs Length", 
+       x = "PC1 Residuals",  # Label for x-axis
+       y = "Length (µm)") +  # Updated label for y-axis
+  theme_minimal() +  # Use a clean theme
+  theme(legend.title = element_text(size = 10), 
+        legend.text = element_text(size = 8)) +
+  scale_size_continuous(name = "Scaled Distance", range = c(1, 4))  # Adjust size range for visibility
+
+
+# Subset the data for each group
+north_eastern_sections <- subset(merged_data, Group == "North-Eastern part")
+western_sections <- subset(merged_data, Group == "Western part")
+
+# Fit linear models for each group
+lm_north_eastern <- lm(Scaled_Distance ~ PC1_Residuals, data = north_eastern_sections)
+lm_western <- lm(Scaled_Distance ~ PC1_Residuals, data = western_sections)
+
+# Extract slopes (coefficients for PC1)
+slope_north_eastern <- coef(lm_north_eastern)["PC1_Residuals"]
+slope_western <- coef(lm_western)["PC1_Residuals"]
 
 
