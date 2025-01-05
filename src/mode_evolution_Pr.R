@@ -26,9 +26,13 @@ write.csv(Pr_samples,
 
 Pr_heights <- read.csv(file = "data/Prikrnica_heights.csv",
                        header = F)
-colnames(Pr_heights) <- c("Rock_sample", "Height")
+colnames(Pr_heights) <- c("Sample", "Height")
 
 pca_Pr <- pca_Pr[order(pca_Pr$Rock_sample),]
-Pr_heights <- Pr_heights[order(Pr_heights$Rock_sample),]
+Pr_heights <- Pr_heights[order(Pr_heights$Sample),]
 
-pca_Pr_heights <- 
+pca_Pr_heights <- merge(x = pca_Pr,
+                        y = Pr_heights,
+                        by.x = "Rock_sample",
+                        by.y = "Sample",
+                        all.x = all)
