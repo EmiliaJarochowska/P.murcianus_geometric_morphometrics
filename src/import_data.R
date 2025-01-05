@@ -38,5 +38,7 @@ samples$country <- factor(samples$country,
                           levels = c("SL", "SP", "BAH"),
                           labels = c("Slovenia", "Spain", "Bosnia and Herzegovina"))
 
-save(samples, PCA, msho,
+summary <- summary(PCA)
+
+save(samples, PCA, msho, summary,
      file = "data/imported.RData")
