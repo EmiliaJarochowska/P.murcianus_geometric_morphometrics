@@ -1,3 +1,127 @@
+### STATISTICAL DIFFERENCE IN SHAPE BETWEEN LEFT AND RIGHT ELEMENTS ###
+library(geomorph)
+
+# Load TPS file
+tps_file <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/MORFOMETRIČNE ANALIZE/loceno_R_L/group_analise.TPS"
+landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+
+# Define sliding landmarks
+sliders <- define.sliders(3:138)
+
+# Perform Generalized Procrustes Analysis (GPA)
+landmarks.gpa <- gpagen(landmarks, curves = sliders)
+PCA <- gm.prcomp(landmarks.gpa$coords) 
+
+# Compute Mean Shape for each specimen
+mean_shapes <- apply(landmarks.gpa$coords, 3, function(x) mean(x)) 
+
+# Extract specimen IDs
+specimen_IDs <- dimnames(landmarks.gpa$coords)[[3]]
+
+# Create a grouping factor (assumes IDs containing 'R' belong to one group)
+group <- ifelse(grepl("R", specimen_IDs), "R", "No_R")
+
+# Perform Kruskal-Wallis test
+kruskal_test <- kruskal.test(mean_shapes ~ group)
+
+# Print results
+print(kruskal_test)
+
+
+### STATISTICAL DIFFERENCE IN LENGTH BETWEENLEFT AND RIGHT ELEMENTS ###
+
+library(dplyr)
+
+# Function to calculate Euclidean distance
+calculate_distance <- function(x1, y1, x2, y2) {
+  return(sqrt((x2 - x1)^2 + (y2 - y1)^2))
+}
+
+# Function to process TPS file and compute mean Euclidean distances
+process_data <- function(file_path, group_label) {
+  lines <- readLines(file_path)
+  lm_indices <- which(grepl("LM=", lines))
+  scale_indices <- which(grepl("SCALE=", lines))
+  id_indices <- which(grepl("ID=", lines))  # Extract specimen IDs
+  
+  if (length(lm_indices) == 0 || length(scale_indices) == 0 || length(id_indices) == 0) {
+    stop("LM=, SCALE=, or ID= not found in the data file.")
+  }
+  
+  results <- data.frame(ID = character(), Mean_Distance = numeric(), Group = character(), stringsAsFactors = FALSE)
+  
+  for (i in seq_along(lm_indices)) {
+    num_landmarks <- as.numeric(gsub("LM=", "", lines[lm_indices[i]]))
+    scale <- as.numeric(gsub("SCALE=", "", lines[scale_indices[i]]))
+    
+    # Extract specimen ID
+    specimen_ID <- gsub("ID=", "", lines[id_indices[i]])
+    
+    landmark_lines <- lines[(lm_indices[i] + 1):(lm_indices[i] + num_landmarks)]
+    landmarks <- do.call(rbind, strsplit(landmark_lines, "\\s+"))
+    landmarks <- as.data.frame(landmarks, stringsAsFactors = FALSE)
+    landmarks <- mutate_all(landmarks, as.numeric)
+    
+    if (nrow(landmarks) < 2) {
+      next 
+    }
+    
+    # Compute Euclidean distances and scale them
+    num_landmarks <- nrow(landmarks)
+    distances <- numeric()
+    for (j in 1:(num_landmarks - 1)) {
+      for (k in (j + 1):num_landmarks) {
+        dist <- calculate_distance(landmarks[j, 1], landmarks[j, 2], landmarks[k, 1], landmarks[k, 2])
+        scaled_distance <- dist * scale  # Use scaled distance
+        distances <- c(distances, scaled_distance)
+      }
+    }
+    
+    # Compute mean scaled Euclidean distance for this specimen
+    mean_dist <- mean(distances)
+    
+    # Store results with the specified group
+    results <- rbind(results, data.frame(ID = specimen_ID, Mean_Distance = mean_dist, Group = group_label, stringsAsFactors = FALSE))
+  }
+  
+  return(results)
+}
+
+# File paths for right and left TPS files
+right_file_path <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/MORFOMETRIČNE ANALIZE/loceno_R_L/right.TPS"
+left_file_path <- "C:/Users/katja.oselj/Desktop/DOKTORSKA DISERTACIJA/MORFOMETRIČNE ANALIZE/loceno_R_L/Left.TPS"
+
+# Process the right and left files
+right_data <- process_data(right_file_path, "Right")
+left_data <- process_data(left_file_path, "Left")
+
+# Combine the data from both files into one data frame
+combined_data <- rbind(right_data, left_data)
+
+# Check the grouping
+print(table(combined_data$Group))
+# Compute the mean distance for each file (group)
+mean_right <- mean(right_data$Mean_Distance)
+mean_left <- mean(left_data$Mean_Distance)
+
+# Print the mean distances for right and left files
+cat("Mean Distance for Right file: ", mean_right, "\n")
+cat("Mean Distance for Left file: ", mean_left, "\n")
+
+# Ensure we have at least two groups before running Kruskal-Wallis test
+if (length(unique(combined_data$Group)) < 2) {
+  stop("Kruskal-Wallis test requires at least two groups.")
+}
+
+# Perform Kruskal-Wallis test using scaled mean distances
+kruskal_test <- kruskal.test(Mean_Distance ~ Group, data = combined_data)
+
+# Print test result
+print(kruskal_test)
+
+
+
+
 ### IN ANAYSE ARE INCORPORATE ELEMENTS FROM SLOVENIA, SPAIN AND BOSNIA & HERZEGOVINA ###
 
 library(geomorph)
