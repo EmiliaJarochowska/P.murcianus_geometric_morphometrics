@@ -2,6 +2,7 @@
 library(geomorph)
 
 # Load TPS file
+
 tps_file <- "group_analise.TPS"
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 
@@ -88,8 +89,10 @@ process_data <- function(file_path, group_label) {
 }
 
 # File paths for right and left TPS files
+
 right_file_path <- "right.TPS"
 left_file_path <- "Left.TPS"
+
 
 # Process the right and left files
 right_data <- process_data(right_file_path, "Right")
@@ -163,20 +166,20 @@ sliders <- define.sliders(3:138)
 # Assuming `landmarks` is already defined and loaded
 samples <- data.frame(name = rep(NA, dim(landmarks)[3]),
                       country = rep(NA, dim(landmarks)[3]),
-                      variable1 = rep(NA, dim(landmarks)[3]),
-                      variable2 = rep(NA, dim(landmarks)[3]),
-                      variable3 = rep(NA, dim(landmarks)[3]))
+                      section = rep(NA, dim(landmarks)[3]),
+                      rock_sample = rep(NA, dim(landmarks)[3]),
+                      element_number = rep(NA, dim(landmarks)[3]))
 
 for (i in 1:dim(landmarks)[3]) {
   samples$name[i] <- dimnames(landmarks)[[3]][i]
   samples$country[i] <- unlist(strsplit(samples$name[i], "_"))[1]
-  samples$variable1[i] <- unlist(strsplit(samples$name[i], "_"))[2]
-  samples$variable2[i] <- unlist(strsplit(samples$name[i], "_"))[3]
-  samples$variable3[i] <- unlist(strsplit(samples$name[i], "_"))[4]
+  samples$section[i] <- unlist(strsplit(samples$name[i], "_"))[2]
+  samples$rock_sample[i] <- unlist(strsplit(samples$name[i], "_"))[3]
+  samples$element_number[i] <- unlist(strsplit(samples$name[i], "_"))[4]
 }
 
 samples$country <- as.factor(samples$country)
-samples$variable1 <- as.factor(samples$variable1)
+samples$rock_sample <- as.factor(samples$rock_sample)
 
 # Perform Procrustes analysis
 sliders <- define.sliders(3:138)
