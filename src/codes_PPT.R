@@ -4,8 +4,8 @@ library(geomorph)
 library(readxl)
 
 # 1. Load TPS file and metadata Excel file
-tps_file <- "All_sections.TPS"
-specimen_info_path <- "Specimens_info.xlsx"
+tps_file <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/All_sections.TPS"
+specimen_info_path <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/Specimens_info.xlsx"
 
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 specimen_info <- read_excel(specimen_info_path)
@@ -59,6 +59,10 @@ group <- factor(ifelse(specimen_info_filtered$Chirality == "R", "Right", "Left")
 # 9. PCA on GPA-aligned coordinates
 pca <- gm.prcomp(gpa_coords_filtered)
 
+# Test if PC1 scores differ significantly between Left and Right
+kruskal_test_result <- kruskal.test(pca$x[,1] ~ group)
+print(kruskal_test_result)
+
 # 10. Plot PCA colored by chirality
 cols <- c("Left" = "blue", "Right" = "red")
 plot(pca$x[,1], pca$x[,2], col = cols[group], pch = 19,
@@ -76,11 +80,6 @@ plotRefToTarget(mean_shape_left, mean_shape_right, method = "points",
 plotRefToTarget(mean_shape_right, mean_shape_left, method = "points",
                 main = "Mean Shape: Right -> Left")
 par(mfrow = c(1, 1))
-
-# 13. Procrustes ANOVA test for shape difference by Chirality
-gdf <- geomorph.data.frame(coords = gpa_coords_filtered, group = group)
-proc_test <- procD.lm(coords ~ group, data = gdf, iter = 1000)
-summary(proc_test)
 
 
 
