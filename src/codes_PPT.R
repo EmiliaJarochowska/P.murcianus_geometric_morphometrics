@@ -243,9 +243,9 @@ process_data <- function(file_path) {
   return(results)
 }
 # --- File Paths ---
-tps_file <- "All_sections.TPS"
-metadata_path <- "Specimens_info.xlsx"
 
+tps_file <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/All_sections.TPS"
+metadata_path <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/Specimens_info.xlsx"
 
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 specimen_info <- read_excel(metadata_path)
@@ -427,6 +427,49 @@ plotRefToTarget(PCA$shapes$shapes.comp2$max, msho, method = "vector")
 variance_explained <- PCA$sdev^2 / sum(PCA$sdev^2)
 cat(sprintf("\nPC1: %.2f%%\nPC2: %.2f%%\n", variance_explained[1]*100, variance_explained[2]*100))
 
+# --- Function to Plot Mean Shape for a Grouping Variable ---
+plot_mean_shapes_by_group <- function(gpa_coords, grouping, group_levels = NULL, title = NULL, point_size = 1.5) {
+  if (is.null(group_levels)) {
+    group_levels <- levels(factor(grouping))
+  }
+  
+  old_par <- par(no.readonly = TRUE)
+  on.exit(par(old_par))
+  
+  n <- length(group_levels)
+  par(mfrow = c(1, n), mar = c(1, 1, 2, 1), oma = c(0, 0, 3, 0))
+  
+  for (level in group_levels) {
+    group_idx <- which(grouping == level)
+    
+    if (length(group_idx) >= 2) {
+      group_coords <- gpa_coords[, , group_idx]
+      mean_shape <- mshape(group_coords)
+      
+      x <- mean_shape[, 1]
+      y <- mean_shape[, 2]
+      
+      # Only plot points, larger size
+      plot(x, y, type = "p", asp = 1, main = level, xlab = "", ylab = "", axes = FALSE, pch = 19, cex = 1.5)
+    } else {
+      plot.new()
+      title(main = paste(level, "\nNot enough data"), cex.main = 0.8)
+    }
+  }
+  
+  if (!is.null(title)) {
+    mtext(title, outer = TRUE, line = 1.5, cex = 1.2)
+  }
+}
+
+
+plot_mean_shapes_by_group(landmarks.gpa$coords, data_combined$Country, title = "Mean Shapes by Country")
+plot_mean_shapes_by_group(landmarks.gpa$coords, data_combined$Section, title = "Mean Shapes by Section")
+plot_mean_shapes_by_group(landmarks.gpa$coords, data_combined$FaciesZone, title = "Mean Shapes by Facies Zone")
+plot_mean_shapes_by_group(landmarks.gpa$coords, data_combined$Par, title = "Mean Shapes by Subprovince")
+
+
+
 # --- Working on residuals PC1 ---
 # Calculate PC1 residuals after removing effect of Mean_Distance
 lm_pc1 <- lm(PC1 ~ Mean_Distance, data = data_combined)
@@ -544,6 +587,13 @@ plot_distance_boxplot(data_combined, "Region", colors_list$Region, "Mean Scaled 
 
 # --- Plot Scaled Mean Distance by Section ---
 plot_distance_boxplot(data_combined, "Section", colors_list$Section, "Mean Scaled Distance by Section")
+
+data_combined %>%
+  group_by(Section) %>%
+  summarise(
+    Median = median(Mean_Distance),
+    Mean = mean(Mean_Distance)
+  )
 
 
 perform_distance_tests <- function(data, group_var) {
