@@ -693,8 +693,8 @@ ggplot(data_combined, aes(x = Mean_Distance, y = PC1)) +
   theme_minimal(base_size = 14) +
   labs(
     title = "Relationship Between Length (Mean Distance) and PC1",
-    x = "Length (Mean Distance)",
-    y = "PC1 Score",
+    x = "PC1 Score",
+    y = "Length",
     color = "Region"
   ) +
   theme(
@@ -746,8 +746,8 @@ ggplot(data_combined, aes(x = Mean_Distance, y = PC1)) +
   theme_minimal(base_size = 14) +
   labs(
     title = "Relationship Between Length (Mean Distance) and PC1",
-    x = "Length (Mean Distance)",
-    y = "PC1 Score",
+    x = "PC1 Score",
+    y = "Length (Mean Distance)",
     color = "Country"
   ) +
   theme(
@@ -798,8 +798,8 @@ ggplot(data_combined, aes(x = Mean_Distance, y = PC1)) +
   theme_minimal(base_size = 14) +
   labs(
     title = "Relationship Between Length (Mean Distance) and PC1",
-    x = "Length (Mean Distance)",
-    y = "PC1 Score",
+    x = "PC1 Score",
+    y = "Length (Mean Distance)",
     color = "FaciesZone"
   ) +
   theme(
@@ -849,8 +849,8 @@ ggplot(data_combined, aes(x = Mean_Distance, y = PC1)) +
   theme_minimal(base_size = 14) +
   labs(
     title = "Relationship Between Length (Mean Distance) and PC1",
-    x = "Length (Mean Distance)",
-    y = "PC1 Score",
+    x = "PC1 Score",
+    y = "Length (Mean Distance)",
     color = "Section"
   ) +
   theme(
