@@ -141,12 +141,12 @@ process_data <- function(file_path) {
 }
 
 # Load specimen metadata from Excel
-specimen_info <- read_excel("Specimens_info.xlsx")
+specimen_info <- read_excel("C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/Specimens_info.xlsx")
 specimen_info$ID <- gsub("\\s+", "", specimen_info$ID)
 specimen_info$Chirality <- toupper(specimen_info$Chirality)
 
 # Process TPS file
-tps_results <- process_data("All_sections.TPS")
+tps_results <- process_data("C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/All_sections.TPS")
 
 # Merge distances with metadata
 combined_data <- merge(tps_results, specimen_info[, c("ID", "Chirality")], by = "ID")
@@ -243,8 +243,8 @@ process_data <- function(file_path) {
   return(results)
 }
 # --- File Paths ---
-tps_file <- "All_sections.TPS"
-metadata_path <- "Specimens_info.xlsx"
+tps_file <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/All_sections.TPS"
+metadata_path <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/Specimens_info.xlsx"
 
 
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
@@ -427,6 +427,10 @@ plotRefToTarget(PCA$shapes$shapes.comp2$max, msho, method = "vector")
 variance_explained <- PCA$sdev^2 / sum(PCA$sdev^2)
 cat(sprintf("\nPC1: %.2f%%\nPC2: %.2f%%\n", variance_explained[1]*100, variance_explained[2]*100))
 
+
+
+
+
 # --- Working on residuals PC1 ---
 # Calculate PC1 residuals after removing effect of Mean_Distance
 lm_pc1 <- lm(PC1 ~ Mean_Distance, data = data_combined)
@@ -573,6 +577,11 @@ perform_distance_tests(data_combined, "Section")
 
 
 
+# Calculate mean scaled distance for each Section
+mean_scaled_distance_by_section <- aggregate(Mean_Distance ~ Section, data = data_combined, FUN = mean, na.rm = TRUE)
+
+# Print the mean scaled distances by Section
+print(mean_scaled_distance_by_section)
 
 
 
