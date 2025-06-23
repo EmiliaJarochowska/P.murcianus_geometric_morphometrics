@@ -243,11 +243,10 @@ process_data <- function(file_path) {
   return(results)
 }
 # --- File Paths ---
-<<<<<<< HEAD
+
 tps_file <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/All_sections.TPS"
 metadata_path <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/Specimens_info.xlsx"
-=======
->>>>>>> 4a413680f81b84ad03aa79f90c27ef0fd2b06d10
+
 
 tps_file <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/All_sections.TPS"
 metadata_path <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/Specimens_info.xlsx"
@@ -432,9 +431,6 @@ plotRefToTarget(PCA$shapes$shapes.comp2$max, msho, method = "vector")
 variance_explained <- PCA$sdev^2 / sum(PCA$sdev^2)
 cat(sprintf("\nPC1: %.2f%%\nPC2: %.2f%%\n", variance_explained[1]*100, variance_explained[2]*100))
 
-<<<<<<< HEAD
-
-=======
 # --- Function to Plot Mean Shape for a Grouping Variable ---
 plot_mean_shapes_by_group <- function(gpa_coords, grouping, group_levels = NULL, title = NULL, point_size = 1.5) {
   if (is.null(group_levels)) {
@@ -475,7 +471,7 @@ plot_mean_shapes_by_group(landmarks.gpa$coords, data_combined$Country, title = "
 plot_mean_shapes_by_group(landmarks.gpa$coords, data_combined$Section, title = "Mean Shapes by Section")
 plot_mean_shapes_by_group(landmarks.gpa$coords, data_combined$FaciesZone, title = "Mean Shapes by Facies Zone")
 plot_mean_shapes_by_group(landmarks.gpa$coords, data_combined$Par, title = "Mean Shapes by Subprovince")
->>>>>>> 4a413680f81b84ad03aa79f90c27ef0fd2b06d10
+
 
 
 
