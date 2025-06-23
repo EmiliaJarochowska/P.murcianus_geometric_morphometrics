@@ -243,9 +243,14 @@ process_data <- function(file_path) {
   return(results)
 }
 # --- File Paths ---
+<<<<<<< HEAD
 tps_file <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/All_sections.TPS"
 metadata_path <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/Specimens_info.xlsx"
+=======
+>>>>>>> 4a413680f81b84ad03aa79f90c27ef0fd2b06d10
 
+tps_file <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/All_sections.TPS"
+metadata_path <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/Specimens_info.xlsx"
 
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 specimen_info <- read_excel(metadata_path)
@@ -427,7 +432,50 @@ plotRefToTarget(PCA$shapes$shapes.comp2$max, msho, method = "vector")
 variance_explained <- PCA$sdev^2 / sum(PCA$sdev^2)
 cat(sprintf("\nPC1: %.2f%%\nPC2: %.2f%%\n", variance_explained[1]*100, variance_explained[2]*100))
 
+<<<<<<< HEAD
 
+=======
+# --- Function to Plot Mean Shape for a Grouping Variable ---
+plot_mean_shapes_by_group <- function(gpa_coords, grouping, group_levels = NULL, title = NULL, point_size = 1.5) {
+  if (is.null(group_levels)) {
+    group_levels <- levels(factor(grouping))
+  }
+  
+  old_par <- par(no.readonly = TRUE)
+  on.exit(par(old_par))
+  
+  n <- length(group_levels)
+  par(mfrow = c(1, n), mar = c(1, 1, 2, 1), oma = c(0, 0, 3, 0))
+  
+  for (level in group_levels) {
+    group_idx <- which(grouping == level)
+    
+    if (length(group_idx) >= 2) {
+      group_coords <- gpa_coords[, , group_idx]
+      mean_shape <- mshape(group_coords)
+      
+      x <- mean_shape[, 1]
+      y <- mean_shape[, 2]
+      
+      # Only plot points, larger size
+      plot(x, y, type = "p", asp = 1, main = level, xlab = "", ylab = "", axes = FALSE, pch = 19, cex = 1.5)
+    } else {
+      plot.new()
+      title(main = paste(level, "\nNot enough data"), cex.main = 0.8)
+    }
+  }
+  
+  if (!is.null(title)) {
+    mtext(title, outer = TRUE, line = 1.5, cex = 1.2)
+  }
+}
+
+
+plot_mean_shapes_by_group(landmarks.gpa$coords, data_combined$Country, title = "Mean Shapes by Country")
+plot_mean_shapes_by_group(landmarks.gpa$coords, data_combined$Section, title = "Mean Shapes by Section")
+plot_mean_shapes_by_group(landmarks.gpa$coords, data_combined$FaciesZone, title = "Mean Shapes by Facies Zone")
+plot_mean_shapes_by_group(landmarks.gpa$coords, data_combined$Par, title = "Mean Shapes by Subprovince")
+>>>>>>> 4a413680f81b84ad03aa79f90c27ef0fd2b06d10
 
 
 
@@ -549,6 +597,13 @@ plot_distance_boxplot(data_combined, "Region", colors_list$Region, "Mean Scaled 
 # --- Plot Scaled Mean Distance by Section ---
 plot_distance_boxplot(data_combined, "Section", colors_list$Section, "Mean Scaled Distance by Section")
 
+data_combined %>%
+  group_by(Section) %>%
+  summarise(
+    Median = median(Mean_Distance),
+    Mean = mean(Mean_Distance)
+  )
+
 
 perform_distance_tests <- function(data, group_var) {
   cat("\n--- Kruskal-Wallis and Dunn Test for", group_var, "---\n")
@@ -582,6 +637,7 @@ mean_scaled_distance_by_section <- aggregate(Mean_Distance ~ Section, data = dat
 
 # Print the mean scaled distances by Section
 print(mean_scaled_distance_by_section)
+
 
 
 
@@ -636,6 +692,218 @@ lm_west <- lm(Length ~ PC1, data = filter(data_combined, group == "Western part"
 
 cat("Slope for North-Eastern part:", coef(lm_north)["PC1"], "\n")
 cat("Slope for Western part:", coef(lm_west)["PC1"], "\n")
+
+
+## by region ##
+library(broom)
+library(dplyr)
+library(FSA)  # for dunnTest
+
+# --- Plot: Region colored, solid regression lines ---
+ggplot(data_combined, aes(x = Mean_Distance, y = PC1)) +
+  geom_point(aes(color = Region), size = 3, alpha = 0.8) +
+  geom_smooth(aes(color = Region), method = "lm", se = FALSE, linetype = "solid") +
+  scale_color_manual(values = colors_list$Region) +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = "Relationship Between Length (Mean Distance) and PC1",
+    x = "PC1 Score",
+    y = "Length",
+    color = "Region"
+  ) +
+  theme(
+    legend.position = "right",
+    panel.grid = element_line(color = "grey90")
+  )
+
+# --- Correlation test for entire dataset ---
+cor_test <- cor.test(data_combined$PC1, data_combined$Mean_Distance)
+cat("Pearson correlation for entire dataset:\n")
+cat("  R =", round(cor_test$estimate, 3), 
+    "| p-value =", signif(cor_test$p.value, 3), "\n\n")
+
+# --- List unique Regions ---
+regions <- unique(data_combined$Region)
+
+# --- Fit linear models per Region and extract slopes ---
+cat("Slopes by Region:\n")
+for (reg in regions) {
+  sub_data <- filter(data_combined, Region == reg)
+  model <- lm(PC1 ~ Mean_Distance, data = sub_data)
+  slope <- coef(model)["Mean_Distance"]
+  r2 <- summary(model)$r.squared
+  
+  cat("  Region:", reg, 
+      "| Slope =", round(slope, 4), 
+      "| R² =", round(r2, 3), "\n")
+}
+
+# --- Statistical test of PC1 differences between Regions ---
+kruskal_result <- kruskal.test(PC1 ~ Region, data = data_combined)
+print(kruskal_result)
+
+# --- Post hoc Dunn test (non-parametric) ---
+dunn_result <- dunnTest(PC1 ~ Region, data = data_combined, method = 'bonferroni')
+print(dunn_result)
+
+
+## by country ##
+library(broom)  # for tidy regression output
+library(dplyr)
+library(FSA)    # for dunnTest
+
+# --- Plot: Country colored, solid regression lines ---
+ggplot(data_combined, aes(x = Mean_Distance, y = PC1)) +
+  geom_point(aes(color = Country), size = 3, alpha = 0.8) +
+  geom_smooth(aes(color = Country), method = "lm", se = FALSE, linetype = "solid") +
+  scale_color_manual(values = colors_list$Country) +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = "Relationship Between Length (Mean Distance) and PC1",
+    x = "PC1 Score",
+    y = "Length (Mean Distance)",
+    color = "Country"
+  ) +
+  theme(
+    legend.position = "right",
+    panel.grid = element_line(color = "grey90")
+  )
+
+# --- Correlation test for entire dataset ---
+cor_test <- cor.test(data_combined$PC1, data_combined$Mean_Distance)
+cat("Pearson correlation for entire dataset:\n")
+cat("  R =", round(cor_test$estimate, 3), 
+    "| p-value =", signif(cor_test$p.value, 3), "\n\n")
+
+# --- List unique Countries ---
+countries <- unique(data_combined$Country)
+
+# --- Fit linear models per Country and extract slopes ---
+cat("Slopes by Country:\n")
+for (ctry in countries) {
+  sub_data <- filter(data_combined, Country == ctry)
+  model <- lm(PC1 ~ Mean_Distance, data = sub_data)
+  slope <- coef(model)["Mean_Distance"]
+  r2 <- summary(model)$r.squared
+  
+  cat("  Country:", ctry, 
+      "| Slope =", round(slope, 4), 
+      "| R² =", round(r2, 3), "\n")
+}
+
+# --- Statistical test of PC1 differences between Countries ---
+kruskal_result <- kruskal.test(PC1 ~ Country, data = data_combined)
+print(kruskal_result)
+
+# --- Post hoc Dunn test (non-parametric) ---
+dunn_result <- dunnTest(PC1 ~ Country, data = data_combined, method = 'bonferroni')
+print(dunn_result)
+
+
+
+## Facies zone ##
+library(broom)  # for tidy regression output
+
+# --- Plot: FaciesZone colored, solid regression lines ---
+ggplot(data_combined, aes(x = Mean_Distance, y = PC1)) +
+  geom_point(aes(color = FaciesZone), size = 3, alpha = 0.8) +
+  geom_smooth(aes(color = FaciesZone), method = "lm", se = FALSE, linetype = "solid") +
+  scale_color_manual(values = colors_list$FaciesZone) +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = "Relationship Between Length (Mean Distance) and PC1",
+    x = "PC1 Score",
+    y = "Length (Mean Distance)",
+    color = "FaciesZone"
+  ) +
+  theme(
+    legend.position = "right",
+    panel.grid = element_line(color = "grey90")
+  )
+
+library(dplyr)
+
+# Correlation test for entire dataset
+cor_test <- cor.test(data_combined$PC1, data_combined$Mean_Distance)
+cat("Pearson correlation for entire dataset:\n")
+cat("  R =", round(cor_test$estimate, 3), 
+    "| p-value =", signif(cor_test$p.value, 3), "\n\n")
+
+# List unique FaciesZones
+facies_zones <- unique(data_combined$FaciesZone)
+
+# Fit linear models per FaciesZone and extract slopes
+cat("Slopes by FaciesZone:\n")
+for (fz in facies_zones) {
+  sub_data <- filter(data_combined, FaciesZone == fz)
+  model <- lm(PC1 ~ Mean_Distance, data = sub_data)
+  slope <- coef(model)["Mean_Distance"]
+  r2 <- summary(model)$r.squared
+  
+  cat("  FaciesZone:", fz, 
+      "| Slope =", round(slope, 4), 
+      "| R² =", round(r2, 3), "\n")
+}
+kruskal_result <- kruskal.test(PC1 ~ FaciesZone, data = data_combined)
+print(kruskal_result)
+
+# Post hoc Dunn test (non-parametric)
+dunn_result <- dunnTest(PC1 ~ FaciesZone, data = data_combined, method = 'bonferroni')
+print(dunn_result)
+
+
+
+## by section ##
+
+# --- Plot: Section colored, solid regression lines ---
+ggplot(data_combined, aes(x = Mean_Distance, y = PC1)) +
+  geom_point(aes(color = Section), size = 3, alpha = 0.8) +
+  geom_smooth(aes(color = Section), method = "lm", se = FALSE, linetype = "solid") +
+  scale_color_manual(values = section_colors) +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = "Relationship Between Length (Mean Distance) and PC1",
+    x = "PC1 Score",
+    y = "Length (Mean Distance)",
+    color = "Section"
+  ) +
+  theme(
+    legend.position = "right",
+    panel.grid = element_line(color = "grey90")
+  )
+
+# --- Correlation test for entire dataset ---
+cor_test <- cor.test(data_combined$PC1, data_combined$Mean_Distance)
+cat("Pearson correlation for entire dataset:\n")
+cat("  R =", round(cor_test$estimate, 3), 
+    "| p-value =", signif(cor_test$p.value, 3), "\n\n")
+
+# --- List unique Sections ---
+sections <- unique(data_combined$Section)
+
+# --- Fit linear models per Section and extract slopes ---
+cat("Slopes by Section:\n")
+for (sec in sections) {
+  sub_data <- filter(data_combined, Section == sec)
+  model <- lm(PC1 ~ Mean_Distance, data = sub_data)
+  slope <- coef(model)["Mean_Distance"]
+  r2 <- summary(model)$r.squared
+  
+  cat("  Section:", sec, 
+      "| Slope =", round(slope, 4), 
+      "| R² =", round(r2, 3), "\n")
+}
+
+# --- Statistical test of PC1 differences between Sections ---
+kruskal_result <- kruskal.test(PC1 ~ Section, data = data_combined)
+print(kruskal_result)
+
+# --- Post hoc Dunn test (non-parametric) ---
+dunn_result <- dunnTest(PC1 ~ Section, data = data_combined, method = 'bonferroni')
+print(dunn_result)
+
+
+
 
 
 ## residuals PC1 VS Length ##
