@@ -638,33 +638,52 @@ print(mean_scaled_distance_by_section)
 
 
 ### relationship between Length and PC1 scores ###
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+library(broom)
+library(FSA)
+library(scales)
 
-# For simplicity, let's rename Mean_Distance as Length (or create Length if needed)
+###--- Prepare Data ---###
+
+# Ensure Length column exists
 data_combined$Length <- data_combined$Mean_Distance
 
-# Optional: Create a grouping variable similar to your example (adjust country names accordingly)
+# Ensure PC1 and Length are numeric
+data_combined$PC1 <- as.numeric(data_combined$PC1)
+data_combined$Length <- as.numeric(data_combined$Length)
+
+# Create grouping variable
 data_combined$group <- ifelse(data_combined$Country %in% c("Slovenia", "Bosnia and Herzegovina"), 
                               "North-Eastern part", "Western part")
 
-# Plot Length vs PC1 with colors by group and shapes by Section
+###--- Plot 1: Length vs PC1, grouped ---###
+
 ggplot(data_combined, aes(x = PC1, y = Length, color = group, shape = Section)) +
-  geom_point(aes(size = Length), alpha = 0.8) +        # Points sized by Length
-  geom_smooth(aes(group = group), method = "lm", se = FALSE) +  # Linear trend lines per group
+  geom_point(aes(size = Length), alpha = 0.8) +
+  geom_smooth(aes(group = group), method = "lm", se = FALSE) +
   scale_color_manual(
     name = "Sephardic Province Region",
     values = c("North-Eastern part" = "black", "Western part" = "lightblue")
   ) +
   scale_shape_manual(
     name = "Section",
-    values = c(16, 17, 18, 19, 15, 13),  # Use different point shapes
+    values = c(16, 17, 18, 19, 15, 13),
     breaks = levels(data_combined$Section)
   ) +
   scale_size_continuous(range = c(2, 6)) +
-  labs(
-    title = "Relationship between Length and PC1",
-    x = "PC1 Score",
-    y = "Length (Mean Distance)"
+  scale_x_continuous(
+    name = "PC1 Score",
+    labels = number_format(accuracy = 0.1),
+    breaks = pretty(data_combined$PC1)
   ) +
+  scale_y_continuous(
+    name = "Length (Mean Distance)",
+    labels = number_format(accuracy = 0.1),
+    breaks = pretty(data_combined$Length)
+  ) +
+  labs(title = "Relationship between Length and PC1") +
   theme_minimal() +
   theme(
     plot.title = element_text(size = 16, face = "bold"),
@@ -675,126 +694,74 @@ ggplot(data_combined, aes(x = PC1, y = Length, color = group, shape = Section)) 
     legend.position = "right"
   )
 
-# Optional: Calculate correlation and linear model slopes per group
-library(dplyr)
+###--- Correlation and Linear Models ---###
 
-# Correlation test for entire dataset
+# Pearson correlation for full dataset
 cor_test <- cor.test(data_combined$PC1, data_combined$Length)
-print(paste("Pearson correlation: ", round(cor_test$estimate, 3), "p-value:", signif(cor_test$p.value, 3)))
+print(paste("Pearson correlation:", round(cor_test$estimate, 3), 
+            "p-value:", signif(cor_test$p.value, 3)))
 
-# Fit linear models per group
+# Linear models by group
 lm_north <- lm(Length ~ PC1, data = filter(data_combined, group == "North-Eastern part"))
-lm_west <- lm(Length ~ PC1, data = filter(data_combined, group == "Western part"))
+lm_west  <- lm(Length ~ PC1, data = filter(data_combined, group == "Western part"))
 
 cat("Slope for North-Eastern part:", coef(lm_north)["PC1"], "\n")
 cat("Slope for Western part:", coef(lm_west)["PC1"], "\n")
 
+###--- Plot 2: By Region (PC1 on x-axis) ---###
 
-## by region ##
-library(broom)
-library(dplyr)
-library(FSA)  # for dunnTest
-
-# --- Plot: Region colored, solid regression lines ---
-ggplot(data_combined, aes(x = Mean_Distance, y = PC1)) +
+ggplot(data_combined, aes(x = PC1, y = Length)) +
   geom_point(aes(color = Region), size = 3, alpha = 0.8) +
   geom_smooth(aes(color = Region), method = "lm", se = FALSE, linetype = "solid") +
   scale_color_manual(values = colors_list$Region) +
-  theme_minimal(base_size = 14) +
+  scale_x_continuous(
+    name = "PC1 Score",
+    labels = number_format(accuracy = 0.1),
+    breaks = pretty(data_combined$PC1)
+  ) +
+  scale_y_continuous(
+    name = "Length (μm)",
+    labels = number_format(accuracy = 0.1),
+    breaks = pretty(data_combined$Length)
+  ) +
   labs(
-    title = "Relationship Between Length (Mean Distance) and PC1",
-    x = "PC1 Score",
-    y = "Length",
+    title = "Relationship Between PC1 and Length (Mean Distance)",
     color = "Region"
   ) +
+  theme_minimal(base_size = 14) +
   theme(
     legend.position = "right",
     panel.grid = element_line(color = "grey90")
   )
 
-# --- Correlation test for entire dataset ---
-cor_test <- cor.test(data_combined$PC1, data_combined$Mean_Distance)
+###--- Correlation Test ---###
+
+cor_test <- cor.test(data_combined$PC1, data_combined$Length)
 cat("Pearson correlation for entire dataset:\n")
 cat("  R =", round(cor_test$estimate, 3), 
     "| p-value =", signif(cor_test$p.value, 3), "\n\n")
 
-# --- List unique Regions ---
-regions <- unique(data_combined$Region)
+###--- Region-Wise Slopes ---###
 
-# --- Fit linear models per Region and extract slopes ---
+regions <- unique(data_combined$Region)
 cat("Slopes by Region:\n")
 for (reg in regions) {
   sub_data <- filter(data_combined, Region == reg)
-  model <- lm(PC1 ~ Mean_Distance, data = sub_data)
-  slope <- coef(model)["Mean_Distance"]
+  model <- lm(Length ~ PC1, data = sub_data)
+  slope <- coef(model)["PC1"]
   r2 <- summary(model)$r.squared
-  
   cat("  Region:", reg, 
       "| Slope =", round(slope, 4), 
       "| R² =", round(r2, 3), "\n")
 }
 
-# --- Statistical test of PC1 differences between Regions ---
+###--- Kruskal-Wallis Test + Dunn Post Hoc ---###
+
 kruskal_result <- kruskal.test(PC1 ~ Region, data = data_combined)
 print(kruskal_result)
 
-# --- Post hoc Dunn test (non-parametric) ---
 dunn_result <- dunnTest(PC1 ~ Region, data = data_combined, method = 'bonferroni')
 print(dunn_result)
-
-
-## by country ##
-library(broom)  # for tidy regression output
-library(dplyr)
-library(FSA)    # for dunnTest
-
-# --- Plot: Country colored, solid regression lines ---
-ggplot(data_combined, aes(x = Mean_Distance, y = PC1)) +
-  geom_point(aes(color = Country), size = 3, alpha = 0.8) +
-  geom_smooth(aes(color = Country), method = "lm", se = FALSE, linetype = "solid") +
-  scale_color_manual(values = colors_list$Country) +
-  theme_minimal(base_size = 14) +
-  labs(
-    title = "Relationship Between Length (Mean Distance) and PC1",
-    x = "PC1 Score",
-    y = "Length (Mean Distance)",
-    color = "Country"
-  ) +
-  theme(
-    legend.position = "right",
-    panel.grid = element_line(color = "grey90")
-  )
-
-# --- Correlation test for entire dataset ---
-cor_test <- cor.test(data_combined$PC1, data_combined$Mean_Distance)
-cat("Pearson correlation for entire dataset:\n")
-cat("  R =", round(cor_test$estimate, 3), 
-    "| p-value =", signif(cor_test$p.value, 3), "\n\n")
-
-# --- List unique Countries ---
-countries <- unique(data_combined$Country)
-
-# --- Fit linear models per Country and extract slopes ---
-cat("Slopes by Country:\n")
-for (ctry in countries) {
-  sub_data <- filter(data_combined, Country == ctry)
-  model <- lm(PC1 ~ Mean_Distance, data = sub_data)
-  slope <- coef(model)["Mean_Distance"]
-  r2 <- summary(model)$r.squared
-  
-  cat("  Country:", ctry, 
-      "| Slope =", round(slope, 4), 
-      "| R² =", round(r2, 3), "\n")
-}
-
-# --- Statistical test of PC1 differences between Countries ---
-kruskal_result <- kruskal.test(PC1 ~ Country, data = data_combined)
-print(kruskal_result)
-
-# --- Post hoc Dunn test (non-parametric) ---
-dunn_result <- dunnTest(PC1 ~ Country, data = data_combined, method = 'bonferroni')
-print(dunn_result)
-
 
 
 ## Facies zone ##
