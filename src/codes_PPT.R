@@ -1,22 +1,27 @@
-### STATISTICAL DIFFERENCE IN SHAPE BETWEEN LEFT AND RIGHT ELEMENTS ###
+# --- Load Libraries ---
+library(geomorph)
+library(dplyr)
+library(ggplot2)
+library(FSA)
+library(dunn.test)
+library(tidyr)
+library(ggpubr)
+
+#### STATISTICAL DIFFERENCE IN SHAPE BETWEEN LEFT AND RIGHT ELEMENTS ####
 # Load required libraries
 library(geomorph)
 
-# 1. Load TPS file and metadata Excel file
+# 1. Load TPS file and metadata 
 
 landmarks <- readland.tps("data/All_sections.TPS", specID = "ID", readcurves = TRUE)
 specimen_info <- read.csv("data/Specimens_info.csv", header=T)
 
 # 2. Clean specimen IDs: trim whitespace and unify case
-specimen_info$ID <- trimws(specimen_info$ID)
-specimen_info$ID <- toupper(specimen_info$ID)
+specimen_info$ID <- specimen_info$ID |> trimws() |> toupper()
 
-tps_ids <- dimnames(landmarks)[[3]]
-tps_ids <- trimws(tps_ids)
-tps_ids <- toupper(tps_ids)
-dimnames(landmarks)[[3]] <- tps_ids  # overwrite with cleaned IDs
+dimnames(landmarks)[[3]] <- dimnames(landmarks)[[3]] |> trimws() |> toupper()
 
-# 3. Check for unmatched specimen IDs between TPS and Excel
+# 3. Check for unmatched specimen IDs between TPS and metadata
 missing_in_excel <- tps_ids[!tps_ids %in% specimen_info$ID]
 missing_in_tps <- specimen_info$ID[!specimen_info$ID %in% tps_ids]
 
@@ -83,9 +88,6 @@ par(mfrow = c(1, 1))
 
 
 ### STATISTICAL DIFFERENCE IN LENGTH BETWEENLEFT AND RIGHT ELEMENTS ###
-
-library(dplyr)
-library(readxl)
 
 # Function to calculate Euclidean distance
 calculate_distance <- function(x1, y1, x2, y2) {
@@ -190,14 +192,6 @@ print(counts)
 
 #### SHAPE ####
 
-# --- Load Libraries ---
-library(geomorph)
-library(dplyr)
-library(ggplot2)
-library(FSA)
-library(dunn.test)
-library(tidyr)
-library(ggpubr)
 # --- Distance Function ---
 calculate_distance <- function(x1, y1, x2, y2) {
   sqrt((x2 - x1)^2 + (y2 - y1)^2)
