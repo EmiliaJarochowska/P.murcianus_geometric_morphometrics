@@ -4,8 +4,8 @@ library(geomorph)
 library(readxl)
 
 # 1. Load TPS file and metadata Excel file
-tps_file <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/All_sections.TPS"
-specimen_info_path <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/Specimens_info.xlsx"
+tps_file <- "data/All_sections.TPS"
+specimen_info_path <- "data/Specimens_info.xlsx"
 
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 specimen_info <- read_excel(specimen_info_path)
@@ -141,12 +141,12 @@ process_data <- function(file_path) {
 }
 
 # Load specimen metadata from Excel
-specimen_info <- read_excel("C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/Specimens_info.xlsx")
+specimen_info <- read_excel("data/Specimens_info.xlsx")
 specimen_info$ID <- gsub("\\s+", "", specimen_info$ID)
 specimen_info$Chirality <- toupper(specimen_info$Chirality)
 
 # Process TPS file
-tps_results <- process_data("C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/All_sections.TPS")
+tps_results <- process_data("data/All_sections.TPS")
 
 # Merge distances with metadata
 combined_data <- merge(tps_results, specimen_info[, c("ID", "Chirality")], by = "ID")
@@ -244,12 +244,12 @@ process_data <- function(file_path) {
 }
 # --- File Paths ---
 
-tps_file <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/All_sections.TPS"
-metadata_path <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/Specimens_info.xlsx"
+tps_file <- "data/All_sections.TPS"
+metadata_path <- "data/Specimens_info.xlsx"
 
 
-tps_file <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/All_sections.TPS"
-metadata_path <- "C:/Users/katja.oselj/Documents/GitHub/P.murcianus_geometric_morphometrics/data/Specimens_info.xlsx"
+tps_file <- "data/All_sections.TPS"
+metadata_path <- "data/Specimens_info.xlsx"
 
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 specimen_info <- read_excel(metadata_path)
