@@ -1,14 +1,11 @@
 ### STATISTICAL DIFFERENCE IN SHAPE BETWEEN LEFT AND RIGHT ELEMENTS ###
 # Load required libraries
 library(geomorph)
-library(readxl)
 
 # 1. Load TPS file and metadata Excel file
-tps_file <- "data/All_sections.TPS"
-specimen_info_path <- "data/Specimens_info.xlsx"
 
-landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
-specimen_info <- read_excel(specimen_info_path)
+landmarks <- readland.tps("data/All_sections.TPS", specID = "ID", readcurves = TRUE)
+specimen_info <- read.csv("data/Specimens_info.csv", header=T)
 
 # 2. Clean specimen IDs: trim whitespace and unify case
 specimen_info$ID <- trimws(specimen_info$ID)
@@ -140,8 +137,8 @@ process_data <- function(file_path) {
   return(results)
 }
 
-# Load specimen metadata from Excel
-specimen_info <- read_excel("data/Specimens_info.xlsx")
+# Load specimen metadata 
+specimen_info <- read.csv("data/Specimens_info.csv", header=T)
 specimen_info$ID <- gsub("\\s+", "", specimen_info$ID)
 specimen_info$Chirality <- toupper(specimen_info$Chirality)
 
@@ -195,7 +192,6 @@ print(counts)
 
 # --- Load Libraries ---
 library(geomorph)
-library(readxl)
 library(dplyr)
 library(ggplot2)
 library(FSA)
@@ -244,15 +240,9 @@ process_data <- function(file_path) {
 }
 # --- File Paths ---
 
-tps_file <- "data/All_sections.TPS"
-metadata_path <- "data/Specimens_info.xlsx"
-
-
-tps_file <- "data/All_sections.TPS"
-metadata_path <- "data/Specimens_info.xlsx"
 
 landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
-specimen_info <- read_excel(metadata_path)
+specimen_info <- read.csv("data/Specimens_info.csv", header=T)
 
 # --- Clean and Sync IDs ---
 specimen_info$ID <- toupper(trimws(specimen_info$ID))
