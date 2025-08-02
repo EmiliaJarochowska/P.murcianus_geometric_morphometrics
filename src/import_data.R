@@ -74,6 +74,9 @@ source("src/process_data.R")
 #### Calculate mean distances and combine data ####
 
 lengths <- process_data(tps_file)
+lengths$ID <- lengths$ID %>% 
+  trimws() %>% 
+  toupper()
 
 # Combine all data
 data_combined <- specimen_info_matched %>%

@@ -1,5 +1,7 @@
 #### Dependencies ####
 library(vegan)
+library(geomorph)
+library(dunn.test)
 
 #### Statistical Analysis and Visualization Script ####
 
@@ -66,9 +68,24 @@ counts <- data_combined %>%
 
 print(counts)
 
+#### Length of elements ####
+
+
+
+plot_length_histogram(data_combined, "Country", "Length by Country with Normal Distribution")
+plot_length_histogram(data_combined, "Section", "Length by Section with Normal Distribution")
+plot_length_histogram(data_combined, "Region", "Length by Region with Normal Distribution")
+
+### Normality ####
+
+check_normality_and_plot(data_combined, "Country")
+check_normality_and_plot(data_combined, "Section")
+check_normality_and_plot(data_combined, "Region")
+check_normality_and_plot(data_combined, "Part")
+
 #### PCA Analysis by Grouping Variables ####
 
-grouping_vars <- c("FaciesZone", "Country", "Region", "Section", "Par")
+grouping_vars <- c("FaciesZone", "Country", "Region", "Section", "Part")
 
 for (var in grouping_vars) {
   if (var %in% names(data_combined) && var %in% names(colors_list)) {
@@ -117,8 +134,6 @@ if ("Region" %in% names(data_combined)) {
 }
 
 #### Shape Visualization ####
-
-cat("\n=== PCA SHAPE VISUALIZATION ===\n\n")
 
 # Variance explained
 variance_explained <- PCA$sdev^2 / sum(PCA$sdev^2)
