@@ -8,8 +8,6 @@ library(tidyr)
 library(ggpubr)
 
 #### STATISTICAL DIFFERENCE IN SHAPE BETWEEN LEFT AND RIGHT ELEMENTS ####
-# Load required libraries
-library(geomorph)
 
 # 1. Load TPS file and metadata 
 

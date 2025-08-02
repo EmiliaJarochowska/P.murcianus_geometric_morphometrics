@@ -1,44 +1,148 @@
 #### Import script and data preprocessing ####
 
-# Imports
-
+# Load required libraries
 library(geomorph)
+library(dplyr)
 
-# Import landmarks
+# File paths
+tps_file <- "data/All_sections.TPS"
+specimens_file <- "data/Specimens_info.csv"
 
-tps_file <- "All_sections.TPS"
-landmarks <- readland.tps(tps_file, specID = "ID", readcurves = TRUE)
-sliders <- define.sliders(3:138) 
+#### Import landmarks and specimen information ####
 
-##### Mean shape, PC1 min and max, PC2 min and max #####
+# Import landmarks from TPS file
+landmarks <- geomorph::readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 
-landmarks.gpa<-gpagen(landmarks, curves = sliders)
-PCA <- gm.prcomp(landmarks.gpa$coords) 
-msho <- mshape(landmarks.gpa$coords) 
+# Import specimen information from CSV
+specimen_info <- utils::read.csv(specimens_file, header = TRUE)
 
-#### Prepare sample properties dataset ####
+#### Data cleaning and preparation ####
 
-samples <- data.frame(name = rep(NA, dim(landmarks)[3]),
-                      country = rep(NA, dim(landmarks)[3]),
-                      section = rep(NA, dim(landmarks)[3]),
-                      rock_sample = rep(NA, dim(landmarks)[3]),
-                      element_number = rep(NA, dim(landmarks)[3]))
+# Clean specimen IDs: trim whitespace and unify case
+specimen_info$ID <- specimen_info$ID %>% 
+  trimws() %>% 
+  toupper()
 
-for (i in 1:dim(landmarks)[3]) {
-  samples$name[i] <- dimnames(landmarks)[[3]][i]
-  samples$country[i] <- unlist(strsplit(samples$name[i], "_"))[1]
-  samples$section[i] <- unlist(strsplit(samples$name[i], "_"))[2]
-  samples$rock_sample[i] <- unlist(strsplit(samples$name[i], "_"))[3]
-  samples$element_number[i] <- unlist(strsplit(samples$name[i], "_"))[4]
+tps_ids <- dimnames(landmarks)[[3]] %>% 
+  trimws() %>% 
+  toupper()
+
+dimnames(landmarks)[[3]] <- tps_ids
+
+# Check for unmatched specimen IDs
+missing_in_csv <- tps_ids[!tps_ids %in% specimen_info$ID]
+missing_in_tps <- specimen_info$ID[!specimen_info$ID %in% tps_ids]
+
+if (length(missing_in_csv) > 0) {
+  cat("TPS specimen IDs NOT found in Specimens_info.csv:\n")
+  print(missing_in_csv)
 }
 
-samples$country <- as.factor(samples$country)
-samples$rock_sample <- as.factor(samples$rock_sample)
-samples$country <- factor(samples$country,
-                          levels = c("SL", "SP", "BAH"),
-                          labels = c("Slovenia", "Spain", "Bosnia and Herzegovina"))
+if (length(missing_in_tps) > 0) {
+  cat("Specimens_info.csv IDs NOT found in TPS:\n")
+  print(missing_in_tps)
+}
 
-summary <- summary(PCA)
+# Stop if any missing IDs to avoid misalignment
+if (length(missing_in_csv) > 0 || length(missing_in_tps) > 0) {
+  stop("Mismatch between TPS IDs and specimen_info IDs. Please fix and rerun.")
+}
 
-save(samples, PCA, msho, summary,
-     file = "data/imported.RData")
+# Match specimen_info order to TPS specimen IDs
+match_rows <- match(tps_ids, specimen_info$ID)
+specimen_info_matched <- specimen_info[match_rows, ]
+
+#### Geometric morphometric preprocessing ####
+
+# Define sliding landmarks
+sliders <- geomorph::define.sliders(3:138)
+
+# Perform Generalized Procrustes Analysis (GPA)
+landmarks.gpa <- geomorph::gpagen(landmarks, curves = sliders)
+
+# Perform PCA on GPA-aligned coordinates
+PCA <- geomorph::gm.prcomp(landmarks.gpa$coords)
+
+# Calculate mean shape
+msho <- geomorph::mshape(landmarks.gpa$coords)
+
+#### Distance calculation functions ####
+
+source("src/calculate_distance.R")
+source("src/process_data.R")
+
+#### Calculate mean distances and combine data ####
+
+# Calculate mean distances from TPS file
+mean_distances <- process_data(tps_file)
+mean_distances$ID <- mean_distances$ID %>% 
+  trimws() %>% 
+  toupper()
+
+# Combine all data
+data_combined <- specimen_info_matched %>%
+  dplyr::left_join(mean_distances, by = "ID")
+
+# Fill NA Mean_Distance with median
+data_combined$Mean_Distance[is.na(data_combined$Mean_Distance)] <- 
+  stats::median(data_combined$Mean_Distance, na.rm = TRUE)
+
+# Add PCA scores
+data_combined$PC1 <- PCA$x[, 1]
+data_combined$PC2 <- PCA$x[, 2]
+
+# Rename Mean_Distance to Length for consistency
+data_combined$Length <- data_combined$Mean_Distance
+
+#### Create regional classifications ####
+
+# Recode Region from Country
+data_combined$Region <- dplyr::recode_factor(
+  data_combined$Country,
+  "Slovenia" = "North-Eastern part",
+  "Bosnia and Herzegovina" = "North-Eastern part",
+  "Spain" = "Western part",
+  .default = NA_character_
+)
+
+# Define Part variable as subregion of Sephardic Province
+data_combined$Part <- dplyr::recode_factor(
+  data_combined$Country,
+  "Slovenia" = "North-Eastern Subprovince",
+  "Bosnia and Herzegovina" = "North-Eastern Subprovince", 
+  "Spain" = "Western Subprovince",
+  .default = NA_character_
+)
+
+#### Define factor orders and color schemes ####
+
+# Define Section colors and custom order
+section_order <- c("Calasparra", "Henarejos", "Libros", "Bugarra", "Prikrnica", "Drežnica")
+data_combined$Section <- factor(data_combined$Section, levels = section_order)
+
+# Color palettes
+colors_list <- list(
+  FaciesZone = c("FZ3" = "grey", "FZ7" = "#0033A0", "FZ8" = "#D81B60"),
+  Country = c("Slovenia" = "grey", "Bosnia and Herzegovina" = "#0033A0", "Spain" = "#D81B60"),
+  Region = c("North-Eastern part of Sephardic Province" = "grey", 
+                   "Western part of Sephardic Province" = "#0033A0"),
+  Section = c(
+    "Calasparra" = "blue",
+    "Henarejos" = "#D4A017", 
+    "Libros" = "darkgreen",
+    "Bugarra" = "#17BCC4",
+    "Prikrnica" = "#D91C93",
+    "Drežnica" = "lightgreen"
+  ),
+  Par = c("Western Subprovince" = "#0033A0", "North-Eastern Subprovince" = "grey")
+)
+
+# Create chirality grouping factor  
+specimen_info_matched$Chirality <- factor(ifelse(specimen_info_filtered$Chirality == "R", "Right", "Left"))
+
+#### Save all processed data and objects ####
+save(
+  landmarks, specimen_info_matched, landmarks.gpa, PCA, msho,
+  data_combined, gpa_coords_filtered, colors_list, 
+  file = "data/processed_data.RData"
+)
