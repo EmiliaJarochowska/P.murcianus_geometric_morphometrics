@@ -20,23 +20,23 @@ source("src/plot_correlation.R")
 #### Statistical Analysis of Chirality ####
 
 # PCA on chirality-filtered coordinates
-pca_chirality <- geomorph::gm.prcomp(gpa_coords_filtered)
+pca_chirality <- geomorph::gm.prcomp(landmarks.gpa$coords)
 
 # Test if PC scores differ between Left and Right
-vegan::morphol.disparity(coords ~ 1, groups = specimen_info_filtered$Chirality, 
+morphol.disparity(coords ~ 1, groups = specimen_info_matched$Chirality, 
                   data = landmarks.gpa,  
                   print.progress = TRUE)
 
 # Plot PCA colored by chirality
 par(mfrow = c(1, 1))
 cols <- c("Left" = "blue", "Right" = "red")
-graphics::plot(pca_chirality$x[, 1], pca_chirality$x[, 2], col = cols[specimen_info_filtered$Chirality], pch = 19,
+graphics::plot(pca_chirality$x[, 1], pca_chirality$x[, 2], col = cols[specimen_info_matched$Chirality], pch = 19,
                xlab = "PC1", ylab = "PC2", main = "PCA of Shape by Chirality")
-graphics::legend("topright", legend = levels(specimen_info_filtered$Chirality), col = cols, pch = 19)
+graphics::legend("topright", legend = levels(specimen_info_matched$Chirality), col = cols, pch = 19)
 
 # Calculate mean shapes for each group
-mean_shape_left <- geomorph::mshape(gpa_coords_filtered[, , specimen_info_filtered$Chirality == "Left"])
-mean_shape_right <- geomorph::mshape(gpa_coords_filtered[, , specimen_info_filtered$Chirality == "Right"])
+mean_shape_left <- geomorph::mshape(landmarks.gpa$coords[, , specimen_info_matched$Chirality == "Left"])
+mean_shape_right <- geomorph::mshape(landmarks.gpa$coords[, , specimen_info_matched$Chirality == "Right"])
 
 # Plot mean shapes with deformation grids
 par(mfrow = c(1, 2))
@@ -46,35 +46,28 @@ geomorph::plotRefToTarget(mean_shape_right, mean_shape_left, method = "points",
                           main = "Mean Shape: Right -> Left")
 par(mfrow = c(1, 1))
 
-#### Statistical Analysis of Size Differences ####
+#### Analysis of Size Differences ####
 
 combined_data_chirality <- data_combined %>% 
-  dplyr::filter(specimen_info_matched$Chirality %in% c("L", "R")) %>%
-  dplyr::mutate(Group = ifelse(specimen_info_matched$Chirality == "R", "Right", "Left"))
+  dplyr::mutate(Chirality = ifelse(data_combined$Chirality == "R", "Right", "Left"))
 
-print(table(combined_data_chirality$Group))
-mean(combined_data_chirality$Length[combined_data_chirality$Group == "Right"])
-mean(combined_data_chirality$Length[combined_data_chirality$Group == "Left"])
+print(table(combined_data_chirality$Chirality))
+mean(combined_data_chirality$Length[combined_data_chirality$Chirality == "Right"])
+mean(combined_data_chirality$Length[combined_data_chirality$Chirality == "Left"])
 
 # Test for size differences
-stats::kruskal.test(Length ~ Group, data = combined_data_chirality)
+stats::kruskal.test(Length ~ Chirality, data = combined_data_chirality)
 
 # Count specimens by Country and Group (Left/Right)
 counts <- data_combined %>%
-  dplyr::filter(!is.na(specimen_info_matched$Chirality) & specimen_info_matched$Chirality %in% c("L", "R")) %>%
-  dplyr::mutate(Group = ifelse(specimen_info_matched$Chirality[!is.na(specimen_info_matched$Chirality) & 
-                                                                       specimen_info_matched$Chirality %in% c("L", "R")] == "R", "Right", "Left")) %>%
-  dplyr::group_by(Country, Group) %>%
+  dplyr::group_by(Country, Chirality) %>%
   dplyr::summarise(Count = dplyr::n(), .groups = "drop") %>%
-  dplyr::arrange(Country, Group)
+  dplyr::arrange(Country, Chirality)
 
 print(counts)
 
 #### PCA Analysis by Grouping Variables ####
 
-cat("\n=== PCA ANALYSIS BY GROUPING VARIABLES ===\n\n")
-
-# Plot and test for each grouping variable
 grouping_vars <- c("FaciesZone", "Country", "Region", "Section", "Par")
 
 for (var in grouping_vars) {

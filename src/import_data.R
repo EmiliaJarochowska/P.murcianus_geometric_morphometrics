@@ -73,26 +73,15 @@ source("src/process_data.R")
 
 #### Calculate mean distances and combine data ####
 
-# Calculate mean distances from TPS file
-mean_distances <- process_data(tps_file)
-mean_distances$ID <- mean_distances$ID %>% 
-  trimws() %>% 
-  toupper()
+lengths <- process_data(tps_file)
 
 # Combine all data
 data_combined <- specimen_info_matched %>%
-  dplyr::left_join(mean_distances, by = "ID")
-
-# Fill NA Mean_Distance with median
-data_combined$Mean_Distance[is.na(data_combined$Mean_Distance)] <- 
-  stats::median(data_combined$Mean_Distance, na.rm = TRUE)
+  dplyr::left_join(lengths, by = "ID")
 
 # Add PCA scores
 data_combined$PC1 <- PCA$x[, 1]
 data_combined$PC2 <- PCA$x[, 2]
-
-# Rename Mean_Distance to Length for consistency
-data_combined$Length <- data_combined$Mean_Distance
 
 #### Create regional classifications ####
 
@@ -127,22 +116,22 @@ colors_list <- list(
   Region = c("North-Eastern part of Sephardic Province" = "grey", 
                    "Western part of Sephardic Province" = "#0033A0"),
   Section = c(
-    "Calasparra" = "blue",
-    "Henarejos" = "#D4A017", 
-    "Libros" = "darkgreen",
-    "Bugarra" = "#17BCC4",
-    "Prikrnica" = "#D91C93",
-    "Drežnica" = "lightgreen"
+    "Calasparra" = "#d73027",
+    "Henarejos" = "#fc8d59", 
+    "Libros" = "#fee090",
+    "Bugarra" = "#ffffbf",
+    "Prikrnica" = "#91bfdb",
+    "Drežnica" = "#4575b4"
   ),
-  Par = c("Western Subprovince" = "#0033A0", "North-Eastern Subprovince" = "grey")
+  Part = c("Western Subprovince" = "#0033A0", "North-Eastern Subprovince" = "grey")
 )
 
 # Create chirality grouping factor  
-specimen_info_matched$Chirality <- factor(ifelse(specimen_info_filtered$Chirality == "R", "Right", "Left"))
+specimen_info_matched$Chirality <- factor(ifelse(specimen_info_matched$Chirality == "R", "Right", "Left"))
 
 #### Save all processed data and objects ####
 save(
   landmarks, specimen_info_matched, landmarks.gpa, PCA, msho,
-  data_combined, gpa_coords_filtered, colors_list, 
+  data_combined, colors_list, 
   file = "data/processed_data.RData"
 )
