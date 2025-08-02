@@ -116,8 +116,8 @@ data_combined$Section <- factor(data_combined$Section, levels = section_order)
 colors_list <- list(
   FaciesZone = c("FZ3" = "grey", "FZ7" = "#0033A0", "FZ8" = "#D81B60"),
   Country = c("Slovenia" = "grey", "Bosnia and Herzegovina" = "#0033A0", "Spain" = "#D81B60"),
-  Region = c("North-Eastern part of Sephardic Province" = "grey", 
-                   "Western part of Sephardic Province" = "#0033A0"),
+  Region = c("North-Eastern part" = "grey", 
+                   "Western part" = "#0033A0"),
   Section = c(
     "Calasparra" = "#d73027",
     "Henarejos" = "#fc8d59", 

@@ -2,6 +2,8 @@
 library(vegan)
 library(geomorph)
 library(dunn.test)
+library(egg)
+library(ggpubr)
 
 #### Statistical Analysis and Visualization Script ####
 
@@ -70,11 +72,49 @@ print(counts)
 
 #### Length of elements ####
 
-
+# Perform Shapiro-Wilk tests by Country, Section, Region on Length
+perform_normality_tests(data_combined, "Country")
+perform_normality_tests(data_combined, "Section")
+perform_normality_tests(data_combined, "Region")
 
 plot_length_histogram(data_combined, "Country", "Length by Country with Normal Distribution")
 plot_length_histogram(data_combined, "Section", "Length by Section with Normal Distribution")
 plot_length_histogram(data_combined, "Region", "Length by Region with Normal Distribution")
+
+plot_distance_boxplot <- function(data, group_var, colors, title) {
+  ggplot(data, aes_string(x = group_var, y = "Length", fill = group_var)) +
+    geom_boxplot(alpha = 0.7, outlier.shape = 16, outlier.size = 2) +
+    theme_minimal() +
+    scale_fill_manual(values = colors) +
+    labs(x = group_var, y = "Length [um]") +
+    theme(legend.position = "none") +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      plot.title = element_text(face = "bold", hjust = 0.5)
+    )
+}
+  
+FZ_length <- plot_distance_boxplot(data_combined, "FaciesZone", colors_list$FaciesZone,)
+
+plot_distance_boxplot(data_combined, "Country", colors_list$Country)
+
+Region_length <- plot_distance_boxplot(data_combined, "Region", colors_list$Region)
+
+Section_length <- plot_distance_boxplot(data_combined, "Section", colors_list$Section)
+
+
+ggarrange(Section_length, Region_length, FZ_length, 
+          ncol=3, widths = c(3,2,2), 
+          labels = c("A", "B", "C")) %>%
+  ggsave(filename = "figs/lengths.pdf", width = 170, units = "mm")
+  
+  data_combined %>%
+    group_by(Section) %>%
+    summarise(
+      Median = median(Length),
+      Mean = mean(Length)
+    )
+  
 
 ### Normality ####
 
@@ -105,8 +145,6 @@ for (var in grouping_vars) {
 }
 
 #### Correlation Analysis ####
-
-cat("\n=== CORRELATION ANALYSIS: PC1 vs LENGTH ===\n\n")
 
 # Overall correlation
 cor_test_overall <- stats::cor.test(data_combined$PC1, data_combined$Length)
