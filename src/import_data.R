@@ -67,12 +67,10 @@ PCA <- geomorph::gm.prcomp(landmarks.gpa$coords)
 # Calculate mean shape
 msho <- geomorph::mshape(landmarks.gpa$coords)
 
-#### Distance calculation functions ####
+#### Calculate mean distances and combine data ####
 
 source("src/calculate_distance.R")
 source("src/process_data.R")
-
-#### Calculate mean distances and combine data ####
 
 lengths <- process_data(tps_file)
 
@@ -95,7 +93,8 @@ data_combined$Region <- dplyr::recode_factor(
   .default = NA_character_
 )
 
-# Define Part variable as subregion of Sephardic Province
+# Define the Part variable as a subregion of the Sephardic Province
+
 data_combined$Part <- dplyr::recode_factor(
   data_combined$Country,
   "Slovenia" = "North-Eastern Subprovince",
