@@ -18,7 +18,7 @@ process_data <- function(file_path) {
     specimen_id <- gsub("ID=", "", lines[id_indices[i]])
     specimen_id <- gsub("\\s+", "", specimen_id)
     
-    landmark_lines <- lines[(lm_indices[i] + 1):(lm_indices[i] + num_landmarks)]
+    landmark_lines <- lines[(lm_indices[i] + 1):(lm_indices[i] + 2)]
     landmarks_coords <- do.call(rbind, strsplit(landmark_lines, "\\s+"))
     landmarks_coords <- as.data.frame(landmarks_coords, stringsAsFactors = FALSE)
     landmarks_coords <- dplyr::mutate_all(landmarks_coords, as.numeric)
@@ -35,6 +35,10 @@ process_data <- function(file_path) {
       results <- rbind(results, data.frame(ID = specimen_id, Length = scaled_distance, stringsAsFactors = FALSE))
     }
   }
+  
+  results$ID <- results$ID %>% 
+    trimws() %>% 
+    toupper()
   
   return(results)
 }

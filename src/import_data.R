@@ -5,8 +5,10 @@ library(dplyr)
 
 #### Import landmarks and specimen information ####
 
+tps_file = "data/All_sections.TPS"
+
 # Import landmarks from TPS file
-landmarks <- geomorph::readland.tps("data/All_sections.TPS", specID = "ID", readcurves = TRUE)
+landmarks <- geomorph::readland.tps(tps_file, specID = "ID", readcurves = TRUE)
 
 # Import specimen information from CSV
 specimen_info <- utils::read.csv("data/Specimens_info.csv", header = TRUE)
@@ -73,9 +75,6 @@ source("src/process_data.R")
 #### Calculate mean distances and combine data ####
 
 lengths <- process_data(tps_file)
-lengths$ID <- lengths$ID %>% 
-  trimws() %>% 
-  toupper()
 
 # Combine all data
 data_combined <- specimen_info_matched %>%
