@@ -1,20 +1,15 @@
 #### Import script and data preprocessing ####
 
 # Load required libraries
-library(geomorph)
 library(dplyr)
-
-# File paths
-tps_file <- "data/All_sections.TPS"
-specimens_file <- "data/Specimens_info.csv"
 
 #### Import landmarks and specimen information ####
 
 # Import landmarks from TPS file
-landmarks <- geomorph::readland.tps(tps_file, specID = "ID", readcurves = TRUE)
+landmarks <- geomorph::readland.tps("data/All_sections.TPS", specID = "ID", readcurves = TRUE)
 
 # Import specimen information from CSV
-specimen_info <- utils::read.csv(specimens_file, header = TRUE)
+specimen_info <- utils::read.csv("data/Specimens_info.csv", header = TRUE)
 
 #### Data cleaning and preparation ####
 
@@ -51,6 +46,10 @@ if (length(missing_in_csv) > 0 || length(missing_in_tps) > 0) {
 # Match specimen_info order to TPS specimen IDs
 match_rows <- match(tps_ids, specimen_info$ID)
 specimen_info_matched <- specimen_info[match_rows, ]
+rm(tps_ids)
+rm(missing_in_csv)
+rm(missing_in_tps)
+rm(match_rows)
 
 #### Geometric morphometric preprocessing ####
 
