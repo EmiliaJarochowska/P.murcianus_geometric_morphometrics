@@ -4,6 +4,7 @@ library(geomorph)
 library(dunn.test)
 library(egg)
 library(ggpubr)
+library(dplyr)
 
 #### Statistical Analysis and Visualization Script ####
 
@@ -34,9 +35,9 @@ morphol.disparity(coords ~ 1, groups = specimen_info_matched$Chirality,
 # Plot PCA colored by chirality
 par(mfrow = c(1, 1))
 cols <- c("Left" = "blue", "Right" = "red")
-graphics::plot(pca_chirality$x[, 1], pca_chirality$x[, 2], col = cols[specimen_info_matched$Chirality], pch = 19,
+plot(pca_chirality$x[, 1], pca_chirality$x[, 2], col = cols[specimen_info_matched$Chirality], pch = 19,
                xlab = "PC1", ylab = "PC2", main = "PCA of Shape by Chirality")
-graphics::legend("topright", legend = levels(specimen_info_matched$Chirality), col = cols, pch = 19)
+legend("topright", legend = levels(specimen_info_matched$Chirality), col = cols, pch = 19)
 
 # Calculate mean shapes for each group
 mean_shape_left <- geomorph::mshape(landmarks.gpa$coords[, , specimen_info_matched$Chirality == "Left"])
@@ -70,7 +71,7 @@ counts <- data_combined %>%
 
 print(counts)
 
-#### Length of elements ####
+##### Normality of the lengths #####
 
 # Perform Shapiro-Wilk tests by Country, Section, Region on Length
 perform_normality_tests(data_combined, "Country")
@@ -80,6 +81,8 @@ perform_normality_tests(data_combined, "Region")
 plot_length_histogram(data_combined, "Country", "Length by Country with Normal Distribution")
 plot_length_histogram(data_combined, "Section", "Length by Section with Normal Distribution")
 plot_length_histogram(data_combined, "Region", "Length by Region with Normal Distribution")
+
+##### Length plots #####
 
 plot_distance_boxplot <- function(data, group_var, colors, title) {
   ggplot(data, aes_string(x = group_var, y = "Length", fill = group_var)) +
@@ -115,6 +118,10 @@ ggarrange(Section_length, Region_length, FZ_length,
       Mean = mean(Length)
     )
   
+##### Kruskal-Wallis test #####
+  
+kruskal.test(Length ~ Section, data = data_combined)
+dunn.test(data_combined$Length, g=data_combined$Section)
 
 ### Normality ####
 
