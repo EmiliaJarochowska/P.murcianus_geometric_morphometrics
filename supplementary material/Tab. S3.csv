@@ -1,0 +1,38 @@
+Comparing shape (PC1);;;
+Kruskal-Walli's rank sum test;Chi-squared;Df.;p-value
+By part of Sephardic province;124,67;1;< 2,2e-16
+Dunn test;Z;P.unadj;P.adj
+North-Eastern - Western;1.116.573;2,9999E-29;2,9999E-29
+;;;
+Kruskal-Walli's rank sum test;Chi-squared;Df.;p-value
+By Country;126,56;2;< 2,2e-16
+Dunn test;Z;P.unadj;P.adj
+Bosnia and Herzegovina - Slovenia;-1,335083;0,09092464;0,2727739
+Bosnia and Herzegovina - Spain;2,088016;0,01839819;0,05519458
+Slovenia - Spain;11,229276;1,46E-29;4,39E-29
+;;;
+Kruskal-Walli's rank sum test;Chi-squared;Df.;p-value
+By FZ;126,56;2;< 2,2e-16
+Dunn test;Z;P.unadj;P.adj
+FZ3 - FZ7;1,684012;0,04608963;0,1382689
+FZ3 - FZ8;11,249932;1,16E-29;3,48E-29
+FZ7 - FZ8;1,374109;0,0847039;0,2541117
+;;;
+Kruskal-Walli's rank sum test;Chi-squared;Df.;p-value
+By sections;130,67;5;< 2,2e-16
+Dunn test;Z;P.unadj;P.adj
+Bugarra - Calasparra;-1,5548763;0,059988;0,8998166
+Bugarra - Drežnica;-2,3299963;0,009903;0,1485476
+Calasparra - Drežnica;-0,414505;0,339252;1
+Bugarra - Henarejos;-0,7387657;0,230025;1
+Calasparra - Henarejos;0,9900912;0,161065;1
+Drežnica - Henarejos;1,5983466;0,054983;0,8247439
+Bugarra - Libros;-1,4487011;0,073711;1
+Calasparra - Libros;0,8668227;0,19302;1
+Drežnica - Libros;1,5216314;0,064051;0,960761
+Henarejos - Libros;-0,2991742;0,382404;1
+Bugarra - Prikrnica;-10,8781728;7,32E-28;1,10E-26
+Calasparra - Prikrnica;-1,7446859;0,040519;0,6077967
+Drežnica - Prikrnica;-1,3350827;0,090925;1
+Henarejos - Prikrnica;-4,8021546;7,85E-07;1,18E-05
+Libros - Prikrnica;-6,0584276;6,87E-10;1,03E-08
