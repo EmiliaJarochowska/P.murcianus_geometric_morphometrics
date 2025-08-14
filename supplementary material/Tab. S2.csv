@@ -1,38 +1,38 @@
-Comparing length;;;
-Kruskal-Walli's rank sum test;Chi-squared;Df.;p-value
-By part of Sephardic province;10.63;1;0.0011
-Dunn test;Z;P.unadj;P.adj
-North-Eastern - Western;-3.260.057;0.0005569493;0.0005569493
-;;;
-Kruskal-Walli's rank sum test;Chi-squared;Df.;p-value
-By Country;11.864;2;0.002653
-Dunn test;Z;P.unadj;P.adj
-Bosnia and Herzegovina - Slovenia;-1,111987;0,133071948;0,399215845
-Bosnia and Herzegovina - Spain;-2,041769;0,020587202;0,061761605
-Slovenia - Spain;-3,021082;0,001259367;0,003778101
-;;;
-Kruskal-Walli's rank sum test;Chi-squared;Df.;p-value
-By FZ;119.304;2;0
-Dunn test;Z;P.unadj;P.adj
-FZ3 - FZ7;-1,977136;0,02401311;0,072039331
-FZ3 - FZ8;-3,09263;0,000991956;0,002975869
-FZ7 - FZ8;1,141257;0,126881565;0,380644696
-;;;
-Kruskal-Walli's rank sum test;Chi-squared;Df.;p-value
-By sections;28.333;5;3,13E-05
-Dunn test;Z;P.unadj;P.adj
-Bugarra - Calasparra;-1,10127229;1,35E-01;1
-Bugarra - Drežnica;2,01070872;2,22E-02;0,332671743
-Calasparra - Drežnica;2,22581954;1,30E-02;0,195197036
-Bugarra - Henarejos;3,1190435;9,07E-04;0,013607938
-Calasparra - Henarejos;2,64808831;4,05E-03;0,060711283
-Drežnica - Henarejos;0,06000516;4,76E-01;1
-Bugarra - Libros;-1,71014131;4,36E-02;0,654298089
-Calasparra - Libros;0,32296222;3,73E-01;1
-Drežnica - Libros;-2,69770725;3,49E-03;0,052364107
-Henarejos - Libros;-3,8871057;5,07E-05;0,000760849
-Bugarra - Prikrnica;2,68885953;3,58E-03;0,053772437
-Calasparra - Prikrnica;1,9228937;2,72E-02;0,408700511
-Drežnica - Prikrnica;-1,11198664;1,33E-01;1
-Henarejos - Prikrnica;-1,78294815;3,73E-02;0,559460583
-Libros - Prikrnica;3,60908047;1,54E-04;0,002304632
+Comparing length,,,
+Kruskal-Walli's rank sum test,Chi-squared,Df.,p-value
+By part of Sephardic province,10.63,1,0.0011
+Dunn test,Z,P.unadj,P.adj
+North-Eastern - Western,-3.260.057,0.0005569493,0.0005569493
+,,,
+Kruskal-Walli's rank sum test,Chi-squared,Df.,p-value
+By Country,11.864,2,0.002653
+Dunn test,Z,P.unadj,P.adj
+Bosnia and Herzegovina - Slovenia,-1.111987,0.133071948,0.399215845
+Bosnia and Herzegovina - Spain,-2.041769,0.020587202,0.061761605
+Slovenia - Spain,-3.021082,0.001259367,0.003778101
+,,,
+Kruskal-Walli's rank sum test,Chi-squared,Df.,p-value
+By FZ,119.304,2,0
+Dunn test,Z,P.unadj,P.adj
+FZ3 - FZ7,-1.977136,0.02401311,0.072039331
+FZ3 - FZ8,-3.09263,0.000991956,0.002975869
+FZ7 - FZ8,1.141257,0.126881565,0.380644696
+,,,
+Kruskal-Walli's rank sum test,Chi-squared,Df.,p-value
+By sections,28.333,5,3.13E-05
+Dunn test,Z,P.unadj,P.adj
+Bugarra - Calasparra,-1.10127229,0.135,1
+Bugarra - Drežnica,2.01070872,0.0222,0.332671743
+Calasparra - Drežnica,2.22581954,0.013,0.195197036
+Bugarra - Henarejos,3.1190435,0.000907,0.013607938
+Calasparra - Henarejos,2.64808831,0.00405,0.060711283
+Drežnica - Henarejos,0.06000516,0.476,1
+Bugarra - Libros,-1.71014131,0.0436,0.654298089
+Calasparra - Libros,0.32296222,0.373,1
+Drežnica - Libros,-2.69770725,0.00349,0.052364107
+Henarejos - Libros,-3.8871057,5.07E-05,0.000760849
+Bugarra - Prikrnica,2.68885953,0.00358,0.053772437
+Calasparra - Prikrnica,1.9228937,0.0272,0.408700511
+Drežnica - Prikrnica,-1.11198664,0.133,1
+Henarejos - Prikrnica,-1.78294815,0.0373,0.559460583
+Libros - Prikrnica,3.60908047,0.000154,0.002304632
