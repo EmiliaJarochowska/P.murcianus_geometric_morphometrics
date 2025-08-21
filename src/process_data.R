@@ -16,8 +16,7 @@ process_data <- function(file_path) {
     num_landmarks <- as.numeric(gsub("LM=", "", lines[lm_indices[i]]))
     scale <- as.numeric(gsub("SCALE=", "", lines[scale_indices[i]]))
     specimen_id <- gsub("ID=", "", lines[id_indices[i]])
-    specimen_id <- gsub("\\s+", "", specimen_id)
-    
+
     landmark_lines <- lines[(lm_indices[i] + 1):(lm_indices[i] + 2)]
     landmarks_coords <- do.call(rbind, strsplit(landmark_lines, "\\s+"))
     landmarks_coords <- as.data.frame(landmarks_coords, stringsAsFactors = FALSE)
