@@ -1,4 +1,4 @@
-plot_length_histogram <- function(data, group_var, title) {
+plot_length_histogram <- function(data, group_var) {
   ggplot(data, aes_string(x = "Length")) +
     geom_histogram(aes(y = after_stat(density)), bins = 30, fill = "skyblue", color = "black", alpha = 0.7) +
     stat_function(fun = dnorm, 
@@ -7,6 +7,6 @@ plot_length_histogram <- function(data, group_var, title) {
                   color = "red", size = 1) +
     facet_wrap(as.formula(paste("~", group_var))) +
     theme_minimal() +
-    labs(title = title, x = "Length [um]", y = "Density") +
+    labs(x = "Length [um]", y = "Density") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
 }

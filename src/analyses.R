@@ -80,13 +80,22 @@ print(counts)
 ##### Normality of the lengths #####
 
 # Perform Shapiro-Wilk tests by Country, Section, Region on Length
+source("src/perform_normality_tests.R")
 perform_normality_tests(data_combined, "Country")
 perform_normality_tests(data_combined, "Section")
 perform_normality_tests(data_combined, "Region")
 
-plot_length_histogram(data_combined, "Country", "Length by Country with Normal Distribution")
-plot_length_histogram(data_combined, "Section", "Length by Section with Normal Distribution")
-plot_length_histogram(data_combined, "Region", "Length by Region with Normal Distribution")
+source("src/plot_length_histogram.R")
+
+norm_country <- plot_length_histogram(data_combined, "Country")
+norm_section <- plot_length_histogram(data_combined, "Section")
+norm_region <- plot_length_histogram(data_combined, "Region")
+
+ggarrange(norm_country, norm_section, norm_region, 
+          ncol=1, nrow = 3, 
+          labels = c("A", "B", "C")) %>%
+ggsave(filename = "supplementary_material/normality_lengths.pdf", width = 170, 
+       units = "mm", height = 170)
 
 ##### Length plots #####
 
@@ -115,7 +124,7 @@ Section_length <- plot_distance_boxplot(data_combined, "Section", colors_list$Se
 ggarrange(Section_length, Region_length, FZ_length, 
           ncol=3, widths = c(3,2,2), 
           labels = c("A", "B", "C")) %>%
-  ggsave(filename = "figs/lengths.pdf", width = 170, units = "mm")
+ggsave(filename = "figs/lengths.pdf", width = 170, units = "mm")
 
 data_combined %>%
   group_by(Section) %>%
