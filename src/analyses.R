@@ -95,22 +95,11 @@ ggarrange(norm_country, norm_section, norm_region,
           ncol=1, nrow = 3, 
           labels = c("A", "B", "C")) %>%
 ggsave(filename = "supplementary_material/normality_lengths.pdf", width = 170, 
-       units = "mm", height = 170)
+       units = "mm", height = 170, device=cairo_pdf)
 
 ##### Length plots #####
 
-plot_distance_boxplot <- function(data, group_var, colors, title) {
-  ggplot(data, aes_string(x = group_var, y = "Length", fill = group_var)) +
-    geom_boxplot(alpha = 0.7, outlier.shape = 16, outlier.size = 2) +
-    theme_minimal() +
-    scale_fill_manual(values = colors) +
-    labs(x = group_var, y = "Length [um]") +
-    theme(legend.position = "none") +
-    theme(
-      axis.text.x = element_text(angle = 45, hjust = 1),
-      plot.title = element_text(face = "bold", hjust = 0.5)
-    )
-}
+source("src/plot_distance_boxplot.R")
 
 FZ_length <- plot_distance_boxplot(data_combined, "FaciesZone", colors_list$FaciesZone,)
 
@@ -124,7 +113,8 @@ Section_length <- plot_distance_boxplot(data_combined, "Section", colors_list$Se
 ggarrange(Section_length, Region_length, FZ_length, 
           ncol=3, widths = c(3,2,2), 
           labels = c("A", "B", "C")) %>%
-ggsave(filename = "figs/lengths.pdf", width = 170, units = "mm")
+ggsave(filename = "figs/lengths.pdf", width = 170, height = 100, 
+       units = "mm", device=cairo_pdf)
 
 data_combined %>%
   group_by(Section) %>%
