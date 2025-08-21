@@ -126,14 +126,7 @@ data_combined %>%
 ##### Kruskal-Wallis test #####
 
 kruskal.test(Length ~ Section, data = data_combined)
-dunn.test(data_combined$Length, g=data_combined$Section)
-
-### Normality ####
-
-check_normality_and_plot(data_combined, "Country")
-check_normality_and_plot(data_combined, "Section")
-check_normality_and_plot(data_combined, "Region")
-check_normality_and_plot(data_combined, "Part")
+dunn.test(data_combined$Length, g=data_combined$Section, method="bonferroni")
 
 #### PCA Analysis by Grouping Variables ####
 
