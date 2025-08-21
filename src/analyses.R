@@ -33,11 +33,17 @@ morphol.disparity(coords ~ 1, groups = specimen_info_matched$Chirality,
                   print.progress = TRUE)
 
 # Plot PCA colored by chirality
+
+pdf(file="supplementary_material/PCA_chirality.pdf")
 par(mfrow = c(1, 1))
 cols <- c("Left" = "blue", "Right" = "red")
-plot(pca_chirality$x[, 1], pca_chirality$x[, 2], col = cols[specimen_info_matched$Chirality], pch = 19,
+symbols <- c("Left" = 18, "Right" = 19)
+plot(pca_chirality$x[, 1], pca_chirality$x[, 2], 
+     col = cols[specimen_info_matched$Chirality], 
+     pch = symbols[specimen_info_matched$Chirality],
      xlab = "PC1", ylab = "PC2", main = "PCA of Shape by Chirality")
-legend("topright", legend = levels(specimen_info_matched$Chirality), col = cols, pch = 19)
+legend("bottomright", legend = levels(specimen_info_matched$Chirality), col = cols, pch = 19)
+dev.off()
 
 # Calculate mean shapes for each group
 mean_shape_left <- geomorph::mshape(landmarks.gpa$coords[, , specimen_info_matched$Chirality == "Left"])
