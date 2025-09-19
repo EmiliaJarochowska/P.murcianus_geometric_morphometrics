@@ -6,6 +6,23 @@ library(dplyr)
 source("src/import_data.R")   # defines colors_list
 load("data/processed_data.RData")
 
+
+
+#### Regression model ####
+
+ggplot(data_combined, aes(x = Length, y = PC1)) +
+  geom_point()
+
+
+# Regression model with line #
+
+ggplot(data_combined, aes(x = Length, y = PC1)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) 
+
+
+
+
 #### Correlation Analysis ####
 # Overall Pearson correlation
 cor_test <- cor.test(data_combined$PC1, data_combined$Length)
