@@ -21,6 +21,9 @@ ggplot(data_combined, aes(x = Length, y = PC1)) +
   geom_smooth(method = "lm", se = FALSE) 
 
 
+m <- lm(PC1 ~ Length, data = data_combined)
+
+summary(m)
 
 
 #### Correlation Analysis ####
