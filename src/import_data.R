@@ -15,6 +15,8 @@ specimen_info <- read.csv("data/Specimens_info.csv", header = TRUE)
 
 #### Data cleaning and preparation ####
 
+specimen_info$Part <- trimws(specimen_info$Part)
+
 # Clean specimen IDs: trim whitespace and unify case
 specimen_info$ID <- specimen_info$ID %>% 
   trimws() %>% 
@@ -82,38 +84,18 @@ data_combined <- specimen_info_matched %>%
 data_combined$PC1 <- PCA$x[, 1]
 data_combined$PC2 <- PCA$x[, 2]
 
-#### Create regional classifications ####
-
-# Recode Region from Country
-data_combined$Region <- dplyr::recode_factor(
-  data_combined$Country,
-  "Slovenia" = "North-Eastern part",
-  "Bosnia and Herzegovina" = "North-Eastern part",
-  "Spain" = "Western part",
-  .default = NA_character_
-)
-
-# Define the Part variable as a subregion of the Sephardic Province
-
-data_combined$Part <- dplyr::recode_factor(
-  data_combined$Country,
-  "Slovenia" = "North-Eastern Subprovince",
-  "Bosnia and Herzegovina" = "North-Eastern Subprovince", 
-  "Spain" = "Western Subprovince",
-  .default = NA_character_
-)
-
 #### Define factor orders and color schemes ####
 
 # Define Section colors and custom order
 section_order <- c("Calasparra", "Henarejos", "Libros", "Bugarra", "Prikrnica", "Drežnica")
 data_combined$Section <- factor(data_combined$Section, levels = section_order)
+data_combined$Part <- as.factor(data_combined$Part)
 
 # Color palettes
 colors_list <- list(
   FaciesZone = c("FZ3" = "grey", "FZ7" = "#0033A0", "FZ8" = "#D81B60"),
   Country = c("Slovenia" = "grey", "Bosnia and Herzegovina" = "#0033A0", "Spain" = "#D81B60"),
-  Region = c("North-Eastern part" = "grey", 
+  Part = c("North-Eastern part" = "grey", 
              "Western part" = "#0033A0"),
   Section = c(
     "Calasparra" = "#d73027",
