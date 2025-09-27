@@ -95,8 +95,8 @@ data_combined$Part <- as.factor(data_combined$Part)
 colors_list <- list(
   FaciesZone = c("FZ3" = "grey", "FZ7" = "#0033A0", "FZ8" = "#D81B60"),
   Country = c("Slovenia" = "grey", "Bosnia and Herzegovina" = "#0033A0", "Spain" = "#D81B60"),
-  Part = c("North-Eastern part" = "grey", 
-             "Western part" = "#0033A0"),
+  Part = c("North-Eastern" = "grey", 
+             "Western" = "#0033A0"),
   Section = c(
     "Calasparra" = "#d73027",
     "Henarejos" = "#fc8d59", 
