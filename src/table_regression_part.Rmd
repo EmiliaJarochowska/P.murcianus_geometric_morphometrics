@@ -1,0 +1,9 @@
+---
+output: word_document
+---
+
+```{r, echo = FALSE}
+load("../data/regression_part_summary.RData")
+knitr::kable(part_summary$coefficients)
+```
+

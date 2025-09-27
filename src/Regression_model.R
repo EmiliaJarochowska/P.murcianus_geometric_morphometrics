@@ -6,7 +6,7 @@ library(tidyr)
 library(purrr)
 
 # Load processed data
-load("data/processed_data.RData")
+source("src/import_data.R")
 data_combined$FaciesZone <- as.factor(data_combined$FaciesZone)
 
 #### Exploratory analysis ####
@@ -17,11 +17,17 @@ length_model <- lm(PC1 ~ Length, data = data_combined)
 summary(length_model)
 visreg(length_model, gg = TRUE)
 length_part_model <- lm(PC1 ~ Length * Part, data = data_combined)
-summary(length_part_model)
-visreg(length_part_model, gg = TRUE, "Length", by="Part")
-length_country_model <- lm(PC1 ~ Length * Country, data = data_combined)
-summary(length_country_model)
-visreg(length_country_model, gg = TRUE)
+pdf("figs/regression_by_part.pdf",
+    width=6.69,
+    height = 3)
+visreg(length_part_model, gg = TRUE, "Length", 
+       by="Part",
+       xlab = "Length [µm]")
+dev.off()
+
+# This saves the regression output so it can be exported to doc
+part_summary <- summary(length_part_model)
+save(part_summary, file="data/regression_part_summary.RData") #loaded in table_regression_part.Rmd
 length_section_model <- lm(PC1 ~ Length * Section, data = data_combined)
 summary(length_section_model)
 visreg(length_section_model, gg = TRUE, "Length", by="Section")
@@ -90,10 +96,10 @@ coef_summary <- data.frame(
   upper_50 = apply(all_coefficients, 2, quantile, 0.75, na.rm = TRUE)
 )
 
-cat("\nCoefficient Summary Across", n_iterations, "Iterations:\n")
+# Raw coefficients 
 print(coef_summary, digits = 4)
 
-# Calculate slopes for each Section in each iteration
+# Calculate slopes for each section in each iteration
 slope_data <- data.frame()
 sections <- levels(data_combined$Section)
 
@@ -145,8 +151,8 @@ p1 <- ggplot(all_fitted, aes(x = Length, y = fitted)) +
   geom_smooth(aes(color = Section), method = "lm", se = TRUE, size = 1.2) +
   scale_color_manual(values = colors_list$Section) +
   labs(
-    x = "Length",
-    y = "Fitted PC1",
+    x = "Length [µm]",
+    y = "PC1",
   ) +
   theme_minimal() +
   theme(
@@ -154,7 +160,7 @@ p1 <- ggplot(all_fitted, aes(x = Length, y = fitted)) +
     legend.title = element_text(face = "bold")
   )
 
-print(p1)
+ggsave("figs/regression_sections.pdf", p1, width=170, units="mm")
 
 p2 <- ggplot(all_fitted, aes(x = Length, y = fitted)) +
   geom_line(aes(group = iteration), alpha = 0.2, color = "gray50") +
