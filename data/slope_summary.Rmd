@@ -1,0 +1,10 @@
+---
+output: word_document
+---
+
+```{r, echo=FALSE}
+load(file="../data/slope_summary.RData")
+slope_summary <- dplyr::rename(slope_summary, "Mean slope" = mean_slope, "SD slope" = sd_slope, "Lower 95 CI" = lower_95, "Upper 95 CI" = upper_95)
+knitr::kable(slope_summary, format.args = list(scientific = FALSE))
+```
+

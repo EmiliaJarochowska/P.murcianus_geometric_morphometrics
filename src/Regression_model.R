@@ -6,6 +6,7 @@ library(tidyr)
 library(purrr)
 
 # Load processed data
+set.seed(42)
 source("src/import_data.R")
 data_combined$FaciesZone <- as.factor(data_combined$FaciesZone)
 
@@ -17,17 +18,13 @@ length_model <- lm(PC1 ~ Length, data = data_combined)
 summary(length_model)
 visreg(length_model, gg = TRUE)
 length_part_model <- lm(PC1 ~ Length * Part, data = data_combined)
-pdf("figs/regression_by_part.pdf",
-    width=6.69,
-    height = 3)
-visreg(length_part_model, gg = TRUE, "Length", 
-       by="Part",
-       xlab = "Length [µm]")
-dev.off()
+
 
 # This saves the regression output so it can be exported to doc
 part_summary <- summary(length_part_model)
 save(part_summary, file="data/regression_part_summary.RData") #loaded in table_regression_part.Rmd
+
+# these models we do not show in the manuscript because they suffer from uneven # of observations
 length_section_model <- lm(PC1 ~ Length * Section, data = data_combined)
 summary(length_section_model)
 visreg(length_section_model, gg = TRUE, "Length", by="Section")
@@ -81,11 +78,11 @@ for (i in 1:n_iterations) {
 # Combine all fitted values
 all_fitted <- bind_rows(fitted_values_list)
 
-# Extract and summarize coefficients across iterations
+# Extract coefficients across iterations
 all_coefficients <- do.call(rbind, lapply(model_results, function(x) x$coefficients))
 coef_names <- colnames(all_coefficients)
 
-# Calculate coefficient statistics
+# Coefficient statistics
 coef_summary <- data.frame(
   coefficient = coef_names,
   mean = colMeans(all_coefficients, na.rm = TRUE),
@@ -138,10 +135,13 @@ slope_summary <- slope_data %>%
     sd_slope = sd(slope, na.rm = TRUE),
     lower_95 = quantile(slope, 0.025, na.rm = TRUE),
     upper_95 = quantile(slope, 0.975, na.rm = TRUE),
-    lower_50 = quantile(slope, 0.25, na.rm = TRUE),
-    upper_50 = quantile(slope, 0.75, na.rm = TRUE),
+#    lower_50 = quantile(slope, 0.25, na.rm = TRUE),
+#    upper_50 = quantile(slope, 0.75, na.rm = TRUE),
     .groups = 'drop'
   )
+
+# Export for publication
+save(slope_summary, file="data/slope_summary.RData") # used in slope_summary.Rmd
 
 ##### Line plot for individual interations #####
 
