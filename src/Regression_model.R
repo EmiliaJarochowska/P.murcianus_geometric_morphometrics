@@ -135,15 +135,15 @@ slope_summary <- slope_data %>%
     sd_slope = sd(slope, na.rm = TRUE),
     lower_95 = quantile(slope, 0.025, na.rm = TRUE),
     upper_95 = quantile(slope, 0.975, na.rm = TRUE),
-#    lower_50 = quantile(slope, 0.25, na.rm = TRUE),
-#    upper_50 = quantile(slope, 0.75, na.rm = TRUE),
+    lower_50 = quantile(slope, 0.25, na.rm = TRUE),
+    upper_50 = quantile(slope, 0.75, na.rm = TRUE),
     .groups = 'drop'
   )
 
 # Export for publication
 save(slope_summary, file="data/slope_summary.RData") # used in slope_summary.Rmd
 
-##### Line plot for individual interations #####
+##### Line plot for individual iterations #####
 
 p1 <- ggplot(all_fitted, aes(x = Length, y = fitted)) +
   geom_smooth(aes(group = interaction(Section, iteration), color = Section), 
@@ -168,7 +168,7 @@ p2 <- ggplot(all_fitted, aes(x = Length, y = fitted)) +
   geom_point(aes(y = PC1), alpha = 0.05, size = 0.5) +
   facet_wrap(~ Section, scales = "free_x", ncol = 3) +
   labs(
-    x = "Length",
+    x = "Length [µm]",
     y = "PC1",
   ) +
   theme_minimal() +
@@ -176,7 +176,7 @@ p2 <- ggplot(all_fitted, aes(x = Length, y = fitted)) +
     strip.text = element_text(face = "bold")
   )
 
-print(p2)
+ggsave("supplementary_material/regression_section_points.pdf",p2, width=170, units="mm")
 
 ##### Visualize slope distributions with confidence intervals #####
 
@@ -193,7 +193,6 @@ p3 <- ggplot(slope_data, aes(x = Section, y = slope, fill = Section)) +
   labs(
     x = "Section",
     y = "Slope (Length effect on PC1)",
-    caption = "Diamond: mean, Error bars: 95% CI, Box: IQR, Violin: full distribution"
   ) +
   theme_minimal() +
   theme(
@@ -201,9 +200,12 @@ p3 <- ggplot(slope_data, aes(x = Section, y = slope, fill = Section)) +
     axis.text.x = element_text(angle = 45, hjust = 1),
   )
 
-print(p3)
+# Diamond: mean, Error bars: 95% CI, Box: IQR, Line: full distribution
+ggsave("figs/slope_coefficients.pdf",p3, width=170, height=100, units="mm")
 
 ##### Compare slope confidence intervals #####
+
+# a different version of the plot, not used in the end
 p4 <- ggplot(slope_summary, aes(x = Section, y = mean_slope, color = Section)) +
   geom_point(size = 3) +
   geom_errorbar(aes(ymin = lower_95, ymax = upper_95), width = 0.2, size = 1) +
@@ -211,10 +213,8 @@ p4 <- ggplot(slope_summary, aes(x = Section, y = mean_slope, color = Section)) +
   geom_hline(yintercept = 0, linetype = "dashed", alpha = 0.5) +
   scale_color_manual(values = colors_list$Section) +
   labs(
-    subtitle = "Comparison of slopes across Sections",
     x = "Section",
     y = "Slope (Length effect on PC1)",
-    caption = "Thick bars: 50% CI, Thin bars: 95% CI"
   ) +
   theme_minimal() +
   theme(
@@ -222,7 +222,8 @@ p4 <- ggplot(slope_summary, aes(x = Section, y = mean_slope, color = Section)) +
     axis.text.x = element_text(angle = 45, hjust = 1),
   )
 
-print(p4)
+# Thick bars: 50% CI, Thin bars: 95% CI
+p4
 
 ##### R² #####
 
@@ -248,7 +249,7 @@ p5 <- ggplot(data.frame(r_squared = r_squared_values), aes(x = r_squared)) +
   ) +
   theme_minimal() 
 
-print(p5) # Dashed line: mean, Dotted lines: 95% CI
+ggsave("supplementary_material/r2.pdf",p5, width=170, units="mm") # Dashed line: mean, Dotted lines: 95% CI
 
 ##### ANOVA for interactions #####
 
@@ -269,7 +270,7 @@ interaction_pvalues <- sapply(model_results, function(x) {
 })
 
 # Proportion of iterations with p < 0.05:
-sum(interaction_pvalues < 0.05)/100
+mean(interaction_pvalues < 0.05)/100
 # Median p-value:
 median(interaction_pvalues)
 
