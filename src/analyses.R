@@ -147,7 +147,7 @@ pca4 <- plot_pca_scatter(data_combined, "Country", colors_list[["Country"]])
 ggarrange(pca1,pca2,pca3,pca4,
           ncol=2,nrow=2,  
           labels = c("A", "B", "C", "D")) %>%
-  ggsave(filename = "figs/PCA_categories.pdf", width = 170, height = 170, 
+  ggsave(filename = "figs/PCA_categories.pdf", width = 200, height = 170, 
          units = "mm", device=cairo_pdf)
 
 for (var in grouping_vars) {
