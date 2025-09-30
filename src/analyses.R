@@ -79,25 +79,25 @@ print(counts)
 
 ##### Normality of the lengths #####
 
-# Perform Shapiro-Wilk tests by Country, Section, Region on Length
+# Perform Shapiro-Wilk tests by Country, Section, Part on Length
 source("src/perform_normality_tests.R")
 perform_normality_tests(data_combined, "Country")
 perform_normality_tests(data_combined, "Section")
-perform_normality_tests(data_combined, "Region")
+perform_normality_tests(data_combined, "Part")
 
 source("src/plot_length_histogram.R")
 
 norm_country <- plot_length_histogram(data_combined, "Country")
 norm_section <- plot_length_histogram(data_combined, "Section")
-norm_region <- plot_length_histogram(data_combined, "Region")
+norm_Part <- plot_length_histogram(data_combined, "Part")
 
-ggarrange(norm_country, norm_section, norm_region, 
+ggarrange(norm_country, norm_section, norm_Part, 
           ncol=1, nrow = 3, 
           labels = c("A", "B", "C")) %>%
 ggsave(filename = "supplementary_material/normality_lengths.pdf", width = 170, 
        units = "mm", height = 170, device=cairo_pdf)
 rm(norm_country)
-rm(norm_region)
+rm(norm_Part)
 rm(norm_section)
 
 ##### Length plots #####
@@ -108,12 +108,12 @@ FZ_length <- plot_distance_boxplot(data_combined, "FaciesZone", colors_list$Faci
 
 plot_distance_boxplot(data_combined, "Country", colors_list$Country)
 
-Region_length <- plot_distance_boxplot(data_combined, "Region", colors_list$Region)
+Part_length <- plot_distance_boxplot(data_combined, "Part", colors_list$Part)
 
 Section_length <- plot_distance_boxplot(data_combined, "Section", colors_list$Section)
 
 
-ggarrange(Section_length, Region_length, FZ_length, 
+ggarrange(Section_length, Part_length, FZ_length, 
           ncol=3, widths = c(3,2,2), 
           labels = c("A", "B", "C")) %>%
 ggsave(filename = "figs/lengths.pdf", width = 170, height = 100, 
@@ -133,14 +133,14 @@ dunn.test(data_combined$Length, g=data_combined$Section, method="bonferroni")
 
 #### PCA Analysis by Grouping Variables ####
 
-grouping_vars <- c("FaciesZone", "Region", "Section", "Country")
+grouping_vars <- c("FaciesZone", "Part", "Section", "Country")
 
 source("src/perform_pca_tests.R")
 source("src/plot_pca_scatter.R")
 source("src/plot_pca_boxplot.R")
 
 pca1 <- plot_pca_scatter(data_combined, "FaciesZone", colors_list[["FaciesZone"]])
-pca2 <- plot_pca_scatter(data_combined, "Region", colors_list[["Region"]])
+pca2 <- plot_pca_scatter(data_combined, "Part", colors_list[["Part"]])
 pca3 <- plot_pca_scatter(data_combined, "Section", colors_list[["Section"]])
 pca4 <- plot_pca_scatter(data_combined, "Country", colors_list[["Country"]])
 
@@ -164,21 +164,21 @@ cat("Pearson correlation for entire dataset:\n")
 cat("  R =", round(cor_test_overall$estimate, 3), 
     "| p-value =", signif(cor_test_overall$p.value, 3), "\n\n")
 
-# Correlation plots by Region
-if ("Region" %in% names(data_combined)) {
-  p_region <- plot_correlation(data_combined, "PC1", "Length", "Region", 
-                               colors_list$Region, "Relationship Between PC1 and Length by Region")
-  print(p_region)
+# Correlation plots by Part
+if ("Part" %in% names(data_combined)) {
+  p_Part <- plot_correlation(data_combined, "PC1", "Length", "Part", 
+                               colors_list$Part, "Relationship Between PC1 and Length by Part")
+  print(p_Part)
   
-  # Calculate slopes by region
-  calculate_slopes(data_combined, "PC1", "Length", "Region")
+  # Calculate slopes by Part
+  calculate_slopes(data_combined, "PC1", "Length", "Part")
   
-  # Kruskal-Wallis test by Region
-  kruskal_result <- stats::kruskal.test(PC1 ~ Region, data = data_combined)
+  # Kruskal-Wallis test by Part
+  kruskal_result <- stats::kruskal.test(PC1 ~ Part, data = data_combined)
   print(kruskal_result)
   
   if (kruskal_result$p.value < 0.05) {
-    dunn_result <- dunn.test::dunn.test(data_combined$PC1, data_combined$Region, method = "bonferroni")
+    dunn_result <- dunn.test::dunn.test(data_combined$PC1, data_combined$Part, method = "bonferroni")
     print(dunn_result)
   }
 }
