@@ -83,6 +83,7 @@ data_combined <- specimen_info_matched %>%
 # Add PCA scores
 data_combined$PC1 <- PCA$x[, 1]
 data_combined$PC2 <- PCA$x[, 2]
+all_pcs <- PCA$x
 
 #### Define factor orders and color schemes ####
 
@@ -90,6 +91,7 @@ data_combined$PC2 <- PCA$x[, 2]
 section_order <- c("Calasparra", "Henarejos", "Libros", "Bugarra", "Prikrnica", "Drežnica")
 data_combined$Section <- factor(data_combined$Section, levels = section_order)
 data_combined$Part <- as.factor(data_combined$Part)
+data_combined$FaciesZone <- as.factor(data_combined$FaciesZone)
 
 # Color palettes
 colors_list <- list(

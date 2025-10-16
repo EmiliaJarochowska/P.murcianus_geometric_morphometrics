@@ -156,6 +156,28 @@ for (var in grouping_vars) {
   }
 }
 
+??adonis2
+permanova_allpcs <- adonis2(all_pcs ~ data_combined$FaciesZone, data = data_combined, method = "euclidean", permutations = 999)
+print(permanova_allpcs)
+permanova_allpcs <- adonis2(all_pcs ~ data_combined$Part, data = data_combined, method = "euclidean", permutations = 999)
+print(permanova_allpcs)
+permanova_allpcs <- adonis2(all_pcs ~ data_combined$Section, data = data_combined, method = "euclidean", permutations = 999)
+print(permanova_allpcs)
+permanova_allpcs <- adonis2(all_pcs ~ data_combined$Country, data = data_combined, method = "euclidean", permutations = 999)
+print(permanova_allpcs)
+
+devtools::install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
+library(pairwiseAdonis)
+
+pairwise_permanova <- pairwise.adonis(all_pcs, data_combined$FaciesZone, sim.method = "euclidean", p.adjust.m = "bonferroni")
+pairwise_permanova
+pairwise_permanova <- pairwise.adonis(all_pcs, data_combined$Part, sim.method = "euclidean", p.adjust.m = "bonferroni")
+pairwise_permanova
+pairwise_permanova <- pairwise.adonis(all_pcs, data_combined$Section, sim.method = "euclidean", p.adjust.m = "bonferroni")
+pairwise_permanova
+pairwise_permanova <- pairwise.adonis(all_pcs, data_combined$Country, sim.method = "euclidean", p.adjust.m = "bonferroni")
+pairwise_permanova
+
 #### Correlation Analysis ####
 
 # Overall correlation
