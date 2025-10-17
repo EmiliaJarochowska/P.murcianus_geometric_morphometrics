@@ -156,27 +156,21 @@ for (var in grouping_vars) {
   }
 }
 
-??adonis2
-permanova_allpcs <- adonis2(all_pcs ~ data_combined$FaciesZone, data = data_combined, method = "euclidean", permutations = 999)
-print(permanova_allpcs)
-permanova_allpcs <- adonis2(all_pcs ~ data_combined$Part, data = data_combined, method = "euclidean", permutations = 999)
-print(permanova_allpcs)
-permanova_allpcs <- adonis2(all_pcs ~ data_combined$Section, data = data_combined, method = "euclidean", permutations = 999)
-print(permanova_allpcs)
-permanova_allpcs <- adonis2(all_pcs ~ data_combined$Country, data = data_combined, method = "euclidean", permutations = 999)
-print(permanova_allpcs)
+morphol.disparity(coords ~ 1, groups = data_combined$FaciesZone, 
+                  data = landmarks.gpa,  
+                  print.progress = TRUE)
 
-devtools::install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
-library(pairwiseAdonis)
+morphol.disparity(coords ~ 1, groups = data_combined$Part, 
+                  data = landmarks.gpa,  
+                  print.progress = TRUE)
 
-pairwise_permanova <- pairwise.adonis(all_pcs, data_combined$FaciesZone, sim.method = "euclidean", p.adjust.m = "bonferroni")
-pairwise_permanova
-pairwise_permanova <- pairwise.adonis(all_pcs, data_combined$Part, sim.method = "euclidean", p.adjust.m = "bonferroni")
-pairwise_permanova
-pairwise_permanova <- pairwise.adonis(all_pcs, data_combined$Section, sim.method = "euclidean", p.adjust.m = "bonferroni")
-pairwise_permanova
-pairwise_permanova <- pairwise.adonis(all_pcs, data_combined$Country, sim.method = "euclidean", p.adjust.m = "bonferroni")
-pairwise_permanova
+morphol.disparity(coords ~ 1, groups = data_combined$Section, 
+                  data = landmarks.gpa,  
+                  print.progress = TRUE)
+
+morphol.disparity(coords ~ 1, groups = data_combined$Country, 
+                  data = landmarks.gpa,  
+                  print.progress = TRUE)
 
 #### Correlation Analysis ####
 
