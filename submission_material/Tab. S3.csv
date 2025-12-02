@@ -1,48 +1,48 @@
-morphol.disparity;
-Part of the Sephardic province;Procrustes variances
-Northeastern;0.02949057
-Western;0.02210844
-Pairwise;p-values
-Northeatsern-Western;0.001
-;
-Country;Procrustes variances
-Bosnia and Herzegovina;0.02187416 
-Slovenia;0.02990905 
-Spain;0.02210844
-Pairwise;p-values
-Bosnia and Herzegovina - Slovenia;0.027
-Bosnia and Herzegovina - Spain;0.949
-Slovenia - Spain;0.001
-;
-FaciesZone;Procrustes variances
-FZ3;0.02949057
-FZ7;0.02508664
-FZ8;0.02200394
-Pairwise;p-values
-FZ3 - FZ7;0.269
-FZ3 - FZ8;0.001
-FZ7 - FZ8;0.428
-;
-Section;Procrustes variances
-Calasparra;0.02508664
-Henarejos;0.02888918
-Libros;0.02287185
-Bugarra;0.02060754
-Prikrnica;0.02990905
-Drežnica;0.02187416
-Pairwise;p-values
-Bugarra - Calasparra;0.258
-Bugarra - Drežnica;0.748
-Calasparra - Drežnica;0.525
-Bugarra - Henarejos;0.003
-Calasparra - Henarejos;0.358
-Drežnica - Henarejos;0.086
-Bugarra - Libros;0.199
-Calasparra - Libros;0.592
-Drežnica - Libros;0.789
-Henarejos - Libros;0.022
-Bugarra - Prikrnica;0.001
-Calasparra - Prikrnica;0.215
-Drežnica - Prikrnica;0.027
-Henarejos - Prikrnica;0.643
-Libros - Prikrnica;0.001
+morphol.disparity,
+Part of the Sephardic province,Procrustes variances
+Northeastern,0.02949057
+Western,0.02210844
+Pairwise,p-values
+Northeatsern-Western,0.001
+,,
+Country,Procrustes variances
+Bosnia and Herzegovina,0.02187416 
+Slovenia,0.02990905 
+Spain,0.02210844
+Pairwise,p-values
+Bosnia and Herzegovina - Slovenia,0.027
+Bosnia and Herzegovina - Spain,0.949
+Slovenia - Spain,0.001
+,,
+FaciesZone,Procrustes variances
+FZ3,0.02949057
+FZ7,0.02508664
+FZ8,0.02200394
+Pairwise,p-values
+FZ3 - FZ7,0.269
+FZ3 - FZ8,0.001
+FZ7 - FZ8,0.428
+
+Section,Procrustes variances
+Calasparra,0.02508664
+Henarejos,0.02888918
+Libros,0.02287185
+Bugarra,0.02060754
+Prikrnica,0.02990905
+Drežnica,0.02187416
+Pairwise,p-values
+Bugarra - Calasparra,0.258
+Bugarra - Drežnica,0.748
+Calasparra - Drežnica,0.525
+Bugarra - Henarejos,0.003
+Calasparra - Henarejos,0.358
+Drežnica - Henarejos,0.086
+Bugarra - Libros,0.199
+Calasparra - Libros,0.592
+Drežnica - Libros,0.789
+Henarejos - Libros,0.022
+Bugarra - Prikrnica,0.001
+Calasparra - Prikrnica,0.215
+Drežnica - Prikrnica,0.027
+Henarejos - Prikrnica,0.643
+Libros - Prikrnica,0.001
