@@ -3,7 +3,27 @@ source("src/import_data.R")
 require(dplyr)
 require(paleoTS)
 
-##### 
+samples <- data.frame(name = rep(NA, dim(landmarks)[3]),
+                     country = rep(NA, dim(landmarks)[3]),
+                     section = rep(NA, dim(landmarks)[3]),
+                     rock_sample = rep(NA, dim(landmarks)[3]),
+                     element_number = rep(NA, dim(landmarks)[3]))
+
+for (i in 1:dim(landmarks)[3]) {
+  samples$name[i] <- dimnames(landmarks)[[3]][i]
+  samples$country[i] <- unlist(strsplit(samples$name[i], "_"))[1]
+  samples$section[i] <- unlist(strsplit(samples$name[i], "_"))[2]
+  samples$rock_sample[i] <- unlist(strsplit(samples$name[i], "_"))[3]
+  samples$element_number[i] <- unlist(strsplit(samples$name[i], "_"))[4]
+}
+
+samples$country <- as.factor(samples$country)
+samples$rock_sample <- as.factor(samples$rock_sample)
+samples$country <- factor(samples$country,
+                          levels = c("SL", "SP", "BAH"),
+                          labels = c("Slovenia", "Spain", "Bosnia and Herzegovina"))
+
+
 pca_data <- data.frame(PC1 = PCA$x[, 1], 
                        PC2 = PCA$x[, 2], 
                        Country = samples$country,
@@ -11,7 +31,8 @@ pca_data <- data.frame(PC1 = PCA$x[, 1],
                        Rock_sample = samples$rock_sample,
                        Element_number = samples$element_number)
 
-pca_Pr <- pca_data[pca_data$Section == "Pr",]
+pca_Pr <- pca_data[pca_data$Section == "PR",]
+rm(pca_data)
 
 # Remove A at the end of sample names
 # Here we assume that A, B, C etc are subsequent samples taken from the same 
@@ -69,6 +90,6 @@ fit9models(PC1_mode,
            method = "AD",
            pool = FALSE)
 
-PC1_sstasis <- opt.joint.Stasis(y = PC1_mode,
-                                pool = F)
-plot(PC1_mode, modelFit = PC1_sstasis)
+# fit a punctuated model from the data
+punc <- fitGpunc(PC1_mode, oshare = FALSE, pool = FALSE)
+plot(PC1_mode, modelFit = punc)
