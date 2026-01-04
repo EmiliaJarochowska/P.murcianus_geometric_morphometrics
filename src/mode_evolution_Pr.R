@@ -86,10 +86,14 @@ PC1_mode <- paleoTS::as.paleoTS(mm = PC1_ts$mean,
                      oldest = "first",
                      reset.time = T)  
 
-fit9models(PC1_mode, 
+mode_evolution <- fit9models(PC1_mode, 
            method = "AD",
            pool = FALSE)
+write.csv(mode_evolution, file="data/Table_S4.csv")
 
 # fit a punctuated model from the data
 punc <- fitGpunc(PC1_mode, oshare = FALSE, pool = FALSE)
+
+pdf(file="figs/mode_of_evolution.pdf", width = 10, height = 6)
 plot(PC1_mode, modelFit = punc)
+dev.off()
