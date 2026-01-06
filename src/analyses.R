@@ -172,33 +172,6 @@ morphol.disparity(coords ~ 1, groups = data_combined$Country,
                   data = landmarks.gpa,  
                   print.progress = TRUE)
 
-#### Correlation Analysis ####
-
-# Overall correlation
-cor_test_overall <- stats::cor.test(data_combined$PC1, data_combined$Length)
-cat("Pearson correlation for entire dataset:\n")
-cat("  R =", round(cor_test_overall$estimate, 3), 
-    "| p-value =", signif(cor_test_overall$p.value, 3), "\n\n")
-
-# Correlation plots by Part
-if ("Part" %in% names(data_combined)) {
-  p_Part <- plot_correlation(data_combined, "PC1", "Length", "Part", 
-                               colors_list$Part, "Relationship Between PC1 and Length by Part")
-  print(p_Part)
-  
-  # Calculate slopes by Part
-  calculate_slopes(data_combined, "PC1", "Length", "Part")
-  
-  # Kruskal-Wallis test by Part
-  kruskal_result <- stats::kruskal.test(PC1 ~ Part, data = data_combined)
-  print(kruskal_result)
-  
-  if (kruskal_result$p.value < 0.05) {
-    dunn_result <- dunn.test::dunn.test(data_combined$PC1, data_combined$Part, method = "bonferroni")
-    print(dunn_result)
-  }
-}
-
 #### Shape Visualization ####
 
 # Variance explained
