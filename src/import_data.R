@@ -2,6 +2,7 @@
 
 # Load required libraries
 library(dplyr)
+set.seed(42)
 
 #### Import landmarks and specimen information ####
 
@@ -119,3 +120,4 @@ save(
   data_combined, colors_list, 
   file = "data/processed_data.RData"
 )
+
