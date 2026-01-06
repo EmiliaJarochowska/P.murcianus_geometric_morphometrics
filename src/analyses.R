@@ -174,11 +174,6 @@ morphol.disparity(coords ~ 1, groups = data_combined$Country,
 
 #### Shape Visualization ####
 
-# Variance explained
-variance_explained <- PCA$sdev^2 / sum(PCA$sdev^2)
-cat(sprintf("PC1: %.2f%%\nPC2: %.2f%%\n", 
-            variance_explained[1] * 100, variance_explained[2] * 100))
-
 # Plot shape changes along PC axes
 par(mfrow = c(2, 2))
 
