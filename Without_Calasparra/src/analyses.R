@@ -142,7 +142,7 @@ source("src/plot_pca_boxplot.R")
 pca1 <- plot_pca_scatter(data_combined, "FaciesZone", colors_list[["FaciesZone"]])
 pca2 <- plot_pca_scatter(data_combined, "Region", colors_list[["Region"]])
 pca3 <- plot_pca_scatter(data_combined, "FaciesZone", colors_list[["FaciesZone"]])
-pca4 <- plot_pca_scatter(data_combined, "Country", colors_list[["Country"]])
+pca4 <- plot_pca_scatter(data_combined, "Section", colors_list[["Section"]])
 
 for (var in grouping_vars) {
   if (var %in% names(data_combined) && var %in% names(colors_list)) {
@@ -158,7 +158,7 @@ morphol.disparity(coords ~ 1, groups = data_combined$Region,
                   data = landmarks.gpa,  
                   print.progress = TRUE)
 
-morphol.disparity(coords ~ 1, groups = data_combined$FaciesZone, 
+morphol.disparity(coords ~ 1, groups = data_combined$Section, 
                   data = landmarks.gpa,  
                   print.progress = TRUE)
 

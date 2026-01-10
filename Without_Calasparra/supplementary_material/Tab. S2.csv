@@ -1,0 +1,31 @@
+Comparing length,,,
+Kruskal-Walli's rank sum test,Chi-squared,Df.,p-value
+By region of Sephardic province,7.6545,1,0.005663
+Dunn test,MeanDifference,p-values
+North-Eastern - Western,-2.766674,0,0028
+,,,
+Kruskal-Walli's rank sum test,Chi-squared,Df.,p-value
+By Country,8.8856,2,0.01176
+Dunn test,MeanDifference,p-values
+Bosnia and Herzegovina - Slovenia,-1.109577,0.4008
+Bosnia and Herzegovina - Spain,-1.896128,0.0869
+Slovenia - Spain,-2.537478,0.0167
+,,,
+Kruskal-Walli's rank sum test,Chi-squared,Df.,p-value
+By FZ,7.6545,1,0.005663
+Dunn test,MeanDifference,p-values
+FZ3 - FZ8,-2.766674,0.0028
+,,,
+Kruskal-Walli's rank sum test,Chi-squared,Df.,p-value
+By sections,20.86,4,0.0003375
+Dunn test,MeanDifference,p-values
+Bugarra - Drežnica,2.013578,0.2203
+Bugarra - Henarejos,3.156440,0.0080
+Drežnica - Henarejos,0.079199,1.0000
+Bugarra - Libros,-0.805521,1.0000
+Drežnica - Libros,-2.277310,0.1138
+Henarejos - Libros,-3.324936,0.0044
+Bugarra - Prikrnica,2.704519,0.0342
+Drežnica - Prikrnica,-1.109577,1.0000
+Henarejos - Prikrnica,-1.812783,0.3493
+Libros - Prikrnica,2.696358,0.0351
