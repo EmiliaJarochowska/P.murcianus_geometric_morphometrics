@@ -140,6 +140,27 @@ FZp1 <- ggplot(all_fitted, aes(x = Length, y = fitted)) +
   )
 
 
+
+FZp2 <- ggplot(slope_data, aes(x = FaciesZone, y = slope, fill = FaciesZone)) +
+  geom_boxplot(width = 0.2, alpha = 0.7, outlier.shape = NA) +
+  geom_point(data = slope_summary, aes(y = mean_slope), 
+             size = 3, color = "black", shape = 18) +
+  geom_errorbar(data = slope_summary, 
+                aes(y = mean_slope, ymin = lower_95, ymax = upper_95),
+                width = 0.1, color = "black", size = 0.5) +
+  scale_fill_manual(values = colors_list$FaciesZone) +
+  labs(
+    x = "Facies Zone",
+    y = "Slope (Length effect on PC1)",
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.x = element_text(angle = 45, hjust = 1),
+  )
+
+# Diamond: mean, Error bars: 95% CI, Box: IQR, Line: full distribution
+ggsave("supplementary_material/Fig.S5.jpg",FZp2, width=170, height=100, units="mm", dpi = 300)
 ##### Visualize slope distributions with confidence intervals #####
 
 FZp3 <- ggplot(slope_data, aes(x = FaciesZone, y = slope, fill = FaciesZone)) +
