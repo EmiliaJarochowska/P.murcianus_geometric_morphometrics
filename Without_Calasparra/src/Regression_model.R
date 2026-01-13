@@ -35,7 +35,7 @@ visreg(length_facies_model, "Length", by="Section", gg = TRUE, layout=c(3,1))
 #### Subsampling ####
 
 # Function to subsample n observations from each Section level
-subsample_by_Section <- function(data, n_per_group = 16, seed = 42) {
+subsample_by_Section <- function(data, n_per_group = 20, seed = 42) {
   data %>%
     group_by(Section) %>%
     sample_n(size = min(n_per_group, n()), replace = FALSE) %>%
@@ -45,7 +45,7 @@ subsample_by_Section <- function(data, n_per_group = 16, seed = 42) {
 
 # Run subsampling 
 n_iterations <- 100
-n_per_group <- 16
+n_per_group <- 20
 model_results <- list()
 fitted_values_list <- list()
 subsample_list <- list()
