@@ -66,6 +66,7 @@ landmarks.gpa <- geomorph::gpagen(landmarks, curves = sliders)
 
 # Perform PCA on GPA-aligned coordinates
 PCA <- geomorph::gm.prcomp(landmarks.gpa$coords)
+plot(PCA)
 
 # Calculate mean shape
 msho <- geomorph::mshape(landmarks.gpa$coords)
