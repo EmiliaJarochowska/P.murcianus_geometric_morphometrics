@@ -66,6 +66,7 @@ landmarks.gpa <- geomorph::gpagen(landmarks, curves = sliders)
 
 # Perform PCA on GPA-aligned coordinates
 PCA <- geomorph::gm.prcomp(landmarks.gpa$coords)
+plot(PCA)
 
 # Calculate mean shape
 msho <- geomorph::mshape(landmarks.gpa$coords)
@@ -89,7 +90,7 @@ all_pcs <- PCA$x
 #### Define factor orders and color schemes ####
 
 # Define Section colors and custom order
-section_order <- c("Calasparra", "Henarejos", "Libros", "Bugarra", "Prikrnica", "Drežnica")
+section_order <- c("Henarejos", "Libros", "Bugarra", "Prikrnica", "Drežnica")
 data_combined$Section <- factor(data_combined$Section, levels = section_order)
 data_combined$Region <- as.factor(data_combined$Region)
 data_combined$FaciesZone <- as.factor(data_combined$FaciesZone)
@@ -101,7 +102,6 @@ colors_list <- list(
   Region = c("North-Eastern" = "grey", 
              "Western" = "#0033A0"),
   Section = c(
-    "Calasparra" = "#d73027",
     "Henarejos" = "#fc8d59", 
     "Libros" = "#fee090",
     "Bugarra" = "#ffffbf",

@@ -14,7 +14,7 @@ data_combined$FaciesZone <- as.factor(data_combined$FaciesZone)
 #### Subsampling ####
 
 # Function to subsample n observations from each facies level
-subsample_by_FZ <- function(data, n_per_group = 16, seed = 42) {
+subsample_by_FZ <- function(data, n_per_group = 20, seed = 42) {
   data %>%
     group_by(FaciesZone) %>%
     sample_n(size = min(n_per_group, n()), replace = FALSE) %>%
@@ -24,7 +24,7 @@ subsample_by_FZ <- function(data, n_per_group = 16, seed = 42) {
 
 # Run subsampling 
 n_iterations <- 100
-n_per_group <- 16
+n_per_group <- 20
 model_results <- list()
 fitted_values_list <- list()
 subsample_list <- list()
@@ -140,6 +140,7 @@ FZp1 <- ggplot(all_fitted, aes(x = Length, y = fitted)) +
   )
 
 
+
 FZp2 <- ggplot(slope_data, aes(x = FaciesZone, y = slope, fill = FaciesZone)) +
   geom_boxplot(width = 0.2, alpha = 0.7, outlier.shape = NA) +
   geom_point(data = slope_summary, aes(y = mean_slope), 
@@ -182,6 +183,8 @@ FZp3 <- ggplot(slope_data, aes(x = FaciesZone, y = slope, fill = FaciesZone)) +
     axis.text.x = element_text(angle = 45, hjust = 1),
   )
 
+# Diamond: mean, Error bars: 95% CI, Box: IQR, Line: full distribution
+ggsave("supplementary_material/Fig.S5.jpg",FZp3, width=170, height=100, units="mm", dpi = 300)
 
 ##### R² #####
 
