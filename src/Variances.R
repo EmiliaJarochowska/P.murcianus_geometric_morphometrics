@@ -1,6 +1,7 @@
 source("src/import_data.R")
 require(dplyr)
 library("ggplot2")
+library(car)
 
 
 samples <- data.frame(name = rep(NA, dim(landmarks)[3]),
@@ -62,3 +63,10 @@ ggplot(pca_data, aes(x = Rock_sample, y = PC1)) +
   geom_errorbar(data = pca_data, aes(x = Rock_sample, ymin = PC1_mean - sqrt(PC1_var), ymax = PC1_mean + sqrt(PC1_var))
   ) +
   theme_minimal()
+
+
+
+shapiro.test(pca_data$PC1)
+
+# data is non-normal distributed
+leveneTest(PC1 ~ Rock_sample, data = pca_data)
