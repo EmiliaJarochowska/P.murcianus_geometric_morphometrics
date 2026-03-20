@@ -87,28 +87,41 @@ data_combined$PC1 <- PCA$x[, 1]
 data_combined$PC2 <- PCA$x[, 2]
 all_pcs <- PCA$x
 
+#### Separate Prikrnica ####
+data_combined$Section <- as.character(data_combined$Section)
+data_combined$Section[c(21:62, 187:370)] <- "lower part of Prikrnica"
+data_combined$Section[c(63:186, 371:384)] <- "upper part of Prikrnica"
+
+
+#### Define Region based on Section ####
+
+data_combined$Region <- as.character(data_combined$Region)
+data_combined$Region[data_combined$Section %in% c("Henarejos","Libros","Bugarra")] <- "Western"
+data_combined$Region[data_combined$Section %in% c("lower part of Prikrnica", "upper part of Prikrnica", "Drežnica")] <- "Northeastern"
+
 #### Define factor orders and color schemes ####
 
 # Define Section colors and custom order
-section_order <- c("Henarejos", "Libros", "Bugarra", "Prikrnica", "Drežnica")
+section_order <- c("Henarejos", "Libros", "Bugarra", "lower part of Prikrnica", "upper part of Prikrnica", "Drežnica")
+Region_order <- c("Western", "Northeastern")
+FaciesZone_order <- c("FZ8", "FZ3")
 data_combined$Section <- factor(data_combined$Section, levels = section_order)
-data_combined$Region <- as.factor(data_combined$Region)
-data_combined$FaciesZone <- as.factor(data_combined$FaciesZone)
+data_combined$Region <- factor(data_combined$Region, levels = Region_order)
+data_combined$FaciesZone <- factor(data_combined$FaciesZone, levels = FaciesZone_order)
 
 # Color palettes
 colors_list <- list(
-  FaciesZone = c("FZ3" = "grey", "FZ7" = "#0033A0", "FZ8" = "#D81B60"),
+  FaciesZone = c("FZ8" = "#D81B60", "FZ3" = "grey"),
   Country = c("Slovenia" = "grey", "Bosnia and Herzegovina" = "#0033A0", "Spain" = "#D81B60"),
-  Region = c("North-Eastern" = "grey", 
-             "Western" = "#0033A0"),
+  Region = c("Western" = "#0033A0", "Northeastern" = "grey"),
   Section = c(
     "Henarejos" = "#fc8d59", 
     "Libros" = "#fee090",
     "Bugarra" = "#ffffbf",
-    "Prikrnica" = "#91bfdb",
+    "lower part of Prikrnica" = "#91bfdb",
+    "upper part of Prikrnica" = "darkblue",
     "Drežnica" = "#4575b4"
-  ),
-  Region = c("Western Subprovince" = "#0033A0", "North-Eastern Subprovince" = "grey")
+  )
 )
 
 # Create chirality grouping factor  
