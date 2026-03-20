@@ -113,10 +113,10 @@ Region_length <- plot_distance_boxplot(data_combined, "Region", colors_list$Regi
 Section_length <- plot_distance_boxplot(data_combined, "Section", colors_list$Section)
 
 
-ggarrange(Section_length, Region_length, FZ_length, 
+ggarrange(Region_length, FZ_length, Section_length,
           ncol=3, widths = c(3,2,2), 
           labels = c("A", "B", "C")) %>%
-ggsave(filename = "figs/Fig.6.jpg", width = 170, height = 100, 
+ggsave(filename = "figs/Fig.7.jpg", width = 170, height = 100, 
        units = "mm", dpi = 300)
 
 data_combined %>%
@@ -128,8 +128,8 @@ data_combined %>%
 
 ##### Kruskal-Wallis test #####
 
-kruskal.test(Length ~ FaciesZone, data = data_combined)
-dunn.test(data_combined$Length, g=data_combined$FaciesZone, method="bonferroni")
+kruskal.test(Length ~ Section, data = data_combined)
+dunn.test(data_combined$Length, g=data_combined$Section, method="bonferroni")
 
 #### PCA Analysis by Grouping Variables ####
 

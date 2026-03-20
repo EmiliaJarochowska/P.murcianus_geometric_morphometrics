@@ -7,6 +7,6 @@ plot_length_histogram <- function(data, group_var) {
                   color = "red", size = 1) +
     facet_wrap(as.formula(paste("~", group_var))) +
     theme_minimal() +
-    labs(x = "Length [um]", y = "Density") +
+    labs(x = "Length [μm]", y = "Density") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
 }

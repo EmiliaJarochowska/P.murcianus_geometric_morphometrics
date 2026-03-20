@@ -140,6 +140,7 @@ FZp1 <- ggplot(all_fitted, aes(x = Length, y = fitted)) +
   )
 
 
+slope_data$FaciesZone <- factor(slope_data$FaciesZone, levels = FaciesZone_order)
 
 FZp2 <- ggplot(slope_data, aes(x = FaciesZone, y = slope, fill = FaciesZone)) +
   geom_boxplot(width = 0.2, alpha = 0.7, outlier.shape = NA) +
@@ -182,9 +183,6 @@ FZp3 <- ggplot(slope_data, aes(x = FaciesZone, y = slope, fill = FaciesZone)) +
     legend.position = "none",
     axis.text.x = element_text(angle = 45, hjust = 1),
   )
-
-# Diamond: mean, Error bars: 95% CI, Box: IQR, Line: full distribution
-ggsave("supplementary_material/Fig.S5.jpg",FZp3, width=170, height=100, units="mm", dpi = 300)
 
 ##### R² #####
 

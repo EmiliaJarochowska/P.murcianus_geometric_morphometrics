@@ -5,15 +5,6 @@ Western,0.02199924
 Pairwise,p-values
 Northeatsern-Western,0.001
 ,,
-Country,Procrustes variances
-Bosnia and Herzegovina,0.02189007
-Slovenia,0.02987042
-Spain,0.02199924
-Pairwise,p-values
-Bosnia and Herzegovina - Slovenia,0.019
-Bosnia and Herzegovina - Spain,0.975
-Slovenia - Spain,0.001
-,,
 FaciesZone,Procrustes variances
 FZ3,0.02945477
 FZ8,0.02199924
@@ -24,7 +15,8 @@ Section,Procrustes variances
 Henarejos,0.02885781
 Libros,0.02288657
 Bugarra,0.02060062
-Prikrnica,0.02987042
+Lower part of Prikrnica,0.02743508
+Upper part of Prikrnica,0.03385872
 Drežnica,0.02189007
 Pairwise,p-values
 Bugarra - Drežnica,0.694
@@ -33,7 +25,12 @@ Drežnica - Henarejos,0.077
 Bugarra - Libros,0.170
 Drežnica - Libros,0.768
 Henarejos - Libros,0.024
-Bugarra - Prikrnica,0.001
-Drežnica - Prikrnica,0.019
-Henarejos - Prikrnica,0.663
-Libros - Prikrnica,0.001
+Upper part of Prikrnica - Henarejos,0.051
+Upper part of Prikrnica - Libros,0.001
+Upper part of Prikrnica - Bugarra,0.001
+Upper part of Prikrnica - Lower part of Prikrnica,0.002
+Upper part of Prikrnica - Drežnica,0.004
+Lower part of Prikrnica - Henarejos,0.560
+Lower part of Prikrnica - Libros,0.011
+Lower part of Prikrnica - Bugarra,0.001
+Lower part of Prikrnica - Drežnica,0.114

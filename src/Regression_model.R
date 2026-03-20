@@ -178,6 +178,7 @@ p2 <- ggplot(all_fitted, aes(x = Length, y = fitted)) +
 ggsave("supplementary_material/Fig.S4.jpg",p2, width=170, units="mm", dpi = 300)
 
 ##### Visualize slope distributions with confidence intervals #####
+slope_data$Section <- factor(slope_data$Section, levels = Section_order)
 
 p3 <- ggplot(slope_data, aes(x = Section, y = slope, fill = Section)) +
   geom_violin(alpha = 0.4) +
@@ -198,7 +199,7 @@ p3 <- ggplot(slope_data, aes(x = Section, y = slope, fill = Section)) +
     legend.position = "none",
     axis.text.x = element_text(angle = 45, hjust = 1),
   )
-
+ggsave("figs/Fig.9.jpg",p3, width=170, units="mm", dpi = 300)
 
 ##### Compare slope confidence intervals #####
 

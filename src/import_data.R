@@ -111,9 +111,9 @@ data_combined$FaciesZone <- factor(data_combined$FaciesZone, levels = FaciesZone
 
 # Color palettes
 colors_list <- list(
-  FaciesZone = c("FZ8" = "#D81B60", "FZ3" = "grey"),
+  FaciesZone = c("FZ8" = "#fc8d59", "FZ3" = "#91bfdb"),
   Country = c("Slovenia" = "grey", "Bosnia and Herzegovina" = "#0033A0", "Spain" = "#D81B60"),
-  Region = c("Western" = "#0033A0", "Northeastern" = "grey"),
+  Region = c("Western" = "#fc8d59", "Northeastern" = "#91bfdb"),
   Section = c(
     "Henarejos" = "#fc8d59", 
     "Libros" = "#fee090",
