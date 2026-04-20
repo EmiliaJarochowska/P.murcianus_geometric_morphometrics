@@ -32,6 +32,8 @@ morphol.disparity(coords ~ 1, groups = specimen_info_matched$Chirality,
                   data = landmarks.gpa,  
                   print.progress = TRUE)
 
+stats::kruskal.test(PC1 ~ Chirality, data = combined_data_chirality)
+
 # Plot PCA colored by chirality
 
 jpeg(file="supplementary_material/Fig.S1.jpg", width = 2000, height = 2000, res = 300)
