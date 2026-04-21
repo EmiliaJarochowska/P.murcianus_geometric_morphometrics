@@ -50,6 +50,9 @@ pca_data <- merge(pca_data, PC1_var, by = "Rock_sample")
 ggplot(pca_data, aes_string(x = "n", y = "PC1_var")) +
   geom_point()
 
+boxplot(PC1 ~ Rock_sample, data = pca_data,
+        ylab = "PC1 scores", xlab = "Rock sample",
+        cex.axis = 0.7)
 
 # plotted var. for each rock sample
 ggplot(pca_data, aes(x = Rock_sample, y = PC1_var)) +
@@ -63,6 +66,14 @@ ggplot(pca_data, aes(x = Rock_sample, y = PC1)) +
   geom_errorbar(data = pca_data, aes(x = Rock_sample, ymin = PC1_mean - sqrt(PC1_var), ymax = PC1_mean + sqrt(PC1_var))
   ) +
   theme_minimal()
+
+
+ggplot(pca_data, aes(x = Rock_sample, y = PC1)) +
+  stat_boxplot(geom = "errorbar", width = 0.3) +
+  geom_boxplot() +
+  labs(x = "Rock sample", y = "PC1 scores") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45))
 
 
 
