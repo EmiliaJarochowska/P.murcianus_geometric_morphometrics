@@ -1,6 +1,6 @@
-# Geometric morphometrics of *Pseudofurnishius murcianus*
+# Morphological plasticity of *Pseudofurnishius murcianus*
 
-Code and data supporting the manuscript "Geometric morphometric variation of conodont species Pseudofurnishius murcianus in the Triassic Sephardic Province"
+Code and data supporting the manuscript "Morphological plasticity of the Middle Triassic conodont *Pseudofurnishius murcianus* in the Western Tethys"
 
 ## Authors
 
@@ -12,14 +12,20 @@ Emilia Jarochowska
 e.b.jarochowska@uu.nl
 
 Luka Gale 
+luka.gale@geo-zs.si
+luka.gale@ntf.uni-lj.si
 
 Tea Kolar-Jurkovšek 
+tea.kolar-jurkovsek@geo-zs.si
 
 Bogdan Jurkovšek
 
 Gonçalo Silvério
+gsilverio@uevora.pt
 
 Carlos Martínez-Pérez 
+carlos.martinez-perez@bristol.ac.uk
+carlos.martinez-perez@uv.es
 
 ## License 
 

@@ -68,14 +68,14 @@ ggplot(pca_data, aes(x = Rock_sample, y = PC1)) +
   theme_minimal()
 
 
-ggplot(pca_data, aes(x = Rock_sample, y = PC1)) +
+var <- ggplot(pca_data, aes(x = Rock_sample, y = PC1)) +
   stat_boxplot(geom = "errorbar", width = 0.3) +
   geom_boxplot() +
   labs(x = "Rock sample", y = "PC1 scores") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45))
 
-
+ggsave("supplementary_material/Fig.S2.jpg", var, width=170, units="mm", dpi = 300)
 
 shapiro.test(pca_data$PC1)
 
