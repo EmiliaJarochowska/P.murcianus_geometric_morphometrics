@@ -37,6 +37,7 @@ P.murcianus_geometric_morphometrics/
 │   ├── Pr_samples.csv            # Prikrnica sample data
 │   ├── Prikrnica_heights.csv     # Stratigraphic heights for the Prikrnica section
 │   ├── curveslide.csv            # Semi-landmark sliding definitions
+<<<<<<< HEAD
 │   ├── processed_data.RData      # Pre-processed landmarks, GPA results, PCA 
 ├── src/
 │   ├── import_data.R             # Read TPS file, run GPA and PCA, save processed_data.RData
@@ -52,6 +53,31 @@ P.murcianus_geometric_morphometrics/
 ├── supplementary_material/       # Supplementary figures (Fig. S1–S3) and table (S1)
 ├── Tab/                          # Manuscript tables (Word format)
 ├── RMarkdown report
+=======
+│   ├── Table_S4.csv              # Supplementary data table S4
+│   ├── processed_data.RData      # Pre-processed landmarks, GPA results, PCA scores
+│   ├── regression_part_summary.RData  # Regression model summaries
+│   └── slope_summary.RData       # Slope estimates from subsampling
+├── src/
+│   ├── import_data.R             # Read TPS file, run GPA and PCA, save processed_data.RData
+│   ├── process_data.R            # Additional data wrangling utilities
+│   ├── analyses.R                # Main statistical analyses (MANOVA, disparity, Kruskal-Wallis)
+│   ├── perform_normality_tests.R # Shapiro-Wilk normality tests
+│   ├── perform_pca_tests.R       # Kruskal-Wallis + Dunn post-hoc on PC scores
+│   ├── calculate_distance.R      # Pairwise distance calculations
+│   ├── Variances.R               # Levene's tests for variance homogeneity
+│   ├── Regression_model.R        # Linear regression (Length ~ PC1) with subsampling
+│   ├── Regression_facies.R       # Regression stratified by facies zone
+│   ├── mode_evolution_Pr.R       # paleoTS mode-of-evolution analysis
+│   ├── plot_pca_scatter.R        # PCA scatter plots
+│   ├── plot_pca_boxplot.R        # PC score boxplots by group
+│   ├── plot_distance_boxplot.R   # Morphological distance boxplots
+│   ├── plot_length_histogram.R   # Length frequency histograms
+│   └── plot_correlation.R        # Correlation plots
+├── figs/                         # Output figures (Fig. 1–9, mode_of_evolution.pdf)
+├── supplementary_material/       # Supplementary figures (Fig. S1–S7) and tables (S1–S4)
+├── Tab/                          # Manuscript tables (Word format)
+>>>>>>> 443b2cd9fa0a39c50bd420c096615aa8bf3f36db
 └── P.murcianus_geometric_morphometrics.Rproj
 ```
 ## Software requirements
@@ -68,6 +94,7 @@ R (≥ 4.1.0) with the following packages:
 | `ggplot2` | Plotting |
 | `ggpubr` | Multi-panel figure assembly |
 | `egg` | Additional ggplot2 extensions |
+<<<<<<< HEAD
 | `dplyr` | Data manipulation |
 | `tidyr` | Data reshaping |
 | `scales` | Axis formatting |
@@ -75,6 +102,15 @@ R (≥ 4.1.0) with the following packages:
 | `knitr` | R Markdown rendering |
 
 
+=======
+| `visreg` | Regression visualisation |
+| `dplyr` | Data manipulation |
+| `tidyr` | Data reshaping |
+| `purrr` | Functional programming / iteration |
+| `scales` | Axis formatting |
+| `knitr` | R Markdown rendering |
+
+>>>>>>> 443b2cd9fa0a39c50bd420c096615aa8bf3f36db
 Install all packages at once:
 
 ```r
@@ -82,6 +118,7 @@ install.packages(c(
   "geomorph", "paleoTS", "vegan", "car", "dunn.test",
   "ggplot2", "ggpubr", "egg", "visreg",
   "dplyr", "tidyr", "purrr", "scales", "pairwiseAdonis", "knitr"
+  "dplyr", "tidyr", "purrr", "scales", "knitr"
 ))
 ```
 
@@ -99,15 +136,32 @@ Open `P.murcianus_geometric_morphometrics.Rproj` in RStudio (or set the project 
 2. **Statistical analyses**
    ```r
    source("src/analyses.R")
+<<<<<<< HEAD
    source("src/perform_pca_tests.R")
    source("src/calculate_distance.R")
+=======
+   source("src/perform_normality_tests.R")
+   source("src/perform_pca_tests.R")
+   source("src/calculate_distance.R")
+   source("src/Variances.R")
+   source("src/Regression_model.R")
+   source("src/Regression_facies.R")
+>>>>>>> 443b2cd9fa0a39c50bd420c096615aa8bf3f36db
    source("src/mode_evolution_Pr.R")
    ```
 
 3. **Figures**
    ```r
+<<<<<<< HEAD
    source("src/plot_distance_boxplot.R")
    source("src/plot_distance_violin.R.R")
+=======
+   source("src/plot_pca_scatter.R")
+   source("src/plot_pca_boxplot.R")
+   source("src/plot_distance_boxplot.R")
+   source("src/plot_length_histogram.R")
+   source("src/plot_correlation.R")
+>>>>>>> 443b2cd9fa0a39c50bd420c096615aa8bf3f36db
    ```
 
 Steps 2 and 3 load `data/processed_data.RData` (produced in step 1); pre-computed `.RData` files are included so steps 2–3 can be run independently.
