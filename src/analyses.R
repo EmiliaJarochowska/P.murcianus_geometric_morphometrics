@@ -5,102 +5,50 @@ library(dunn.test)
 library(egg)
 library(ggpubr)
 library(dplyr)
+library(pairwiseAdonis)
+library(car)
+library(tidyr)
+
 
 #### Statistical Analysis and Visualization Script ####
 
 # Load and clean up data, set global variables
 source("src/import_data.R")
 
+
 # Or load from saved file if import_data.R had run previously
 # load("data/processed_data.RData")
 
-#### Load helper functions ####
 
-# Function to create PCA scatter plots
-source("src/plot_pca_scatter.R")
-source("src/plot_pca_boxplot.R")
-source("src/perform_pca_tests.R")
-source("src/plot_correlation.R")
+#### Length ####
 
-#### Statistical Analysis of Chirality ####
+##### Chirality #####
 
-# PCA on chirality-filtered coordinates
-pca_chirality <- geomorph::gm.prcomp(landmarks.gpa$coords)
+stats::kruskal.test(Length ~ Chirality, data = data_combined)
 
-# Test if PC scores differ between Left and Right
-morphol.disparity(coords ~ 1, groups = specimen_info_matched$Chirality, 
-                  data = landmarks.gpa,  
-                  print.progress = TRUE)
+aggregate(Length ~ Chirality, data = data_combined, mean)
 
-stats::kruskal.test(PC1 ~ Chirality, data = combined_data_chirality)
 
-# Plot PCA colored by chirality
 
-jpeg(file="supplementary_material/Fig.S1.jpg", width = 2000, height = 2000, res = 300)
-par(mfrow = c(1, 1))
-cols <- c("Left" = "blue", "Right" = "red")
-symbols <- c("Left" = 18, "Right" = 19)
-plot(pca_chirality$x[, 1], pca_chirality$x[, 2], 
-     col = cols[specimen_info_matched$Chirality], 
-     pch = symbols[specimen_info_matched$Chirality],
-     xlab = "PC1", ylab = "PC2", main = "PCA of Shape by Chirality")
-legend("bottomright", legend = levels(specimen_info_matched$Chirality), col = cols, pch = 19)
-dev.off()
 
-# Calculate mean shapes for each group
-mean_shape_left <- geomorph::mshape(landmarks.gpa$coords[, , specimen_info_matched$Chirality == "Left"])
-mean_shape_right <- geomorph::mshape(landmarks.gpa$coords[, , specimen_info_matched$Chirality == "Right"])
+##### Section #####
 
-# Plot mean shapes with deformation grids
-par(mfrow = c(1, 2))
-geomorph::plotRefToTarget(mean_shape_left, mean_shape_right, method = "points",
-                          main = "Mean Shape: Left -> Right")
-geomorph::plotRefToTarget(mean_shape_right, mean_shape_left, method = "points",
-                          main = "Mean Shape: Right -> Left")
-par(mfrow = c(1, 1))
+aggregate(Length ~ Section, data = data_combined, mean)
 
-#### Analysis of Size Differences ####
+kruskal.test(Length ~ Section, data = data_combined)
+dunn.test(data_combined$Length, g=data_combined$Section, method="bonferroni")
 
-combined_data_chirality <- data_combined %>% 
-  dplyr::mutate(Chirality = ifelse(data_combined$Chirality == "R", "Right", "Left"))
 
-print(table(combined_data_chirality$Chirality))
-mean(combined_data_chirality$Length[combined_data_chirality$Chirality == "Right"])
-mean(combined_data_chirality$Length[combined_data_chirality$Chirality == "Left"])
 
-# Test for size differences
-stats::kruskal.test(Length ~ Chirality, data = combined_data_chirality)
 
-# Count specimens by Country and Group (Left/Right)
-counts <- data_combined %>%
-  dplyr::group_by(Country, Chirality) %>%
-  dplyr::summarise(Count = dplyr::n(), .groups = "drop") %>%
-  dplyr::arrange(Country, Chirality)
+##### Region #####
 
-print(counts)
+aggregate(Length ~ Region, data = data_combined, mean)
 
-##### Normality of the lengths #####
+kruskal.test(Length ~ Region, data = data_combined)
 
-# Perform Shapiro-Wilk tests by Country, FaciesZone, Region on Length
-source("src/perform_normality_tests.R")
-perform_normality_tests(data_combined, "Country")
-perform_normality_tests(data_combined, "FaciesZone")
-perform_normality_tests(data_combined, "Region")
 
-source("src/plot_length_histogram.R")
 
-norm_country <- plot_length_histogram(data_combined, "Country")
-norm_Section <- plot_length_histogram(data_combined, "Section")
-norm_Region <- plot_length_histogram(data_combined, "Region")
-
-ggarrange(norm_country, norm_Section, norm_Region, 
-          ncol=1, nrow = 3, 
-          labels = c("A", "B", "C")) %>%
-ggsave(filename = "supplementary_material/Fig.S2.jpg", width = 170, 
-       units = "mm", height = 170, dpi = 300)
-rm(norm_country)
-rm(norm_Region)
-rm(norm_Section)
 
 ##### Length plots #####
 
@@ -108,92 +56,671 @@ source("src/plot_distance_boxplot.R")
 
 FZ_length <- plot_distance_boxplot(data_combined, "FaciesZone", colors_list$FaciesZone,)
 
-plot_distance_boxplot(data_combined, "Country", colors_list$Country)
-
 Region_length <- plot_distance_boxplot(data_combined, "Region", colors_list$Region)
 
 Section_length <- plot_distance_boxplot(data_combined, "Section", colors_list$Section)
 
+Chirality_length <- plot_distance_boxplot(data_combined, "Chirality", colors_list$Chirality)
 
-ggarrange(Region_length, FZ_length, Section_length,
-          ncol=3, widths = c(3,2,2), 
-          labels = c("A", "B", "C")) %>%
-ggsave(filename = "figs/Fig.7.jpg", width = 170, height = 100, 
-       units = "mm", dpi = 300)
+ggarrange(Chirality_length, Region_length, Section_length,
+          ncol=3, widths = c(1,1,2), 
+          labels = c("A", "B", "C"))
+
 
 data_combined %>%
-  group_by(FaciesZone) %>%
+  group_by(Chirality, Region, FaciesZone, Section) %>%
   summarise(
-    Median = median(Length),
-    Mean = mean(Length)
+    Median = median(Length, na.rm = TRUE),
+    Mean = mean(Length, na.rm = TRUE),
+    Count = n(),
+    .groups = "drop"
   )
 
-##### Kruskal-Wallis test #####
 
-kruskal.test(Length ~ Section, data = data_combined)
-dunn.test(data_combined$Length, g=data_combined$Section, method="bonferroni")
+source("src/plot_distance_violin.R")
 
-#### PCA Analysis by Grouping Variables ####
+FZ_length <- plot_distance_violin(data_combined, "FaciesZone", colors_list$FaciesZone, "Facies Zone"
+)
 
-grouping_vars <- c("FaciesZone", "Region", "FaciesZone", "Country")
+Region_length <- plot_distance_violin(data_combined, "Region", colors_list$Region,"Region"
+)
 
-source("src/perform_pca_tests.R")
-source("src/plot_pca_scatter.R")
-source("src/plot_pca_boxplot.R")
+Section_length <- plot_distance_violin( data_combined, "Section", colors_list$Section, "Section"
+)
 
-pca1 <- plot_pca_scatter(data_combined, "FaciesZone", colors_list[["FaciesZone"]])
-pca2 <- plot_pca_scatter(data_combined, "Region", colors_list[["Region"]])
-pca3 <- plot_pca_scatter(data_combined, "Country", colors_list[["Country"]])
-pca4 <- plot_pca_scatter(data_combined, "Section", colors_list[["Section"]])
+Chirality_length <- plot_distance_violin(data_combined, "Chirality", colors_list$Chirality, "Chirality"
+)
 
-for (var in grouping_vars) {
-  if (var %in% names(data_combined) && var %in% names(colors_list)) {
-        perform_pca_tests(data_combined, var)
-  }
-}
 
-morphol.disparity(coords ~ 1, groups = data_combined$FaciesZone, 
-                  data = landmarks.gpa,  
-                  print.progress = TRUE)
+ggarrange(
+  Chirality_length,
+  Region_length,
+  Section_length,
+  ncol = 3,
+  widths = c(1, 1, 1.8),
+  labels = c("A", "B", "C"),
+  align = "hv"
+)
 
-morphol.disparity(coords ~ 1, groups = data_combined$Region, 
-                  data = landmarks.gpa,  
-                  print.progress = TRUE)
+#### Statistical Analysis of first 7 PCs ####
+##### PCA Analysis by Grouping Variables #####
 
-morphol.disparity(coords ~ 1, groups = data_combined$Section, 
-                  data = landmarks.gpa,  
-                  print.progress = TRUE)
+pca1 <- ggplot(data_combined, aes(x = PC1, y = PC2,
+                                  fill = Region,
+                                  shape = Chirality)) +
+  geom_point(size = 4, alpha = 0.7, color = "black") +
+  scale_fill_manual(values = colors_list[["Region"]]) +
+  scale_shape_manual(values = c("Sinistral" = 21,
+                                "Dextral" = 24)) +
+  labs(
+    x = "PC1",
+    y = "PC2",
+    fill = "Region",
+    shape = "Chirality"
+  ) +
+  guides(
+    fill = guide_legend(override.aes = list(shape = 21)),
+    shape = guide_legend(override.aes = list(fill = "white"))
+  ) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom"
+  )
 
-morphol.disparity(coords ~ 1, groups = data_combined$Country, 
-                  data = landmarks.gpa,  
-                  print.progress = TRUE)
 
-#### Shape Visualization ####
+pca2 <- ggplot(data_combined, aes(x = PC1, y = PC2,
+                                  fill = Section,
+                                  shape = Chirality)) +
+  geom_point(size = 4, alpha = 0.7, color = "black") +
+  scale_fill_manual(values = colors_list[["Section"]]) +
+  scale_shape_manual(values = c("Sinistral" = 21,
+                                "Dextral" = 24)) +
+  labs(
+    x = "PC1",
+    y = "PC2",
+    fill = "Section",
+    shape = "Chirality"
+  ) +
+  guides(
+    fill = guide_legend(override.aes = list(shape = 21)),
+    shape = guide_legend(override.aes = list(fill = "white"))
+  ) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom"
+  )
 
-# Plot shape changes along PC axes
-par(mfrow = c(2, 2))
+
+pca3 <- ggplot(data_combined, aes(x = PC1, y = PC2,
+                                  fill = Chirality,
+                                  shape = Chirality)) +
+  geom_point(size = 4, alpha = 0.7, color = "black") +
+  scale_fill_manual(values = colors_list[["Chirality"]]) +
+  scale_shape_manual(values = c("Sinistral" = 21,
+                                "Dextral" = 24)) +
+  labs(
+    x = "PC1",
+    y = "PC2",
+    fill = "Chirality",
+    shape = "Chirality"
+  ) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom"
+  )
+
+
+ggarrange(pca3, pca1, pca2, 
+          labels = c("A", "B", "C")) 
+
+
+
+# sinistral by region
+Region_Sinistral <- ggplot(subset(data_combined, Chirality == "Sinistral"),
+                            aes(x = PC1, y = PC2,
+                                fill = Region)) +
+  geom_point(size = 4, alpha = 0.7, shape = 21, color = "black") +
+  stat_ellipse(aes(color = Region), linewidth = 1) +
+  scale_fill_manual(values = colors_list[["Region"]]) +
+  scale_color_manual(values = colors_list[["Region"]]) +
+  labs(
+    x = "PC1",
+    y = "PC2",
+    fill = "Region",
+    title = "Sinistral chirality by region"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+# dextral by region
+Region_Dextral <- ggplot(subset(data_combined, Chirality == "Dextral"),
+                          aes(x = PC1, y = PC2,
+                              fill = Region)) +
+  geom_point(size = 4, alpha = 0.7, shape = 21, color = "black") +
+  stat_ellipse(aes(color = Region), linewidth = 1) +
+  scale_fill_manual(values = colors_list[["Region"]]) +
+  scale_color_manual(values = colors_list[["Region"]]) +
+  labs(
+    x = "PC1",
+    y = "PC2",
+    fill = "Region",
+    title = "Dextral chirality by region"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+
+ggarrange(Region_Sinistral, Region_Dextral, 
+          labels = c("A", "B")) 
+
+
+
+
+# sinistral by section
+Section_Sinistral <- ggplot(subset(data_combined, Chirality == "Sinistral"),
+       aes(x = PC1, y = PC2,
+           fill = Section)) +
+  geom_point(size = 4, alpha = 0.7, shape = 21, color = "black") +
+  stat_ellipse(aes(color = Section), linewidth = 1) +
+  scale_fill_manual(values = colors_list[["Section"]]) +
+  scale_color_manual(values = colors_list[["Section"]]) +
+  labs(
+    x = "PC1",
+    y = "PC2",
+    fill = "Section",
+    title = "Sinistral chirality"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+# dextral by section
+Section_Dextral <- ggplot(subset(data_combined, Chirality == "Dextral"),
+       aes(x = PC1, y = PC2,
+           fill = Section)) +
+  geom_point(size = 4, alpha = 0.7, shape = 21, color = "black") +
+  stat_ellipse(aes(color = Section), linewidth = 1) +
+  scale_fill_manual(values = colors_list[["Section"]]) +
+  scale_color_manual(values = colors_list[["Section"]]) +
+  labs(
+    x = "PC1",
+    y = "PC2",
+    fill = "Section",
+    title = "Dextral chirality"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+
+ggarrange(Section_Sinistral, Section_Dextral, 
+          labels = c("A", "B")) 
+
+
+
+
+##### Extreme shape changes along first 7 PCs axes #####
+par(mfrow = c(4, 4))
 
 # PC1 shape changes
 geomorph::plotRefToTarget(PCA$shapes$shapes.comp1$min, msho, method = "vector", 
                           main = "PC1 Minimum")
+title(main = "PC1 Minimum")
 geomorph::plotRefToTarget(PCA$shapes$shapes.comp1$max, msho, method = "vector",
                           main = "PC1 Maximum")
-
+title(main = "PC1 Maximum")
 # PC2 shape changes  
 geomorph::plotRefToTarget(PCA$shapes$shapes.comp2$min, msho, method = "vector",
                           main = "PC2 Minimum")
+title(main = "PC2 Minimum")
 geomorph::plotRefToTarget(PCA$shapes$shapes.comp2$max, msho, method = "vector",
                           main = "PC2 Maximum")
+title(main = "PC2 Maximum")
+# PC3 shape changes  
+geomorph::plotRefToTarget(PCA$shapes$shapes.comp3$min, msho, method = "vector",
+                          main = "PC3 Minimum")
+title(main = "PC3 Minimum")
+geomorph::plotRefToTarget(PCA$shapes$shapes.comp3$max, msho, method = "vector",
+                          main = "PC3 Maximum")
+title(main = "PC3 Maximum")
+# PC4 shape changes  
+geomorph::plotRefToTarget(PCA$shapes$shapes.comp4$min, msho, method = "vector",
+                          main = "PC4 Minimum")
+title(main = "PC4 Minimum")
+geomorph::plotRefToTarget(PCA$shapes$shapes.comp4$max, msho, method = "vector",
+                          main = "PC4 Maximum")
+title(main = "PC4 Maximum")
+# PC5 shape changes  
+geomorph::plotRefToTarget(PCA$shapes$shapes.comp5$min, msho, method = "vector",
+                          main = "PC5 Minimum")
+title(main = "PC5 Minimum")
+geomorph::plotRefToTarget(PCA$shapes$shapes.comp5$max, msho, method = "vector",
+                          main = "PC5 Maximum")
+title(main = "PC5 Maximum")
+# PC6 shape changes  
+geomorph::plotRefToTarget(PCA$shapes$shapes.comp6$min, msho, method = "vector",
+                          main = "PC6 Minimum")
+title(main = "PC6 Minimum")
+geomorph::plotRefToTarget(PCA$shapes$shapes.comp6$max, msho, method = "vector",
+                          main = "PC6 Maximum")
+title(main = "PC6 Maximum")
+
 
 par(mfrow = c(1, 1))
 
-#### Summary ####
 
-cat("\n=== ANALYSIS SUMMARY ===\n")
-cat("Total specimens analyzed:", nrow(data_combined), "\n")
-cat("Specimens with valid chirality:", sum(valid_rows), "\n")
-cat("PC1 variance explained:", round(variance_explained[1] * 100, 2), "%\n")
-cat("PC2 variance explained:", round(variance_explained[2] * 100, 2), "%\n")
-cat("Overall PC1-Length correlation:", round(cor_test_overall$estimate, 3), "\n")
+##### Statistical test #####
+###### Chirality ###### 
 
-cat("\nAnalysis complete!\n")
+adonis2(
+  PC_scores ~ Chirality,
+  data = data_combined,
+  permutations = 9999,
+  method = "euclidean")
+
+
+###### Region ###### 
+# Compare only Sinistral specimens: Western vs North-Eastern
+
+adonis_Sinistral <- adonis2(
+  PC_scores[specimen_info_matched$Chirality == "Sinistral", ] ~ Region,
+  data = data_combined[specimen_info_matched$Chirality == "Sinistral", ],
+  method = "euclidean",
+  permutations = 9999
+)
+adonis_Sinistral
+
+
+
+# Compare only Dextral specimens: Western vs North-Eastern
+
+adonis_Dextral <- adonis2(
+  PC_scores[specimen_info_matched$Chirality == "Dextral", ] ~ Region,
+  data = data_combined[specimen_info_matched$Chirality == "Dextral", ],
+  method = "euclidean",
+  permutations = 9999
+)
+
+adonis_Dextral
+
+
+
+
+###### Section ###### 
+# Sinistral
+
+adonis_Sinistral <- adonis2(
+  PC_scores[specimen_info_matched$Chirality == "Sinistral", ] ~ Section,
+  data = data_combined[specimen_info_matched$Chirality == "Sinistral", ],
+  method = "euclidean",
+  permutations = 9999
+)
+
+pairwise_results_Section <- pairwise.adonis2(
+  PC_scores[specimen_info_matched$Chirality == "Sinistral", ] ~ Section,
+  data = data_combined[specimen_info_matched$Chirality == "Sinistral", ],
+  method = "euclidean",
+  permutations = 9999
+)
+
+
+# subset 
+
+run_Section_test <- function(df, n_sample = 10){
+  
+  replicate(500, {
+    
+    keep <- unlist(
+      lapply(levels(df$Section), function(sec){
+        
+        idx <- which(df$Section == sec)
+        
+        if(length(idx) > n_sample){
+          sample(idx, n_sample)
+        } else {
+          idx
+        }
+        
+      })
+    )
+    
+    test <- adonis2(
+      dist(df[keep, paste0("PC",1:7)]) ~ Section,
+      data = df[keep, ],
+      permutations = 999
+    )
+    
+    test$`Pr(>F)`[1]
+    
+  })
+}
+
+
+results_sin_section <- run_Section_test(sin_data)
+
+mean(results_sin_section < 0.05)
+
+
+
+# Dextral
+
+adonis_Sinistral <- adonis2(
+  PC_scores[specimen_info_matched$Chirality == "Dextral", ] ~ Section,
+  data = data_combined[specimen_info_matched$Chirality == "Dextral", ],
+  method = "euclidean",
+  permutations = 9999
+)
+
+pairwise_results_Section <- pairwise.adonis2(
+  PC_scores[specimen_info_matched$Chirality == "Dextral", ] ~ Section,
+  data = data_combined[specimen_info_matched$Chirality == "Dextral", ],
+  method = "euclidean",
+  permutations = 9999
+)
+
+
+#subset
+dex_data <- subset(data_combined, Chirality == "Dextral")
+run_Section_test_dex <- function(df, n_sample = 8){
+  
+  replicate(500, {
+    
+    keep <- unlist(
+      lapply(levels(df$Section), function(sec){
+        
+        idx <- which(df$Section == sec)
+        
+        if(length(idx) > n_sample){
+          sample(idx, n_sample)
+        } else {
+          idx
+        }
+        
+      })
+    )
+    
+    test <- adonis2(
+      dist(df[keep, paste0("PC",1:7)]) ~ Section,
+      data = df[keep, ],
+      permutations = 999
+    )
+    
+    test$`Pr(>F)`[1]
+    
+  })
+}
+
+
+results_dex_section <- run_Section_test_dex(dex_data)
+
+mean(results_dex_section < 0.05)
+
+
+
+##### Mean shapes #####
+# Chirality
+mean_shape_Sinistral <- geomorph::mshape(landmarks.gpa$coords[, , specimen_info_matched$Chirality == "Sinistral"])
+mean_shape_Dextral <- geomorph::mshape(landmarks.gpa$coords[, , specimen_info_matched$Chirality == "Dextral"])
+
+geomorph::plotRefToTarget(mean_shape_Sinistral, mean_shape_Dextral, method = "points",
+                          main = "Mean Shape: Sinistral -> Dextral")
+title(main = "Mean shape of sinistral and Dextral elements (grey dots represents mean shape of sinistral elements, and black dots mean shape of dextral elements")
+
+
+
+plot(
+  mean_shape_Sinistral[,1],
+  mean_shape_Sinistral[,2],
+  asp = 1,
+  type = "n",
+  xlab = "X",
+  ylab = "Y",
+  main = "Mean shapes of Sinistral and Dextral elements"
+)
+
+points(mean_shape_Sinistral[,1], mean_shape_Sinistral[,2],
+       pch=21, bg="black")
+
+points(mean_shape_Dextral[,1], mean_shape_Dextral[,2],
+       pch=21, bg="grey")
+
+
+legend(
+  "topright",
+  legend=c("Sinistral","Dextral"),
+  pch=21,
+  pt.bg=c("black","grey")
+)
+
+
+
+
+
+# Regions
+mean_shape_W <- geomorph::mshape(landmarks.gpa$coords[, , specimen_info_matched$Region == "Western"])
+mean_shape_N <- geomorph::mshape(landmarks.gpa$coords[, , specimen_info_matched$Region == "North-Eastern"]
+)
+geomorph::plotRefToTarget(mean_shape_W, mean_shape_N, method = "points",
+                          main = "Mean Shape: Western -> North-Eastern region")
+title(main = "Mean shape of Western and North-Eastern region elements (grey dots represents mean shape of elements from Weatern region, and black dots from Northeastern region")
+
+
+
+mean_shape_W_Sinistral <- geomorph::mshape(
+  landmarks.gpa$coords[, , specimen_info_matched$Region == "Western" &
+                         specimen_info_matched$Chirality == "Sinistral"]
+)
+
+mean_shape_W_Dextral <- geomorph::mshape(
+  landmarks.gpa$coords[, , specimen_info_matched$Region == "Western" &
+                         specimen_info_matched$Chirality == "Dextral"]
+)
+
+mean_shape_N_Sinistral <- geomorph::mshape(
+  landmarks.gpa$coords[, , specimen_info_matched$Region == "North-Eastern" &
+                         specimen_info_matched$Chirality == "Sinistral"]
+)
+
+mean_shape_N_Dextral <- geomorph::mshape(
+  landmarks.gpa$coords[, , specimen_info_matched$Region == "North-Eastern" &
+                         specimen_info_matched$Chirality == "Dextral"]
+)
+
+
+geomorph::plotRefToTarget(
+  mean_shape_W_Sinistral,
+  mean_shape_N_Sinistral,
+  method = "points",
+  main = "Comparison of Sinistral elements between Western and North-Eastern region"
+)
+title(main = "Comparison of Sinistral elements between Western and North-Eastern region (grey dots represents mean shape of elements from Weatern region, and black dots from Northeastern region)")
+
+
+geomorph::plotRefToTarget(
+  mean_shape_W_Dextral,
+  mean_shape_N_Dextral,
+  method = "points",
+  main = "Comparison of Sinistral elements between Western and North-Eastern region"
+)
+title(main = "Comparison of Dextral elements between Western and North-Eastern region (grey dots represents mean shape of elements from Weatern region, and black dots from Northeastern region)")
+
+
+
+
+
+plot(
+  mean_shape_W_Sinistral[,1],
+  mean_shape_W_Sinistral[,2],
+  asp = 1,
+  type = "n",
+  xlab = "X",
+  ylab = "Y",
+  main = "Mean shapes of sinistral elements across regions"
+)
+points(mean_shape_W_Sinistral[,1], mean_shape_W_Sinistral[,2],
+       pch=21, bg="black")
+
+points(mean_shape_N_Sinistral[,1], mean_shape_N_Sinistral[,2],
+       pch=21, bg="grey")
+
+legend(
+  "topright",
+  legend=c("Western region","Northeastern region"),
+  pch=21,
+  pt.bg=c("black","grey")
+)
+
+
+
+plot(
+  mean_shape_W_Dextral[,1],
+  mean_shape_W_Dextral[,2],
+  asp = 1,
+  type = "n",
+  xlab = "X",
+  ylab = "Y",
+  main = "Mean shapes of dextral elements across regions"
+)
+points(mean_shape_W_Dextral[,1], mean_shape_W_Dextral[,2],
+       pch=21, bg="black")
+
+points(mean_shape_N_Dextral[,1], mean_shape_N_Dextral[,2],
+       pch=21, bg="grey")
+
+legend(
+  "topright",
+  legend=c("W region","NE region"),
+  pch=21,
+  pt.bg=c("black","grey")
+)
+
+
+# Section 
+## Sinistral elements
+
+mean_shape_Henarejos_L <- geomorph::mshape(
+  landmarks.gpa$coords[, , specimen_info_matched$Section == "Henarejos" &
+                         specimen_info_matched$Chirality == "Sinistral"]
+)
+
+mean_shape_Libros_L <- geomorph::mshape(
+  landmarks.gpa$coords[, , specimen_info_matched$Section == "Libros" &
+                         specimen_info_matched$Chirality == "Sinistral"]
+)
+
+mean_shape_Bugarra_L <- geomorph::mshape(
+  landmarks.gpa$coords[, , specimen_info_matched$Section == "Bugarra" &
+                         specimen_info_matched$Chirality == "Sinistral"]
+)
+
+mean_shape_Prikrnica_L <- geomorph::mshape(
+  landmarks.gpa$coords[, , specimen_info_matched$Section == "Prikrnica" &
+                         specimen_info_matched$Chirality == "Sinistral"]
+)
+
+mean_shape_Drežnica_L <- geomorph::mshape(
+  landmarks.gpa$coords[, , specimen_info_matched$Section == "Drežnica" &
+                         specimen_info_matched$Chirality == "Sinistral"]
+)
+
+
+plot(
+  mean_shape_Henarejos_L[,1],
+  mean_shape_Henarejos_L[,2],
+  asp = 1,
+  type = "n",
+  xlab = "X",
+  ylab = "Y",
+  main = "Mean shapes of Sinistral elements by Section"
+)
+
+points(mean_shape_Henarejos_L[,1], mean_shape_Henarejos_L[,2],
+       pch=21, bg="#fc8d59")
+
+points(mean_shape_Libros_L[,1], mean_shape_Libros_L[,2],
+       pch=21, bg="#fee090")
+
+points(mean_shape_Bugarra_L[,1], mean_shape_Bugarra_L[,2],
+       pch=21, bg="#ffffbf")
+
+points(mean_shape_Prikrnica_L[,1], mean_shape_Prikrnica_L[,2],
+       pch=21, bg="darkblue")
+
+points(mean_shape_Drežnica_L[,1], mean_shape_Drežnica_L[,2],
+       pch=21, bg="#4575b4")
+
+
+legend(
+  "topright",
+  legend=c("Henarejos","Libros","Bugarra","Prikrnica","Drežnica"),
+  pch=21,
+  pt.bg=c("#fc8d59","#fee090","#ffffbf","darkblue","#4575b4")
+)
+
+
+
+
+## Dextral elements
+
+
+mean_shape_Henarejos_R <- geomorph::mshape(
+  landmarks.gpa$coords[, , specimen_info_matched$Section == "Henarejos" &
+                         specimen_info_matched$Chirality == "Dextral"]
+)
+
+mean_shape_Libros_R <- geomorph::mshape(
+  landmarks.gpa$coords[, , specimen_info_matched$Section == "Libros" &
+                         specimen_info_matched$Chirality == "Dextral"]
+)
+
+mean_shape_Bugarra_R <- geomorph::mshape(
+  landmarks.gpa$coords[, , specimen_info_matched$Section == "Bugarra" &
+                         specimen_info_matched$Chirality == "Dextral"]
+)
+
+mean_shape_Prikrnica_R <- geomorph::mshape(
+  landmarks.gpa$coords[, , specimen_info_matched$Section == "Prikrnica" &
+                         specimen_info_matched$Chirality == "Dextral"]
+)
+
+mean_shape_Drežnica_R <- geomorph::mshape(
+  landmarks.gpa$coords[, , specimen_info_matched$Section == "Drežnica" &
+                         specimen_info_matched$Chirality == "Dextral"]
+)
+
+
+plot(
+  mean_shape_Henarejos_R[,1],
+  mean_shape_Henarejos_R[,2],
+  asp = 1,
+  type = "n",
+  xlab = "X",
+  ylab = "Y",
+  main = "Mean shapes of Dextral elements by Section"
+)
+
+points(mean_shape_Henarejos_R[,1], mean_shape_Henarejos_R[,2],
+       pch=21, bg="#fc8d59")
+
+points(mean_shape_Libros_R[,1], mean_shape_Libros_R[,2],
+       pch=21, bg="#fee090")
+
+points(mean_shape_Bugarra_R[,1], mean_shape_Bugarra_R[,2],
+       pch=21, bg="#ffffbf")
+
+points(mean_shape_Prikrnica_R[,1], mean_shape_Prikrnica_R[,2],
+       pch=21, bg="darkblue")
+
+points(mean_shape_Drežnica_R[,1], mean_shape_Drežnica_R[,2],
+       pch=21, bg="#4575b4")
+
+
+legend(
+  "topright",
+  legend=c("Henarejos","Libros","Bugarra","Prikrnica","Drežnica"),
+  pch=21,
+  pt.bg=c("#fc8d59","#fee090","#ffffbf","darkblue","#4575b4")
+)
+
+
+
+
+

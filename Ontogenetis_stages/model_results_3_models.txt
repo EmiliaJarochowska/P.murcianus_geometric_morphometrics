@@ -1,0 +1,120 @@
+SIMPLE LINEAR REGRESSION
+
+
+Call:
+lm(formula = Denticles ~ Length, data = dat)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-3.766 -0.630 -0.023  0.570  3.060 
+
+Coefficients:
+            Estimate Std. Error t value            Pr(>|t|)    
+(Intercept) 3.845722   0.241875    15.9 <0.0000000000000002 ***
+Length      0.009714   0.000613    15.8 <0.0000000000000002 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.948 on 372 degrees of freedom
+Multiple R-squared:  0.403,	Adjusted R-squared:  0.401 
+F-statistic:  251 on 1 and 372 DF,  p-value: <0.0000000000000002
+
+
+
+BROKEN-STICK: 1 BREAKPOINT / 2 LINES
+
+
+	***Regression Model with Segmented Relationship(s)***
+
+Call: 
+segmented.lm(obj = base_model, seg.Z = ~Length, psi = list(Length = initial_psi), 
+    control = segmented::seg.control(display = FALSE, it.max = 300, 
+        n.boot = n_boot, seed = 123))
+
+Estimated Break-Point(s):
+                Est. St.Err
+psi1.Length 529.253 28.433
+
+Coefficients of the linear terms:
+             Estimate Std. Error t value            Pr(>|t|)    
+(Intercept)  3.377955   0.290465   11.63 <0.0000000000000002 ***
+Length       0.011009   0.000763   14.42 <0.0000000000000002 ***
+U1.Length   -0.011087   0.003738   -2.97                  NA    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.935 on 370 degrees of freedom
+Multiple R-Squared: 0.422,  Adjusted R-squared: 0.417 
+
+Boot restarting based on 8 samples. Last fit:
+Convergence attained in 2 iterations (rel. change 0.0000000000046521)
+
+
+BROKEN-STICK: 2 BREAKPOINTS / 3 LINES
+
+
+	***Regression Model with Segmented Relationship(s)***
+
+Call: 
+segmented.lm(obj = base_model, seg.Z = ~Length, psi = list(Length = initial_psi), 
+    control = segmented::seg.control(display = FALSE, it.max = 300, 
+        n.boot = n_boot, seed = 123))
+
+Estimated Break-Point(s):
+                Est. St.Err
+psi1.Length 297.862 18.735
+psi2.Length 532.174 34.824
+
+Coefficients of the linear terms:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -0.05861    1.74297   -0.03  0.97319    
+Length       0.02294    0.00639    3.59  0.00037 ***
+U1.Length   -0.01294    0.00645   -2.01       NA    
+U2.Length   -0.00934    0.00383   -2.44       NA    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.929 on 368 degrees of freedom
+Multiple R-Squared: 0.433,  Adjusted R-squared: 0.425 
+
+Boot restarting based on 6 samples. Last fit:
+Convergence attained in 2 iterations (rel. change 0.0000000038609)
+
+
+MODEL COMPARISON
+
+                 Model   N K   logLik     AIC    AICc     BIC     RMSE
+ Broken-stick: 3 lines 374 7 -500.242 1014.48 1014.79 1041.95 0.921831
+ Broken-stick: 2 lines 374 5 -503.667 1017.33 1017.50 1036.96 0.930313
+                Linear 374 3 -509.833 1025.67 1025.73 1037.44 0.945776
+ R_squared Delta_AIC AIC_weight Delta_AICc AICc_weight Delta_BIC
+  0.432509   0.00000 0.80376259     0.0000  0.79211576  4.997745
+  0.422018   2.85077 0.19323760     2.7078  0.20454906  0.000000
+  0.402644  11.18151 0.00299981    10.9404  0.00333518  0.482231
+
+
+TWO-LINE EQUATIONS
+
+                 Model Segment Intercept         Slope
+ Broken-stick: 2 lines  Line 1   3.37795  0.0110085238
+ Broken-stick: 2 lines  Line 2   9.24582 -0.0000785339
+                 Model Breakpoint  Length Denticles Standard_error CI_95_lower
+ Broken-stick: 2 lines          1 529.253   9.20425         28.433     473.526
+ CI_95_upper
+     584.981
+
+
+THREE-LINE EQUATIONS
+
+                 Model Segment  Intercept       Slope
+ Broken-stick: 3 lines  Line 1 -0.0586101 0.022942376
+ Broken-stick: 3 lines  Line 2  3.7952723 0.010003877
+ Broken-stick: 3 lines  Line 3  8.7680049 0.000659689
+                 Model Breakpoint  Length Denticles Standard_error CI_95_lower
+ Broken-stick: 3 lines          1 297.862   6.77504        18.7346     261.143
+ Broken-stick: 3 lines          2 532.174   9.11907        34.8243     463.920
+ CI_95_upper
+     334.581
+     600.428
+
+AICc(3 lines) - AICc(2 lines) = -2.707799

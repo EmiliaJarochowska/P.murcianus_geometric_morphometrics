@@ -1,0 +1,156 @@
+---
+title: "Ontogenetic change in conodont elements"
+subtitle: "Comparison of linear, two-line, and three-line broken-stick models"
+author: "Humberto G. Ferrón Jiménez"
+date: today
+lang: en
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: true
+    code-summary: "Show R code"
+    code-tools: true
+    embed-resources: true
+    theme: cosmo
+    df-print: paged
+execute:
+  echo: true
+  warning: false
+  message: false
+params:
+  data_file: "C:/Users/Humbe/OneDrive - University of Bristol/Desktop/Conodontos_Carlos/data_combined.xlsx"
+  sheet: 1
+---
+
+# Biological background
+
+The dataset represents a **population of conodont elements spanning different ontogenetic stages**. Two variables were measured for each element:
+
+- **element length**, used as a proxy for body or element size;
+- **number of denticles on the blade**, a meristic character that may change during ontogeny.
+
+The biological objective is to determine whether the relationship between these variables is best represented by:
+
+1. a single continuous growth trajectory;
+2. two ontogenetic phases separated by one transition; or
+3. three ontogenetic phases separated by two transitions.
+
+During ontogeny, denticles may be added rapidly in small elements, more slowly during an intermediate stage, and cease to be added once the adult denticulation pattern has been established. If so, the relationship between length and denticle number should show successive reductions in slope.
+
+# Hypotheses and predictions
+
+## Model 1: a single linear trajectory
+
+The simplest hypothesis proposes one constant relationship across the full size range:
+
+\[
+y_i=\beta_0+\beta_1x_i+\varepsilon_i.
+\]
+
+Under this model, denticle number changes at the same average rate throughout ontogeny. There is no detectable juvenile–adult transition based on these two characters.
+
+## Model 2: two ontogenetic phases
+
+A broken-stick model with one breakpoint represents two connected linear phases:
+
+\[
+y_i=\beta_0+\beta_1x_i+
+\beta_2(x_i-\psi_1)_+ + \varepsilon_i.
+\]
+
+This model is compatible with:
+
+1. a juvenile phase in which length and denticle number increase together;
+2. an adult phase in which denticle addition slows or stops.
+
+The prediction is a positive first slope followed by a much smaller second slope.
+
+## Model 3: three ontogenetic phases
+
+A broken-stick model with two breakpoints represents three connected linear phases:
+
+\[
+y_i=\beta_0+\beta_1x_i+
+\beta_2(x_i-\psi_1)_+
++\beta_3(x_i-\psi_2)_+
++\varepsilon_i.
+\]
+
+This model is compatible with:
+
+1. an **early juvenile phase** with rapid denticle addition;
+2. a **late juvenile or subadult phase** with slower denticle addition;
+3. an **adult phase** in which denticle number approaches a plateau.
+
+The principal prediction is a progressive reduction in slope across the three phases.
+
+::: {.callout-important}
+## Scope of inference
+
+Broken-stick regression identifies changes in the mean ontogenetic trajectory. It does not perform unsupervised clustering and does not demonstrate that juveniles, subadults, and adults form perfectly discrete groups.
+
+The breakpoints should therefore be regarded as **candidate ontogenetic thresholds**. Independent morphological, histological, or growth-related evidence is required to validate them as actual maturity boundaries.
+:::
+
+# Analytical objective
+
+The three models are compared using:
+
+- AIC and sample-size-corrected AIC (AICc);
+- Bayesian information criterion (BIC);
+- Akaike weights;
+- root mean squared error (RMSE);
+- \(R^2\);
+- the estimated slopes and breakpoints;
+- residual diagnostics.
+
+AICc is used as the primary model-selection criterion because the candidate models differ in complexity and because the additional breakpoints must be justified by sufficient improvement in fit. BIC is reported as a more conservative criterion that penalises additional parameters more strongly.
+
+# Analysis setup
+
+```{r}
+#| label: setup
+
+required_packages <- c(
+  "readxl",
+  "ggplot2",
+  "segmented",
+  "patchwork",
+  "knitr"
+)
+
+missing_packages <- setdiff(
+  required_packages,
+  rownames(installed.packages())
+)
+
+if (length(missing_packages) > 0) {
+  install.packages(missing_packages)
+}
+
+invisible(
+  lapply(
+    required_packages,
+    library,
+    character.only = TRUE
+  )
+)
+
+options(
+  scipen = 999,
+  digits = 6
+)
+
+set.seed(123)
+
+fmt <- function(x, digits = 2) {
+  formatC(
+    x,
+    format = "f",
+    digits = digits,
+    decimal.mark = "."
+  )
+}
+```

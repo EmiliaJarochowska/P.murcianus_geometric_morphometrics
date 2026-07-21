@@ -71,6 +71,7 @@ plot(pca_Pr$PC1, pca_Pr$PC2,
      cex = (PC1_ts$Height-5)^(1/3),
      xlab = "PC1",
      ylab = "PC2",
+     main = "Relationship between position in the section and in the morphospace (Point size is proportional to height in the section)",
      col = "orange",
      pch = 16
 )
@@ -97,3 +98,7 @@ punc <- fitGpunc(PC1_mode, oshare = FALSE, pool = FALSE)
 jpeg(file="figs/Fig.4.jpg", width = 2000, height = 1000, res = 300)
 plot(PC1_mode, modelFit = punc)
 dev.off()
+
+plot(PC1_mode, modelFit = punc)
+
+

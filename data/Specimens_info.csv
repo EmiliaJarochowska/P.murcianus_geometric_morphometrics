@@ -1,5 +1,4 @@
 ID,Country,Section,Region,Chirality,FaciesZone
-BAH_Dr_DR-2_1,Bosnia and Herzegovina,Drežnica,North-Eastern ,L,FZ3
 BAH_Dr_DR-2_2,Bosnia and Herzegovina,Drežnica,North-Eastern ,R,FZ3
 BAH_Dr_DR-2_3,Bosnia and Herzegovina,Drežnica,North-Eastern ,L,FZ3
 BAH_Dr_DR-3_1,Bosnia and Herzegovina,Drežnica,North-Eastern ,L,FZ3
@@ -15,7 +14,6 @@ BAH_Dr_DR-4_6,Bosnia and Herzegovina,Drežnica,North-Eastern ,L,FZ3
 BAH_Dr_DR-5_1,Bosnia and Herzegovina,Drežnica,North-Eastern ,L,FZ3
 BAH_Dr_DR-6_1,Bosnia and Herzegovina,Drežnica,North-Eastern ,L,FZ3
 BAH_Dr_DR-7_1,Bosnia and Herzegovina,Drežnica,North-Eastern ,L,FZ3
-BAH_Dr_DR-9_1,Bosnia and Herzegovina,Drežnica,North-Eastern ,L,FZ3
 BAH_Dr_DR-9_2,Bosnia and Herzegovina,Drežnica,North-Eastern ,R,FZ3
 BAH_Dr_DR-9_3,Bosnia and Herzegovina,Drežnica,North-Eastern ,R,FZ3
 BAH_Dr_DR-9_4,Bosnia and Herzegovina,Drežnica,North-Eastern ,L,FZ3
@@ -61,130 +59,6 @@ SL_Pr_PR15_6,Slovenia,Prikrnica,North-Eastern ,R,FZ3
 SL_Pr_PR15_7,Slovenia,Prikrnica,North-Eastern ,L,FZ3
 SL_Pr_PR15_8,Slovenia,Prikrnica,North-Eastern ,L,FZ3
 SL_Pr_PR15_9,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR16_1,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR16_2,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR16_3,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR16_4,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR16_5,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR16_6,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR16_7,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR16_8,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR17_1,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR17_2,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR17_3,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR18_1,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR18_10,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR18_11,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR18_2,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR18_3,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR18_4,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR18_5,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR18_6,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR18_7,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR18_8,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR18_9,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR19_1,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR19_10,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR19_11,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR19_12,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR19_13,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR19_14,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR19_15,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR19_16,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR19_17,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR19_18,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR19_19,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR19_2,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR19_20,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR19_21,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR19_22,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR19_23,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR19_24,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR19_25,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR19_3,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR19_4,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR19_5,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR19_6,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR19_7,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR19_8,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR19_9,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR21_1,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR21_10,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR21_11,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR21_12,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR21_2,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR21_3,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR21_4,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR21_5,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR21_6,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR21_7,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR21_8,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR21_9,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_1,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_10,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_11,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_12,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_13,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_14,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_15,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_16,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_17,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_18,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_19,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_2,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_20,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_21,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_22,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_23,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_24,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_25,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_26,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_27,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_28,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_29,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_3,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_30,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_31,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_32,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_33,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_34,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_35,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_36,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_37,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_38,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_39,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_4,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_40,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_5,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_6,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR22_7,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_8,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_9,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR23_1,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR23_10,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR23_12,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR23_13,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR23_14,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR23_15,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR23_16,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR23_17,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR23_2,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR23_3,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR23_4,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR23_5,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR23_6,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR23_7,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR23_8,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR23_9,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR24_1,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR24_2,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR24_3,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR24_4,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR24_5,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR24_6,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR24_7,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR24_8,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR24_9,Slovenia,Prikrnica,North-Eastern ,L,FZ3
 SL_Pr_PR4_1,Slovenia,Prikrnica,North-Eastern ,L,FZ3
 SL_Pr_PR4_2,Slovenia,Prikrnica,North-Eastern ,R,FZ3
 SL_Pr_PR4_3,Slovenia,Prikrnica,North-Eastern ,L,FZ3
@@ -369,20 +243,6 @@ SL_Pr_PR9_6,Slovenia,Prikrnica,North-Eastern ,L,FZ3
 SL_Pr_PR9_7,Slovenia,Prikrnica,North-Eastern ,L,FZ3
 SL_Pr_PR9_8,Slovenia,Prikrnica,North-Eastern ,L,FZ3
 SL_Pr_PR9_9,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_41,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_42,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR22_43,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR23_18,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR24_10,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR24_11,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR24_12,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR24_13,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR24_14,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR24_15,Slovenia,Prikrnica,North-Eastern ,L,FZ3
-SL_Pr_PR24_16,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR24_17,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR24_18,Slovenia,Prikrnica,North-Eastern ,R,FZ3
-SL_Pr_PR24_19,Slovenia,Prikrnica,North-Eastern ,L,FZ3
 SP_He_HE-14_1,Spain,Henarejos,Western,R,FZ8
 SP_He_HE-14_10,Spain,Henarejos,Western,L,FZ8
 SP_He_HE-14_11,Spain,Henarejos,Western,L,FZ8
@@ -392,22 +252,15 @@ SP_He_HE-14_14,Spain,Henarejos,Western,R,FZ8
 SP_He_HE-14_15,Spain,Henarejos,Western,R,FZ8
 SP_He_HE-14_2,Spain,Henarejos,Western,L,FZ8
 SP_He_HE-14_3,Spain,Henarejos,Western,L,FZ8
-SP_He_HE-14_4,Spain,Henarejos,Western,R,FZ8
 SP_He_HE-14_5,Spain,Henarejos,Western,L,FZ8
 SP_He_HE-14_6,Spain,Henarejos,Western,R,FZ8
 SP_He_HE-14_7,Spain,Henarejos,Western,R,FZ8
-SP_He_HE-14_8,Spain,Henarejos,Western,L,FZ8
 SP_He_HE-14_9,Spain,Henarejos,Western,R,FZ8
 SP_He_HE-18_1,Spain,Henarejos,Western,L,FZ8
 SP_He_HE-18_10,Spain,Henarejos,Western,R,FZ8
-SP_He_HE-18_11,Spain,Henarejos,Western,L,FZ8
 SP_He_HE-18_12,Spain,Henarejos,Western,L,FZ8
 SP_He_HE-18_13,Spain,Henarejos,Western,R,FZ8
-SP_He_HE-18_14,Spain,Henarejos,Western,L,FZ8
-SP_He_HE-18_15,Spain,Henarejos,Western,L,FZ8
-SP_He_HE-18_16,Spain,Henarejos,Western,L,FZ8
 SP_He_HE-18_17,Spain,Henarejos,Western,L,FZ8
-SP_He_HE-18_18,Spain,Henarejos,Western,R,FZ8
 SP_He_HE-18_19,Spain,Henarejos,Western,R,FZ8
 SP_He_HE-18_2,Spain,Henarejos,Western,L,FZ8
 SP_He_HE-18_20,Spain,Henarejos,Western,L,FZ8
@@ -419,14 +272,9 @@ SP_He_HE-18_25,Spain,Henarejos,Western,L,FZ8
 SP_He_HE-18_26,Spain,Henarejos,Western,R,FZ8
 SP_He_HE-18_27,Spain,Henarejos,Western,L,FZ8
 SP_He_HE-18_28,Spain,Henarejos,Western,L,FZ8
-SP_He_HE-18_29,Spain,Henarejos,Western,L,FZ8
 SP_He_HE-18_3,Spain,Henarejos,Western,L,FZ8
 SP_He_HE-18_30,Spain,Henarejos,Western,R,FZ8
-SP_He_HE-18_31,Spain,Henarejos,Western,R,FZ8
-SP_He_HE-18_32,Spain,Henarejos,Western,L,FZ8
-SP_He_HE-18_33,Spain,Henarejos,Western,R,FZ8
 SP_He_HE-18_34,Spain,Henarejos,Western,L,FZ8
-SP_He_HE-18_4,Spain,Henarejos,Western,L,FZ8
 SP_He_HE-18_5,Spain,Henarejos,Western,R,FZ8
 SP_He_HE-18_6,Spain,Henarejos,Western,R,FZ8
 SP_He_HE-18_7,Spain,Henarejos,Western,R,FZ8
@@ -437,7 +285,6 @@ SP_Li_LI-8_10,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_100,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_101,Spain,Libros,Western,R,FZ8
 SP_Li_LI-8_102,Spain,Libros,Western,R,FZ8
-SP_Li_LI-8_103,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_104,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_11,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_12,Spain,Libros,Western,L,FZ8
@@ -468,7 +315,6 @@ SP_Li_LI-8_36,Spain,Libros,Western,R,FZ8
 SP_Li_LI-8_37,Spain,Libros,Western,R,FZ8
 SP_Li_LI-8_38,Spain,Libros,Western,R,FZ8
 SP_Li_LI-8_39,Spain,Libros,Western,L,FZ8
-SP_Li_LI-8_4,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_40,Spain,Libros,Western,R,FZ8
 SP_Li_LI-8_41,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_42,Spain,Libros,Western,R,FZ8
@@ -510,7 +356,6 @@ SP_Li_LI-8_74,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_75,Spain,Libros,Western,R,FZ8
 SP_Li_LI-8_76,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_77,Spain,Libros,Western,R,FZ8
-SP_Li_LI-8_78,Spain,Libros,Western,R,FZ8
 SP_Li_LI-8_79,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_8,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_80,Spain,Libros,Western,L,FZ8
@@ -521,13 +366,11 @@ SP_Li_LI-8_84,Spain,Libros,Western,R,FZ8
 SP_Li_LI-8_85,Spain,Libros,Western,R,FZ8
 SP_Li_LI-8_86,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_87,Spain,Libros,Western,L,FZ8
-SP_Li_LI-8_88,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_89,Spain,Libros,Western,R,FZ8
 SP_Li_LI-8_9,Spain,Libros,Western,R,FZ8
 SP_Li_LI-8_90,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_91,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_92,Spain,Libros,Western,R,FZ8
-SP_Li_LI-8_93,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_94,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_95,Spain,Libros,Western,L,FZ8
 SP_Li_LI-8_96,Spain,Libros,Western,L,FZ8
@@ -540,7 +383,6 @@ SP_Bu_BU-I-26_100,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_101,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_102,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_103,Spain,Bugarra,Western,L,FZ8
-SP_Bu_BU-I-26_104,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_105,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_106,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_107,Spain,Bugarra,Western,R,FZ8
@@ -549,7 +391,6 @@ SP_Bu_BU-I-26_109,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_11,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_110,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_111,Spain,Bugarra,Western,L,FZ8
-SP_Bu_BU-I-26_112,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_113,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_114,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_115,Spain,Bugarra,Western,R,FZ8
@@ -558,7 +399,6 @@ SP_Bu_BU-I-26_117,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_118,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_119,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_12,Spain,Bugarra,Western,R,FZ8
-SP_Bu_BU-I-26_120,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_121,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_122,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_123,Spain,Bugarra,Western,L,FZ8
@@ -707,7 +547,6 @@ SP_Bu_BU-I-26_251,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_252,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_253,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_254,Spain,Bugarra,Western,L,FZ8
-SP_Bu_BU-I-26_255,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_256,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_257,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_258,Spain,Bugarra,Western,L,FZ8
@@ -724,7 +563,6 @@ SP_Bu_BU-I-26_267,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_268,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_269,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_27,Spain,Bugarra,Western,L,FZ8
-SP_Bu_BU-I-26_270,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_271,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_272,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_273,Spain,Bugarra,Western,R,FZ8
@@ -763,7 +601,6 @@ SP_Bu_BU-I-26_32,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_33,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_34,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_35,Spain,Bugarra,Western,L,FZ8
-SP_Bu_BU-I-26_36,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_37,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_38,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_39,Spain,Bugarra,Western,L,FZ8
@@ -788,11 +625,9 @@ SP_Bu_BU-I-26_55,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_56,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_57,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_58,Spain,Bugarra,Western,R,FZ8
-SP_Bu_BU-I-26_59,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_6,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_60,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_61,Spain,Bugarra,Western,R,FZ8
-SP_Bu_BU-I-26_62,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_63,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_64,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_65,Spain,Bugarra,Western,L,FZ8
@@ -804,17 +639,14 @@ SP_Bu_BU-I-26_7,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_70,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_71,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_72,Spain,Bugarra,Western,R,FZ8
-SP_Bu_BU-I-26_73,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_74,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_75,Spain,Bugarra,Western,R,FZ8
-SP_Bu_BU-I-26_76,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_77,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_78,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_79,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_8,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_80,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_81,Spain,Bugarra,Western,R,FZ8
-SP_Bu_BU-I-26_82,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_83,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_84,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_85,Spain,Bugarra,Western,L,FZ8
@@ -825,12 +657,10 @@ SP_Bu_BU-I-26_89,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_9,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_90,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-I-26_91,Spain,Bugarra,Western,R,FZ8
-SP_Bu_BU-I-26_92,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_93,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_94,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_95,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_96,Spain,Bugarra,Western,R,FZ8
-SP_Bu_BU-I-26_97,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_98,Spain,Bugarra,Western,R,FZ8
 SP_Bu_BU-I-26_99,Spain,Bugarra,Western,L,FZ8
 SP_Bu_BU-pl_1,Spain,Bugarra,Western,L,FZ8
