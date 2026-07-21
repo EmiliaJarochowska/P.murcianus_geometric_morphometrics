@@ -110,7 +110,8 @@ R (≥ 4.1.0) with the following packages:
 | `scales` | Axis formatting |
 | `knitr` | R Markdown rendering |
 
->>>>>>> 443b2cd9fa0a39c50bd420c096615aa8bf3f36db
+
+
 Install all packages at once:
 
 ```r
@@ -136,32 +137,28 @@ Open `P.murcianus_geometric_morphometrics.Rproj` in RStudio (or set the project 
 2. **Statistical analyses**
    ```r
    source("src/analyses.R")
-<<<<<<< HEAD
    source("src/perform_pca_tests.R")
    source("src/calculate_distance.R")
-=======
    source("src/perform_normality_tests.R")
    source("src/perform_pca_tests.R")
    source("src/calculate_distance.R")
    source("src/Variances.R")
    source("src/Regression_model.R")
    source("src/Regression_facies.R")
->>>>>>> 443b2cd9fa0a39c50bd420c096615aa8bf3f36db
    source("src/mode_evolution_Pr.R")
    ```
 
 3. **Figures**
    ```r
-<<<<<<< HEAD
+
    source("src/plot_distance_boxplot.R")
    source("src/plot_distance_violin.R.R")
-=======
    source("src/plot_pca_scatter.R")
    source("src/plot_pca_boxplot.R")
    source("src/plot_distance_boxplot.R")
    source("src/plot_length_histogram.R")
    source("src/plot_correlation.R")
->>>>>>> 443b2cd9fa0a39c50bd420c096615aa8bf3f36db
+
    ```
 
 Steps 2 and 3 load `data/processed_data.RData` (produced in step 1); pre-computed `.RData` files are included so steps 2–3 can be run independently.
