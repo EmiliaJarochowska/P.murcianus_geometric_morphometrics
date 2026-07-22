@@ -35,49 +35,26 @@ P.murcianus_geometric_morphometrics/
 │   ├── All_sections.TPS          # Raw landmark coordinates (TPS format)
 │   ├── Specimens_info.csv        # Specimen metadata (section, region, facies zone, etc.)
 │   ├── Pr_samples.csv            # Prikrnica sample data
-│   ├── Prikrnica_heights.csv     # Stratigraphic heights for the Prikrnica section
+│   ├── Prikrnica_heights.csv     # Stratigraphic heights for the Prikrnica
+│   ├── Prikrnica_mode_evolution.TPS     # Raw landmark coordinates (TPS format) with all adults specimens including upper part of Prikrnica
+│   ├── Specimens_inf_mode_evolution.csv     # Specimen metadata with all adults specimens including upper part of Prikrnica (section, region, facies zone, etc.)
+section
 │   ├── curveslide.csv            # Semi-landmark sliding definitions
-<<<<<<< HEAD
 │   ├── processed_data.RData      # Pre-processed landmarks, GPA results, PCA 
 ├── src/
 │   ├── import_data.R             # Read TPS file, run GPA and PCA, save processed_data.RData
 │   ├── process_data.R            # Additional data wrangling utilities
-│   ├── analyses.R                # Main statistical analyses (PERMANOVA, disparity, Kruskal-Wallis)
-│   ├── Exploratory Data Analysis.R # Shapiro-Wilk normality tests, disparity test
-│   ├── perform_pca_tests.R       # Kruskal-Wallis + Dunn post-hoc on PC scores
-│   ├── calculate_distance.R      # Pairwise distance calculations
-│   ├── mode_evolution_Pr.R       # paleoTS mode-of-evolution analysis
-│   ├── plot_distance_boxplot.R   # Morphological distance boxplots
-│   ├── plot_distance_violin.R   # Length
-├── figs/                         # Output figures (Fig. 1–6)
-├── supplementary_material/       # Supplementary figures (Fig. S1–S3) and table (S1)
-├── Tab/                          # Manuscript tables (Word format)
-├── RMarkdown report
-=======
-│   ├── Table_S4.csv              # Supplementary data table S4
-│   ├── processed_data.RData      # Pre-processed landmarks, GPA results, PCA scores
-│   ├── regression_part_summary.RData  # Regression model summaries
-│   └── slope_summary.RData       # Slope estimates from subsampling
-├── src/
-│   ├── import_data.R             # Read TPS file, run GPA and PCA, save processed_data.RData
-│   ├── process_data.R            # Additional data wrangling utilities
 │   ├── analyses.R                # Main statistical analyses (MANOVA, disparity, Kruskal-Wallis)
-│   ├── perform_normality_tests.R # Shapiro-Wilk normality tests
 │   ├── perform_pca_tests.R       # Kruskal-Wallis + Dunn post-hoc on PC scores
 │   ├── calculate_distance.R      # Pairwise distance calculations
-│   ├── Variances.R               # Levene's tests for variance homogeneity
-│   ├── Regression_model.R        # Linear regression (Length ~ PC1) with subsampling
-│   ├── Regression_facies.R       # Regression stratified by facies zone
+│   ├── Exploratory Data Analyisi.R  # Exploratory Data Analyisi (outlier detection, Normality, dispersion) 
 │   ├── mode_evolution_Pr.R       # paleoTS mode-of-evolution analysis
-│   ├── plot_pca_scatter.R        # PCA scatter plots
-│   ├── plot_pca_boxplot.R        # PC score boxplots by group
 │   ├── plot_distance_boxplot.R   # Morphological distance boxplots
-│   ├── plot_length_histogram.R   # Length frequency histograms
-│   └── plot_correlation.R        # Correlation plots
-├── figs/                         # Output figures (Fig. 1–9, mode_of_evolution.pdf)
-├── supplementary_material/       # Supplementary figures (Fig. S1–S7) and tables (S1–S4)
-├── Tab/                          # Manuscript tables (Word format)
->>>>>>> 443b2cd9fa0a39c50bd420c096615aa8bf3f36db
+│   ├── plot_distance_violin.R   # Morphological distance boxplots, overlayed violin plot
+├── figs/                         # Output figures (Fig. 1–5)
+├── supplementary_material/       # Supplementary figures (Fig. S1–S3) and table (S1)
+├── Tab/                          # Manuscript tables (Word format, Tab. S1-S3)
+├── P_murcianus.rmarkdown         # Report in RMarkdown
 └── P.murcianus_geometric_morphometrics.Rproj
 ```
 ## Software requirements
@@ -94,18 +71,10 @@ R (≥ 4.1.0) with the following packages:
 | `ggplot2` | Plotting |
 | `ggpubr` | Multi-panel figure assembly |
 | `egg` | Additional ggplot2 extensions |
-<<<<<<< HEAD
 | `dplyr` | Data manipulation |
 | `tidyr` | Data reshaping |
-| `scales` | Axis formatting |
 | `pairwiseAdonis` | pairwise Adonis |
-| `knitr` | R Markdown rendering |
-
-
-=======
 | `visreg` | Regression visualisation |
-| `dplyr` | Data manipulation |
-| `tidyr` | Data reshaping |
 | `purrr` | Functional programming / iteration |
 | `scales` | Axis formatting |
 | `knitr` | R Markdown rendering |
@@ -119,7 +88,6 @@ install.packages(c(
   "geomorph", "paleoTS", "vegan", "car", "dunn.test",
   "ggplot2", "ggpubr", "egg", "visreg",
   "dplyr", "tidyr", "purrr", "scales", "pairwiseAdonis", "knitr"
-  "dplyr", "tidyr", "purrr", "scales", "knitr"
 ))
 ```
 
@@ -139,12 +107,8 @@ Open `P.murcianus_geometric_morphometrics.Rproj` in RStudio (or set the project 
    source("src/analyses.R")
    source("src/perform_pca_tests.R")
    source("src/calculate_distance.R")
-   source("src/perform_normality_tests.R")
    source("src/perform_pca_tests.R")
    source("src/calculate_distance.R")
-   source("src/Variances.R")
-   source("src/Regression_model.R")
-   source("src/Regression_facies.R")
    source("src/mode_evolution_Pr.R")
    ```
 
@@ -152,12 +116,7 @@ Open `P.murcianus_geometric_morphometrics.Rproj` in RStudio (or set the project 
    ```r
 
    source("src/plot_distance_boxplot.R")
-   source("src/plot_distance_violin.R.R")
-   source("src/plot_pca_scatter.R")
-   source("src/plot_pca_boxplot.R")
-   source("src/plot_distance_boxplot.R")
-   source("src/plot_length_histogram.R")
-   source("src/plot_correlation.R")
+   source("src/plot_distance_violin.R")
 
    ```
 
