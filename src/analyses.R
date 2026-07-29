@@ -317,6 +317,17 @@ adonis2(
   method = "euclidean")
 
 
+###### interaction between Chirality and Region ###### 
+
+adonis2(
+  PC_scores ~ Region * Chirality,
+  data = data_combined,
+  method = "euclidean",
+  by = "terms",
+  permutations = 9999
+)
+
+
 ###### Region ###### 
 # Compare only Sinistral specimens: Western vs North-Eastern
 
@@ -343,6 +354,30 @@ adonis_Dextral
 
 
 
+# Compare only NE region: sinistral vs dextral
+
+adonis_Region_NE <- adonis2(
+  PC_scores[specimen_info_matched$Region == "North-Eastern", ] ~ Chirality,
+  data = data_combined[specimen_info_matched$Region == "North-Eastern", ],
+  method = "euclidean",
+  permutations = 9999
+)
+
+adonis_Region_NE
+
+
+# Compare only NE region: sinistral vs dextral
+
+adonis_Region_W <- adonis2(
+  PC_scores[specimen_info_matched$Region == "Western", ] ~ Chirality,
+  data = data_combined[specimen_info_matched$Region == "Western", ],
+  method = "euclidean",
+  permutations = 9999
+)
+
+adonis_Region_W
+
+
 
 ###### Section ###### 
 # Sinistral
@@ -363,7 +398,8 @@ pairwise_results_Section <- pairwise.adonis2(
 
 
 # subset 
-
+set.seed(42)
+sin_data <- subset(data_combined, Chirality == "Sinistral")
 run_Section_test <- function(df, n_sample = 10){
   
   replicate(500, {
@@ -398,6 +434,41 @@ results_sin_section <- run_Section_test(sin_data)
 
 mean(results_sin_section < 0.05)
 
+
+# pairwise_Sinistral
+run_Section_pairwisetest_sin <- function(df, n_sample = 10, n_iter = 500){
+  
+  replicate(n_iter, {
+    
+    keep <- unlist(
+      lapply(levels(df$Section), function(sec){
+        
+        idx <- which(df$Section == sec)
+        
+        if(length(idx) > n_sample){
+          sample(idx, n_sample)
+        } else {
+          idx
+        }
+        
+      })
+    )
+    
+    pw <- pairwise.adonis2(
+      dist(df[keep, paste0("PC",1:6)]) ~ Section,
+      data = df[keep, ],
+      permutations = 999
+    )
+    
+    ## Extract the p-value from every comparison
+    sapply(pw[-1], function(x) x$`Pr(>F)`[1])
+    
+  }, simplify = "matrix")
+}
+results_sin <- run_Section_pairwisetest_sin(sin_data)
+
+rowMeans(results_sin)
+rowMeans(results_sin < 0.05)
 
 
 # Dextral
@@ -453,6 +524,41 @@ results_dex_section <- run_Section_test_dex(dex_data)
 
 mean(results_dex_section < 0.05)
 
+# pairwise
+set.seed(42)
+run_Section_pairwisetest_dex <- function(df, n_sample = 8, n_iter = 500){
+  
+  replicate(n_iter, {
+    
+    keep <- unlist(
+      lapply(levels(df$Section), function(sec){
+        
+        idx <- which(df$Section == sec)
+        
+        if(length(idx) > n_sample){
+          sample(idx, n_sample)
+        } else {
+          idx
+        }
+        
+      })
+    )
+    
+    pw <- pairwise.adonis2(
+      dist(df[keep, paste0("PC",1:6)]) ~ Section,
+      data = df[keep, ],
+      permutations = 999
+    )
+    
+    ## Extract the p-value from every comparison
+    sapply(pw[-1], function(x) x$`Pr(>F)`[1])
+    
+  }, simplify = "matrix")
+}
+results_dex <- run_Section_pairwisetest_dex(dex_data)
+
+rowMeans(results_dex)
+rowMeans(results_dex < 0.05)
 
 
 ##### Mean shapes #####
