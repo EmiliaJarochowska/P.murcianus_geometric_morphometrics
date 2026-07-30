@@ -838,6 +838,17 @@ adonis2(
 ```
 PERMANOVA showed a significant difference in shape  between sinistral and dextral. 
 
+### interaction between Chirality and Region
+```{r}
+set.seed(42)
+adonis2(
+  PC_scores ~ Region * Chirality,
+  data = data_combined,
+  method = "euclidean",
+  by = "terms",
+  permutations = 9999
+)
+```
 ### Region
 #### Sinistral
 ```{r}
@@ -867,29 +878,39 @@ adonis_Dextral
 ```
 Shape variation of dextral elements among regions differs significantly. Disparity test shows no significant differences between region (see Exploratory data analysis - informative PCs - Region - Sinistral), therefore, differences between regions reflect average shape configuration.
 
+#### Compare Chiralities within NE region
+```{r}
+set.seed(42)
+adonis_Region_NE <- adonis2(
+  PC_scores[specimen_info_matched$Region == "North-Eastern", ] ~ Chirality,
+  data = data_combined[specimen_info_matched$Region == "North-Eastern", ],
+  method = "euclidean",
+  permutations = 9999
+)
+
+adonis_Region_NE
+
+```
+
+#### Compare Chiralities within W region
+```{r}
+set.seed(42)
+adonis_Region_W <- adonis2(
+  PC_scores[specimen_info_matched$Region == "Western", ] ~ Chirality,
+  data = data_combined[specimen_info_matched$Region == "Western", ],
+  method = "euclidean",
+  permutations = 9999
+)
+
+adonis_Region_W
+
+```
+
+
 ### Section
 #### Sinistral
 ```{r}
 set.seed(42)
-adonis_Sinistral <- adonis2(
-  PC_scores[specimen_info_matched$Chirality == "Sinistral", ] ~ Section,
-  data = data_combined[specimen_info_matched$Chirality == "Sinistral", ],
-  method = "euclidean",
-  permutations = 9999
-)
-adonis_Sinistral
-
-set.seed(42)
-pairwise_results_Section <- pairwise.adonis2(
-  PC_scores[specimen_info_matched$Chirality == "Sinistral", ] ~ Section,
-  data = data_combined[specimen_info_matched$Chirality == "Sinistral", ],
-  method = "euclidean",
-  permutations = 9999
-)
-pairwise_results_Section
-
-
-
 # The number of analysed sinistral elements differed between section, and resampling method was employed
 
 run_Section_test <- function(df, n_sample = 10){
@@ -926,31 +947,50 @@ results_sin_section <- run_Section_test(sin_data)
 
 mean(results_sin_section < 0.05)
 
+# pairwise_Sinistral
+run_Section_pairwisetest_sin <- function(df, n_sample = 10, n_iter = 500){
+  
+  replicate(n_iter, {
+    
+    keep <- unlist(
+      lapply(levels(df$Section), function(sec){
+        
+        idx <- which(df$Section == sec)
+        
+        if(length(idx) > n_sample){
+          sample(idx, n_sample)
+        } else {
+          idx
+        }
+        
+      })
+    )
+    
+    pw <- pairwise.adonis2(
+      dist(df[keep, paste0("PC",1:6)]) ~ Section,
+      data = df[keep, ],
+      permutations = 999
+    )
+    
+    ## Extract the p-value from every comparison
+    sapply(pw[-1], function(x) x$`Pr(>F)`[1])
+    
+  }, simplify = "matrix")
+}
+results_sin <- run_Section_pairwisetest_sin(sin_data)
+
+rowMeans(results_sin)
+rowMeans(results_sin < 0.05)
+
 ```
 Sinistral elements significantly differ in shape among sections. To evaluate whether the differences in morphological variability were associated with unequal sam-ple size among sections, in 500 iterations, specimens were randomly subsampled within each section (10 samples per section) and differences in multivariate dispersion and average shape configuration were reassessed. 
 
-A resampling approach showed the differences of multivariate shape between section is present in low % % of 500 iteration. Therefore, differences in average shape configuration, when considering sample size, are not significant between sections. 
+A resampling approach showed the differences of multivariate shape between section is present in low % of 500 iteration. Therefore, differences in average shape configuration, when considering sample size, are not significant between sections. 
 
 
 #### Dextral
 ```{r}
 set.seed(42)
-adonis_Sinistral <- adonis2(
-  PC_scores[specimen_info_matched$Chirality == "Dextral", ] ~ Section,
-  data = data_combined[specimen_info_matched$Chirality == "Dextral", ],
-  method = "euclidean",
-  permutations = 9999
-)
-adonis_Sinistral
-
-pairwise_results_Section <- pairwise.adonis2(
-  PC_scores[specimen_info_matched$Chirality == "Dextral", ] ~ Section,
-  data = data_combined[specimen_info_matched$Chirality == "Dextral", ],
-  method = "euclidean",
-  permutations = 9999
-)
-pairwise_results_Section
-
 
 # The number of analysed dextral elements differed between section, and resampling method was employed
 
@@ -987,6 +1027,42 @@ run_Section_test_dex <- function(df, n_sample = 8){
 results_dex_section <- run_Section_test_dex(dex_data)
 
 mean(results_dex_section < 0.05)
+
+# pairwise
+set.seed(42)
+run_Section_pairwisetest_dex <- function(df, n_sample = 8, n_iter = 500){
+  
+  replicate(n_iter, {
+    
+    keep <- unlist(
+      lapply(levels(df$Section), function(sec){
+        
+        idx <- which(df$Section == sec)
+        
+        if(length(idx) > n_sample){
+          sample(idx, n_sample)
+        } else {
+          idx
+        }
+        
+      })
+    )
+    
+    pw <- pairwise.adonis2(
+      dist(df[keep, paste0("PC",1:6)]) ~ Section,
+      data = df[keep, ],
+      permutations = 999
+    )
+    
+    ## Extract the p-value from every comparison
+    sapply(pw[-1], function(x) x$`Pr(>F)`[1])
+    
+  }, simplify = "matrix")
+}
+results_dex <- run_Section_pairwisetest_dex(dex_data)
+
+rowMeans(results_dex)
+rowMeans(results_dex < 0.05)
 
 ```
 Dextral elements shape differs significantly among sections. However here to the sample size varies between section.
