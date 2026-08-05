@@ -54,7 +54,6 @@ section
 ├── supplementary_material/       # Supplementary figures (Fig. S1–S5) and table (S1)
 ├── Tab/                          # Manuscript tables (Word format, Tab. 1-4)
 ├── Ontogenetic_stages/           # All data required to generate the three models used to determine ontogenetic stages
-├── P_murcianus.rmarkdown         # Report in RMarkdown
 └── P.murcianus_geometric_morphometrics.Rproj
 ```
 ## Software requirements
