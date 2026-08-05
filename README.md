@@ -37,7 +37,7 @@ P.murcianus_geometric_morphometrics/
 │   ├── Pr_samples.csv            # Prikrnica sample data
 │   ├── Prikrnica_heights.csv     # Stratigraphic heights for the Prikrnica
 │   ├── Prikrnica_mode_evolution.TPS     # Raw landmark coordinates (TPS format) with all adults specimens including upper part of Prikrnica
-│   ├── Specimens_inf_mode_evolution.csv     # Specimen metadata with all adults specimens including upper part of Prikrnica (section, region, facies zone, etc.)
+│   ├── Specimens_info_mode_evolution.csv     # Specimen metadata with all adults specimens including upper part of Prikrnica (section, region, facies zone, etc.)
 section
 │   ├── curveslide.csv            # Semi-landmark sliding definitions
 │   ├── processed_data.RData      # Pre-processed landmarks, GPA results, PCA 

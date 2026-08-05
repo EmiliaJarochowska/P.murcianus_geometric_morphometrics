@@ -3,3 +3,7 @@
 .RData
 .Ruserdata
 data/*.RData
+figs/*.jpg
+figs/*.pdf
+supplementary_material/*.jpg
+
