@@ -52,8 +52,9 @@ section
 │   ├── plot_distance_boxplot.R   # Morphological distance boxplots
 │   ├── plot_distance_violin.R   # Morphological distance boxplots, overlayed violin plot
 ├── figs/                         # Output figures (Fig. 1–5)
-├── supplementary_material/       # Supplementary figures (Fig. S1–S3) and table (S1)
-├── Tab/                          # Manuscript tables (Word format, Tab. S1-S3)
+├── supplementary_material/       # Supplementary figures (Fig. S1–S5) and table (S1)
+├── Tab/                          # Manuscript tables (Word format, Tab. 1-4)
+├── Ontogenetic_stages/           # All data required to generate the three models used to determine ontogenetic stages
 ├── P_murcianus.rmarkdown         # Report in RMarkdown
 └── P.murcianus_geometric_morphometrics.Rproj
 ```
@@ -78,7 +79,8 @@ R (≥ 4.1.0) with the following packages:
 | `purrr` | Functional programming / iteration |
 | `scales` | Axis formatting |
 | `knitr` | R Markdown rendering |
-
+| `segmented` |  fits segmented regression models with one or more breakpoints  |
+| `patchwork` |  combines multiple plots  |
 
 
 Install all packages at once:
@@ -87,7 +89,7 @@ Install all packages at once:
 install.packages(c(
   "geomorph", "paleoTS", "vegan", "car", "dunn.test",
   "ggplot2", "ggpubr", "egg", "visreg",
-  "dplyr", "tidyr", "purrr", "scales", "pairwiseAdonis", "knitr"
+  "dplyr", "tidyr", "purrr", "scales", "pairwiseAdonis", "knitr", "segmented", "patchwork"
 ))
 ```
 
