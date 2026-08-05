@@ -99,14 +99,12 @@ Open `P.murcianus_geometric_morphometrics.Rproj` in RStudio (or set the project 
 1. **Import and pre-process data**
    ```r
    source("src/import_data.R")   # reads All_sections.TPS, runs GPA + PCA,
-                                  # saves data/processed_data.RData
-   source("src/process_data.R")
+   source("src/process_data.R")   # saves data/processed_data.RData
    ```
 
 2. **Statistical analyses**
    ```r
    source("src/analyses.R")
-   source("src/perform_pca_tests.R")
    source("src/calculate_distance.R")
    source("src/perform_pca_tests.R")
    source("src/calculate_distance.R")
