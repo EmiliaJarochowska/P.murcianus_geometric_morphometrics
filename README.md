@@ -47,7 +47,7 @@ section
 │   ├── analyses.R                # Main statistical analyses (MANOVA, disparity, Kruskal-Wallis)
 │   ├── perform_pca_tests.R       # Kruskal-Wallis + Dunn post-hoc on PC scores
 │   ├── calculate_distance.R      # Pairwise distance calculations
-│   ├── Exploratory Data Analyisi.R  # Exploratory Data Analyisi (outlier detection, Normality, dispersion) 
+│   ├── Exploratory_Data_Analysis.R  # Exploratory Data Analysis (outlier detection, Normality, dispersion) 
 │   ├── mode_evolution_Pr.R       # paleoTS mode-of-evolution analysis
 │   ├── plot_distance_boxplot.R   # Morphological distance boxplots
 │   ├── plot_distance_violin.R   # Morphological distance boxplots, overlayed violin plot
