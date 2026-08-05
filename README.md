@@ -45,7 +45,6 @@ section
 │   ├── import_data.R             # Read TPS file, run GPA and PCA, save processed_data.RData
 │   ├── process_data.R            # Additional data wrangling utilities
 │   ├── analyses.R                # Main statistical analyses (MANOVA, disparity, Kruskal-Wallis)
-│   ├── perform_pca_tests.R       # Kruskal-Wallis + Dunn post-hoc on PC scores
 │   ├── calculate_distance.R      # Pairwise distance calculations
 │   ├── Exploratory_Data_Analysis.R  # Exploratory Data Analysis (outlier detection, Normality, dispersion) 
 │   ├── mode_evolution_Pr.R       # paleoTS mode-of-evolution analysis
